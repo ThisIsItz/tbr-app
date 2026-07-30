@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { FlatList, Modal, Pressable, StyleSheet } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
+import { IconSymbol } from '@/components/ui/icon-symbol';
 import type { PaletteColors } from '@/constants/palette';
 
 export interface FilterOption {
@@ -53,9 +54,11 @@ export function FilterSheet({
           style={[styles.triggerText, { color: isActive ? colors.accent : colors.textPrimary }]}>
           {isActive ? (selectedLabel ?? label) : label}
         </ThemedText>
-        <ThemedText style={{ color: isActive ? colors.accent : colors.textMuted, fontSize: 12 }}>
-          {'⌄'}
-        </ThemedText>
+        <IconSymbol
+          name="chevron.down"
+          size={16}
+          color={isActive ? colors.accent : colors.textMuted}
+        />
       </Pressable>
 
       <Modal visible={visible} transparent animationType="fade" onRequestClose={() => setVisible(false)}>
@@ -84,7 +87,7 @@ export function FilterSheet({
                       }}>
                       {item.label}
                     </ThemedText>
-                    {isSelected && <ThemedText style={{ color: colors.accent }}>{'✓'}</ThemedText>}
+                    {isSelected && <IconSymbol name="checkmark" size={18} color={colors.accent} />}
                   </Pressable>
                 );
               }}
