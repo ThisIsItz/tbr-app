@@ -70,6 +70,14 @@ export async function searchGoogleBooks(query: string): Promise<GoogleBooksVolum
   return rankSearchResults(candidates, trimmed);
 }
 
+export async function searchGoogleBooksByIsbn(isbn: string): Promise<GoogleBooksVolume | null> {
+  const trimmed = isbn.trim();
+  if (!trimmed) return null;
+
+  const results = await fetchVolumes(`isbn:${trimmed}`);
+  return results[0] ?? null;
+}
+
 export async function getGoogleBookById(volumeId: string): Promise<GoogleBooksVolume> {
   const params = withApiKey(new URLSearchParams());
   const query = params.toString();

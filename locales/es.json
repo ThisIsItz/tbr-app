@@ -71,6 +71,17 @@
     "noCover": "Sin portada",
     "unknownAuthor": "Autor desconocido"
   },
+  "scanIsbn": {
+    "instructions": "Apunta la cámara al código de barras de la contraportada del libro para buscarlo automáticamente.",
+    "permissionTitle": "Se necesita acceso a la cámara",
+    "permissionBody": "Para escanear un código de barras, esta app necesita permiso para usar tu cámara.",
+    "grantPermission": "Conceder acceso a la cámara",
+    "openSettings": "Abrir ajustes",
+    "searching": "Buscando este libro…",
+    "notFoundTitle": "Sin coincidencias",
+    "notFoundBody": "No encontramos ningún libro para este código de barras.",
+    "scanAgain": "Escanear de nuevo"
+  },
   "genreEditor": {
     "empty": "Aún no hay géneros — añade uno abajo.",
     "placeholder": "Añadir un género",
@@ -109,6 +120,7 @@
     "addBook": "Añadir un libro",
     "addToTbr": "Añadir a mi TBR",
     "addManually": "Añadir manualmente",
+    "scanIsbn": "Escanear ISBN",
     "settings": "Ajustes"
   }
 }

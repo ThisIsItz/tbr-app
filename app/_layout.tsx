@@ -111,6 +111,10 @@ function RootLayoutNav() {
             options={{ title: t('screenTitles.addManually'), presentation: 'modal', ...warmHeaderOptions }}
           />
           <Stack.Screen
+            name="scan-isbn"
+            options={{ title: t('screenTitles.scanIsbn'), presentation: 'modal', ...warmHeaderOptions }}
+          />
+          <Stack.Screen
             name="settings"
             options={{ title: t('screenTitles.settings'), ...warmHeaderOptions }}
           />

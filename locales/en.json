@@ -71,6 +71,17 @@
     "noCover": "No cover",
     "unknownAuthor": "Unknown author"
   },
+  "scanIsbn": {
+    "instructions": "Point your camera at the barcode on the back of the book to look it up automatically.",
+    "permissionTitle": "Camera access needed",
+    "permissionBody": "To scan a barcode, this app needs permission to use your camera.",
+    "grantPermission": "Grant Camera Access",
+    "openSettings": "Open Settings",
+    "searching": "Looking up this book…",
+    "notFoundTitle": "No match found",
+    "notFoundBody": "We couldn't find a book for this barcode.",
+    "scanAgain": "Scan Again"
+  },
   "genreEditor": {
     "empty": "No genres yet — add one below.",
     "placeholder": "Add a genre",
@@ -109,6 +120,7 @@
     "addBook": "Add a Book",
     "addToTbr": "Add to My TBR",
     "addManually": "Add Manually",
+    "scanIsbn": "Scan ISBN",
     "settings": "Settings"
   }
 }

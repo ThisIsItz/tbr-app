@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
 import { useMemo, useState } from 'react';
-import { ActivityIndicator, Alert, FlatList, Pressable, StyleSheet, TextInput, View } from 'react-native';
+import { ActivityIndicator, FlatList, Pressable, StyleSheet, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { BookCard } from '@/components/book-card';
@@ -27,10 +27,6 @@ export default function AddBookScreen() {
   const { data: results, isLoading, isError, error } = useSearchBooks(debouncedQuery);
   const { data: libraryBooks } = useBooks();
 
-  function showComingSoon(feature: string) {
-    Alert.alert(t('common.comingSoonTitle'), t('common.comingSoonBody', { feature }));
-  }
-
   const savedGoogleIds = useMemo(
     () => new Set(libraryBooks?.map((book) => book.googleBooksId).filter(Boolean)),
     [libraryBooks],
@@ -56,7 +52,7 @@ export default function AddBookScreen() {
       <View style={styles.quickActionsRow}>
         <Pressable
           style={[styles.quickAction, { backgroundColor: surfaceMutedColor }]}
-          onPress={() => showComingSoon(t('search.scanIsbn'))}>
+          onPress={() => router.push('/scan-isbn')}>
           <ThemedText style={[Typography.button, { color: textColor }]}>
             {t('search.scanIsbn')}
           </ThemedText>
