@@ -13,6 +13,13 @@ export class GoogleBooksApiError extends Error {
   }
 }
 
+// Google Books returns cover URLs as `http://`, which iOS/Android block by
+// default (ATS / cleartext traffic policy) — images fail to load silently.
+export function toHttpsUrl(url: string | null | undefined): string | null {
+  if (!url) return null;
+  return url.replace(/^http:\/\//, 'https://');
+}
+
 function withApiKey(params: URLSearchParams): URLSearchParams {
   const apiKey = process.env.EXPO_PUBLIC_GOOGLE_BOOKS_API_KEY;
   if (apiKey) {

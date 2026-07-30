@@ -2,18 +2,16 @@ import { useState } from 'react';
 import { Pressable, StyleSheet, TextInput, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
-import { Colors } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
+import type { PaletteColors } from '@/constants/palette';
 import { normalizeGenres } from '@/lib/genres';
 
 interface GenreEditorProps {
   genres: string[];
   onChange: (genres: string[]) => void;
+  colors: PaletteColors;
 }
 
-export function GenreEditor({ genres, onChange }: GenreEditorProps) {
-  const colorScheme = useColorScheme() ?? 'light';
-  const colors = Colors[colorScheme];
+export function GenreEditor({ genres, onChange, colors }: GenreEditorProps) {
   const [draft, setDraft] = useState('');
 
   function handleAdd() {
@@ -30,13 +28,13 @@ export function GenreEditor({ genres, onChange }: GenreEditorProps) {
     <View style={styles.container}>
       <View style={styles.chipRow}>
         {genres.length === 0 && (
-          <ThemedText style={{ opacity: 0.6 }}>No genres yet — add one below.</ThemedText>
+          <ThemedText style={{ color: colors.textMuted }}>No genres yet — add one below.</ThemedText>
         )}
         {genres.map((genre) => (
-          <View key={genre} style={[styles.chip, { borderColor: colors.icon }]}>
-            <ThemedText style={styles.chipText}>{genre}</ThemedText>
+          <View key={genre} style={[styles.chip, { backgroundColor: colors.accentSoft }]}>
+            <ThemedText style={[styles.chipText, { color: colors.accent }]}>{genre}</ThemedText>
             <Pressable onPress={() => handleRemove(genre)} hitSlop={8}>
-              <ThemedText style={[styles.chipRemove, { color: colors.tint }]}>×</ThemedText>
+              <ThemedText style={[styles.chipRemove, { color: colors.accent }]}>×</ThemedText>
             </Pressable>
           </View>
         ))}
@@ -46,12 +44,12 @@ export function GenreEditor({ genres, onChange }: GenreEditorProps) {
           value={draft}
           onChangeText={setDraft}
           placeholder="Add a genre"
-          placeholderTextColor={colors.icon}
-          style={[styles.input, { color: colors.text, borderColor: colors.icon }]}
+          placeholderTextColor={colors.textMuted}
+          style={[styles.input, { color: colors.textPrimary, backgroundColor: colors.surfaceMuted }]}
           onSubmitEditing={handleAdd}
           returnKeyType="done"
         />
-        <Pressable onPress={handleAdd} style={[styles.addButton, { backgroundColor: colors.tint }]}>
+        <Pressable onPress={handleAdd} style={[styles.addButton, { backgroundColor: colors.accent }]}>
           <ThemedText style={styles.addButtonText}>Add</ThemedText>
         </Pressable>
       </View>
@@ -72,17 +70,17 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    borderWidth: 1,
     borderRadius: 16,
     paddingVertical: 6,
     paddingHorizontal: 12,
   },
   chipText: {
     fontSize: 14,
+    fontWeight: '600',
   },
   chipRemove: {
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: '700',
   },
   inputRow: {
     flexDirection: 'row',
@@ -90,16 +88,17 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    borderWidth: 1,
-    borderRadius: 8,
+    borderRadius: 10,
+    minHeight: 44,
     paddingVertical: 8,
     paddingHorizontal: 12,
     fontSize: 16,
   },
   addButton: {
-    borderRadius: 8,
-    paddingVertical: 8,
+    borderRadius: 10,
+    minHeight: 44,
     paddingHorizontal: 16,
+    alignItems: 'center',
     justifyContent: 'center',
   },
   addButtonText: {

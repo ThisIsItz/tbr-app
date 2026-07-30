@@ -5,17 +5,17 @@ import { ActivityIndicator, Pressable, ScrollView, StyleSheet, View } from 'reac
 
 import { GenreEditor } from '@/components/genre-editor';
 import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Colors } from '@/constants/theme';
+import { Palette } from '@/constants/palette';
 import { useAddBook } from '@/features/library/hooks';
 import { useGoogleBookDetails } from '@/features/search/hooks';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { normalizeGenres } from '@/lib/genres';
+import { toHttpsUrl } from '@/lib/google-books';
 
 export default function AddBookScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const colorScheme = useColorScheme() ?? 'light';
-  const colors = Colors[colorScheme];
+  const colors = Palette[colorScheme];
 
   const { data: volume, isLoading, isError, error } = useGoogleBookDetails(id);
   const addBook = useAddBook();
@@ -29,23 +29,24 @@ export default function AddBookScreen() {
 
   if (isLoading) {
     return (
-      <ThemedView style={styles.centered}>
-        <ActivityIndicator />
-      </ThemedView>
+      <View style={[styles.centered, { backgroundColor: colors.background }]}>
+        <ActivityIndicator color={colors.accent} />
+      </View>
     );
   }
 
   if (isError || !volume) {
     return (
-      <ThemedView style={styles.centered}>
-        <ThemedText>
+      <View style={[styles.centered, { backgroundColor: colors.background }]}>
+        <ThemedText style={{ color: colors.textPrimary }}>
           {error instanceof Error ? error.message : "Couldn't load this book. Try again."}
         </ThemedText>
-      </ThemedView>
+      </View>
     );
   }
 
   const { title, authors, description, publishedDate, pageCount, imageLinks } = volume.volumeInfo;
+  const coverUrl = toHttpsUrl(imageLinks?.thumbnail);
 
   async function handleSave() {
     await addBook.mutateAsync({
@@ -53,7 +54,7 @@ export default function AddBookScreen() {
       title,
       authors: authors ?? [],
       genres,
-      thumbnailUrl: imageLinks?.thumbnail ?? null,
+      thumbnailUrl: coverUrl,
       description: description ?? null,
       publishedDate: publishedDate ?? null,
       pageCount: pageCount ?? null,
@@ -62,31 +63,32 @@ export default function AddBookScreen() {
   }
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <ScrollView
+      style={{ backgroundColor: colors.background }}
+      contentContainerStyle={styles.container}>
       <View style={styles.header}>
-        {imageLinks?.thumbnail ? (
-          <Image source={{ uri: imageLinks.thumbnail }} style={styles.thumbnail} contentFit="cover" />
+        {coverUrl ? (
+          <Image source={{ uri: coverUrl }} style={styles.thumbnail} contentFit="cover" />
         ) : (
-          <View style={[styles.thumbnail, { borderColor: colors.icon, borderWidth: 1 }]} />
+          <View style={[styles.thumbnail, styles.thumbnailPlaceholder, { backgroundColor: colors.surfaceMuted }]}>
+            <ThemedText style={{ color: colors.textMuted, fontSize: 11 }}>No cover</ThemedText>
+          </View>
         )}
         <View style={styles.headerText}>
-          <ThemedText type="subtitle">{title}</ThemedText>
+          <ThemedText style={[styles.bookTitle, { color: colors.textPrimary }]}>{title}</ThemedText>
           {authors && authors.length > 0 && (
-            <ThemedText style={{ opacity: 0.7 }}>{authors.join(', ')}</ThemedText>
+            <ThemedText style={{ color: colors.textMuted }}>{authors.join(', ')}</ThemedText>
           )}
         </View>
       </View>
 
       <View style={styles.section}>
-        <ThemedText type="defaultSemiBold">Genres</ThemedText>
-        <ThemedText style={{ opacity: 0.6, marginBottom: 8 }}>
-          Suggested from Google Books — edit as you like.
-        </ThemedText>
-        <GenreEditor genres={genres} onChange={setGenres} />
+        <ThemedText style={[styles.sectionLabel, { color: colors.textPrimary }]}>Genres</ThemedText>
+        <GenreEditor genres={genres} onChange={setGenres} colors={colors} />
       </View>
 
       <Pressable
-        style={[styles.saveButton, { backgroundColor: colors.tint }]}
+        style={[styles.saveButton, { backgroundColor: colors.accent }]}
         onPress={handleSave}
         disabled={addBook.isPending}>
         <ThemedText style={styles.saveButtonText}>
@@ -114,20 +116,37 @@ const styles = StyleSheet.create({
   thumbnail: {
     width: 80,
     height: 120,
-    borderRadius: 6,
+    borderRadius: 8,
+  },
+  thumbnailPlaceholder: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 4,
   },
   headerText: {
     flex: 1,
     justifyContent: 'center',
     gap: 4,
   },
+  bookTitle: {
+    fontSize: 19,
+    fontWeight: '700',
+    lineHeight: 24,
+  },
   section: {
     gap: 4,
   },
+  sectionLabel: {
+    fontSize: 15,
+    fontWeight: '700',
+    marginBottom: 4,
+  },
   saveButton: {
-    borderRadius: 8,
+    borderRadius: 10,
     paddingVertical: 14,
+    minHeight: 44,
     alignItems: 'center',
+    justifyContent: 'center',
   },
   saveButtonText: {
     color: '#fff',

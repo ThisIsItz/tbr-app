@@ -6,6 +6,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
 import 'react-native-reanimated';
 
+import { Palette } from '@/constants/palette';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { getDb } from '@/lib/db/client';
 import { GoogleBooksApiError } from '@/lib/google-books';
@@ -41,14 +42,31 @@ export default function RootLayout() {
     return null;
   }
 
+  const colors = Palette[colorScheme ?? 'light'];
+  const warmHeaderOptions = {
+    headerStyle: { backgroundColor: colors.background },
+    headerTintColor: colors.accent,
+    headerTitleStyle: { color: colors.textPrimary },
+    headerShadowVisible: false,
+  };
+
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
         <Stack>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="book/[id]" options={{ title: 'Book Details' }} />
-          <Stack.Screen name="add-book" options={{ title: 'Add a Book', presentation: 'modal' }} />
-          <Stack.Screen name="add/[id]" options={{ title: 'Add to My TBR', presentation: 'modal' }} />
+          <Stack.Screen
+            name="book/[id]"
+            options={{ title: 'Book Details', ...warmHeaderOptions }}
+          />
+          <Stack.Screen
+            name="add-book"
+            options={{ title: 'Add a Book', presentation: 'modal', ...warmHeaderOptions }}
+          />
+          <Stack.Screen
+            name="add/[id]"
+            options={{ title: 'Add to My TBR', presentation: 'modal', ...warmHeaderOptions }}
+          />
         </Stack>
         <StatusBar style="auto" />
       </ThemeProvider>

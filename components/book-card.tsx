@@ -3,6 +3,7 @@ import { Pressable, StyleSheet, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
 import type { PaletteColors } from '@/constants/palette';
+import { toHttpsUrl } from '@/lib/google-books';
 
 interface BookCardAction {
   label: string;
@@ -31,6 +32,8 @@ export function BookCard({
   action,
   colors,
 }: BookCardProps) {
+  const coverUrl = toHttpsUrl(thumbnailUrl);
+
   return (
     <Pressable
       onPress={onPress}
@@ -41,8 +44,8 @@ export function BookCard({
           shadowColor: colors.shadow,
         },
       ]}>
-      {thumbnailUrl ? (
-        <Image source={{ uri: thumbnailUrl }} style={styles.cover} contentFit="cover" />
+      {coverUrl ? (
+        <Image source={{ uri: coverUrl }} style={styles.cover} contentFit="cover" />
       ) : (
         <View style={[styles.cover, styles.coverPlaceholder, { backgroundColor: colors.surfaceMuted }]}>
           <ThemedText style={{ color: colors.textMuted, fontSize: 11 }}>No cover</ThemedText>
