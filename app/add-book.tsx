@@ -8,14 +8,14 @@ import { ThemedText } from '@/components/themed-text';
 import { Palette } from '@/constants/palette';
 import { useBooks } from '@/features/library/hooks';
 import { useSearchBooks } from '@/features/search/hooks';
-import { useColorScheme } from '@/hooks/use-color-scheme';
+import { useAppColorScheme } from '@/hooks/use-app-color-scheme';
 import { useDebouncedValue } from '@/hooks/use-debounced-value';
 import { useTranslation } from '@/hooks/use-translation';
 import { normalizeGenres } from '@/lib/genres';
 import { getErrorTranslationKey } from '@/lib/google-books';
 
 export default function AddBookScreen() {
-  const colorScheme = useColorScheme() ?? 'light';
+  const { colorScheme } = useAppColorScheme();
   const colors = Palette[colorScheme];
   const { t } = useTranslation();
   const [query, setQuery] = useState('');

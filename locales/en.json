@@ -64,7 +64,11 @@
     "title": "Settings",
     "language": "Language",
     "english": "English",
-    "spanish": "Español"
+    "spanish": "Español",
+    "appearance": "Appearance",
+    "appearanceSystem": "System",
+    "appearanceLight": "Light",
+    "appearanceDark": "Dark"
   },
   "status": {
     "to_read": "To Read",

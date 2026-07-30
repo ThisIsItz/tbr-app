@@ -64,7 +64,11 @@
     "title": "Ajustes",
     "language": "Idioma",
     "english": "English",
-    "spanish": "Español"
+    "spanish": "Español",
+    "appearance": "Apariencia",
+    "appearanceSystem": "Sistema",
+    "appearanceLight": "Claro",
+    "appearanceDark": "Oscuro"
   },
   "status": {
     "to_read": "Por leer",

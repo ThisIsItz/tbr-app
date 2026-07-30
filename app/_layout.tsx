@@ -8,13 +8,14 @@ import { useEffect, useState } from 'react';
 import 'react-native-reanimated';
 
 import { Palette } from '@/constants/palette';
-import { useColorScheme } from '@/hooks/use-color-scheme';
+import { useAppColorScheme } from '@/hooks/use-app-color-scheme';
 import { useTranslation } from '@/hooks/use-translation';
 import { getDb } from '@/lib/db/client';
 import { GoogleBooksApiError } from '@/lib/google-books';
 import { LanguageProvider } from '@/lib/i18n/language-provider';
 import { DEFAULT_LOCALE, detectLocaleFromLanguageCode, type Locale } from '@/lib/i18n/translations';
 import { getSetting } from '@/lib/repository/settings-repository';
+import { AppThemeProvider, type ThemePreference } from '@/lib/theme/theme-provider';
 
 export const unstable_settings = {
   anchor: '(tabs)',
@@ -37,18 +38,27 @@ function isLocale(value: string | null): value is Locale {
   return value === 'en' || value === 'es';
 }
 
+function isThemePreference(value: string | null): value is ThemePreference {
+  return value === 'light' || value === 'dark' || value === 'system';
+}
+
 export default function RootLayout() {
   const [isReady, setIsReady] = useState(false);
   const [initialLocale, setInitialLocale] = useState<Locale>(DEFAULT_LOCALE);
+  const [initialThemePreference, setInitialThemePreference] = useState<ThemePreference>('system');
 
   useEffect(() => {
     (async () => {
       await getDb();
-      const saved = await getSetting('locale');
-      const locale = isLocale(saved)
-        ? saved
+      const [savedLocale, savedTheme] = await Promise.all([
+        getSetting('locale'),
+        getSetting('themePreference'),
+      ]);
+      const locale = isLocale(savedLocale)
+        ? savedLocale
         : detectLocaleFromLanguageCode(Localization.getLocales()[0]?.languageCode);
       setInitialLocale(locale);
+      setInitialThemePreference(isThemePreference(savedTheme) ? savedTheme : 'system');
       setIsReady(true);
     })().finally(() => SplashScreen.hideAsync());
   }, []);
@@ -59,15 +69,17 @@ export default function RootLayout() {
 
   return (
     <LanguageProvider initialLocale={initialLocale}>
-      <RootLayoutNav />
+      <AppThemeProvider initialPreference={initialThemePreference}>
+        <RootLayoutNav />
+      </AppThemeProvider>
     </LanguageProvider>
   );
 }
 
 function RootLayoutNav() {
-  const colorScheme = useColorScheme();
+  const { colorScheme } = useAppColorScheme();
   const { t } = useTranslation();
-  const colors = Palette[colorScheme ?? 'light'];
+  const colors = Palette[colorScheme];
   const warmHeaderOptions = {
     headerStyle: { backgroundColor: colors.background },
     headerTintColor: colors.accent,
@@ -97,7 +109,7 @@ function RootLayoutNav() {
             options={{ title: t('screenTitles.settings'), ...warmHeaderOptions }}
           />
         </Stack>
-        <StatusBar style="auto" />
+        <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
       </ThemeProvider>
     </QueryClientProvider>
   );

@@ -7,7 +7,7 @@ import { ThemedText } from '@/components/themed-text';
 import { Palette } from '@/constants/palette';
 import { useAddBook } from '@/features/library/hooks';
 import { useGoogleBookDetails } from '@/features/search/hooks';
-import { useColorScheme } from '@/hooks/use-color-scheme';
+import { useAppColorScheme } from '@/hooks/use-app-color-scheme';
 import { useTranslation } from '@/hooks/use-translation';
 import { normalizeGenres } from '@/lib/genres';
 import { GoogleBooksApiError, toHttpsUrl } from '@/lib/google-books';
@@ -15,7 +15,7 @@ import { sanitizeDescription } from '@/lib/sanitize-html';
 
 export default function AddBookScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const colorScheme = useColorScheme() ?? 'light';
+  const { colorScheme } = useAppColorScheme();
   const colors = Palette[colorScheme];
   const { t } = useTranslation();
 
