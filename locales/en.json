@@ -68,7 +68,15 @@
     "appearance": "Appearance",
     "appearanceSystem": "System",
     "appearanceLight": "Light",
-    "appearanceDark": "Dark"
+    "appearanceDark": "Dark",
+    "data": "Data",
+    "exportBackup": "Export Backup",
+    "importBackup": "Import Backup",
+    "exportError": "Couldn't export your backup. Try again.",
+    "importSuccessTitle": "Import complete",
+    "importSuccessBody": "Imported: {{imported}}. Already in your library: {{skipped}}.",
+    "importErrorTitle": "Import failed",
+    "importInvalidFile": "This doesn't look like a valid TBR backup file."
   },
   "status": {
     "to_read": "To Read",

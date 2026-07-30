@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
+import { exportAndShareBackup, importBackupFromUri } from '@/lib/backup';
 import { bookRepository } from '@/lib/repository';
 import type { NewBookInput, ReadingStatus } from '@/types/book';
 
@@ -64,6 +65,22 @@ export function useDeleteBook() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (id: string) => bookRepository.remove(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: booksQueryKey });
+    },
+  });
+}
+
+export function useExportBackup() {
+  return useMutation({
+    mutationFn: () => exportAndShareBackup(),
+  });
+}
+
+export function useImportBackup() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (fileUri: string) => importBackupFromUri(fileUri),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: booksQueryKey });
     },

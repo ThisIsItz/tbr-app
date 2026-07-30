@@ -68,7 +68,15 @@
     "appearance": "Apariencia",
     "appearanceSystem": "Sistema",
     "appearanceLight": "Claro",
-    "appearanceDark": "Oscuro"
+    "appearanceDark": "Oscuro",
+    "data": "Datos",
+    "exportBackup": "Exportar copia de seguridad",
+    "importBackup": "Importar copia de seguridad",
+    "exportError": "No se pudo exportar tu copia de seguridad. Inténtalo de nuevo.",
+    "importSuccessTitle": "Importación completa",
+    "importSuccessBody": "Importados: {{imported}}. Ya en tu biblioteca: {{skipped}}.",
+    "importErrorTitle": "Error al importar",
+    "importInvalidFile": "Este archivo no parece ser una copia de seguridad válida de TBR."
   },
   "status": {
     "to_read": "Por leer",

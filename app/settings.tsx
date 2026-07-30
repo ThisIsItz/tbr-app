@@ -1,10 +1,13 @@
-import { Pressable, StyleSheet, View } from 'react-native';
+import * as DocumentPicker from 'expo-document-picker';
+import { ActivityIndicator, Alert, Pressable, StyleSheet, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Palette, type PaletteColors } from '@/constants/palette';
+import { useExportBackup, useImportBackup } from '@/features/library/hooks';
 import { useAppColorScheme } from '@/hooks/use-app-color-scheme';
 import { useTranslation } from '@/hooks/use-translation';
+import { BackupFileError } from '@/lib/backup';
 import type { Locale } from '@/lib/i18n/translations';
 import type { ThemePreference } from '@/lib/theme/theme-provider';
 
@@ -59,6 +62,40 @@ export default function SettingsScreen() {
   const colors = Palette[colorScheme];
   const { t, locale, setLocale } = useTranslation();
 
+  const exportBackup = useExportBackup();
+  const importBackup = useImportBackup();
+
+  async function handleExport() {
+    try {
+      await exportBackup.mutateAsync();
+    } catch {
+      Alert.alert(t('settings.exportError'));
+    }
+  }
+
+  async function handleImport() {
+    const result = await DocumentPicker.getDocumentAsync();
+    if (result.canceled) return;
+
+    const uri = result.assets[0]?.uri;
+    if (!uri) return;
+
+    try {
+      const { imported, skipped } = await importBackup.mutateAsync(uri);
+      Alert.alert(
+        t('settings.importSuccessTitle'),
+        t('settings.importSuccessBody', { imported, skipped }),
+      );
+    } catch (error) {
+      Alert.alert(
+        t('settings.importErrorTitle'),
+        error instanceof BackupFileError ? t('settings.importInvalidFile') : t('common.genericError'),
+      );
+    }
+  }
+
+  const isBusy = exportBackup.isPending || importBackup.isPending;
+
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       <ThemedText style={[styles.sectionLabel, { color: colors.textPrimary }]}>
@@ -76,6 +113,23 @@ export default function SettingsScreen() {
         colors={colors}
         t={t}
       />
+
+      <ThemedText style={[styles.sectionLabel, { color: colors.textPrimary }]}>
+        {t('settings.data')}
+      </ThemedText>
+      <View style={[styles.optionsCard, { backgroundColor: colors.surface, shadowColor: colors.shadow }]}>
+        <Pressable onPress={handleExport} disabled={isBusy} style={styles.optionRow}>
+          <ThemedText style={{ color: colors.textPrimary }}>{t('settings.exportBackup')}</ThemedText>
+          {exportBackup.isPending && <ActivityIndicator size="small" color={colors.accent} />}
+        </Pressable>
+        <Pressable
+          onPress={handleImport}
+          disabled={isBusy}
+          style={[styles.optionRow, { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: colors.border }]}>
+          <ThemedText style={{ color: colors.textPrimary }}>{t('settings.importBackup')}</ThemedText>
+          {importBackup.isPending && <ActivityIndicator size="small" color={colors.accent} />}
+        </Pressable>
+      </View>
     </View>
   );
 }

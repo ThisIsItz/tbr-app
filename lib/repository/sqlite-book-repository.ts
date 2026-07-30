@@ -3,7 +3,7 @@ import { randomUUID } from 'expo-crypto';
 import { getDb } from '@/lib/db/client';
 import type { Book, NewBookInput, ReadingStatus } from '@/types/book';
 
-import type { BookRepository } from './types';
+import type { BookRepository, ImportBooksResult } from './types';
 
 interface BookRow {
   id: string;
@@ -118,5 +118,47 @@ export const sqliteBookRepository: BookRepository = {
   async remove(id: string) {
     const db = await getDb();
     await db.runAsync('DELETE FROM books WHERE id = ?', [id]);
+  },
+
+  async importBooks(books: Book[]): Promise<ImportBooksResult> {
+    const db = await getDb();
+    let imported = 0;
+    let skipped = 0;
+
+    await db.withTransactionAsync(async () => {
+      for (const book of books) {
+        // INSERT OR IGNORE relies on the existing PRIMARY KEY (id) and
+        // UNIQUE (google_books_id) constraints to silently skip anything
+        // that already exists — no separate existence check needed.
+        const result = await db.runAsync(
+          `INSERT OR IGNORE INTO books (
+            id, google_books_id, title, authors, genres, thumbnail_url,
+            description, published_date, page_count, status, created_at, updated_at
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          [
+            book.id,
+            book.googleBooksId,
+            book.title,
+            JSON.stringify(book.authors),
+            JSON.stringify(book.genres),
+            book.thumbnailUrl,
+            book.description,
+            book.publishedDate,
+            book.pageCount,
+            book.status,
+            book.createdAt,
+            book.updatedAt,
+          ],
+        );
+
+        if (result.changes > 0) {
+          imported++;
+        } else {
+          skipped++;
+        }
+      }
+    });
+
+    return { imported, skipped };
   },
 };
