@@ -10,6 +10,7 @@ import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Palette } from '@/constants/palette';
 import { useBooks } from '@/features/library/hooks';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { normalizeGenres } from '@/lib/genres';
 import { READING_STATUS_LABELS, type Book } from '@/types/book';
 
 type SortBy = 'title' | 'author';
@@ -30,10 +31,18 @@ export default function MyTbrScreen() {
   const [authorFilter, setAuthorFilter] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<SortBy>('title');
 
+  const genresByBookId = useMemo(() => {
+    const map = new Map<string, string[]>();
+    for (const book of books ?? []) {
+      map.set(book.id, normalizeGenres(book.genres));
+    }
+    return map;
+  }, [books]);
+
   const allGenres = useMemo(
     () =>
-      Array.from(new Set(books?.flatMap((book) => book.genres) ?? [])).sort((a, b) => a.localeCompare(b)),
-    [books],
+      Array.from(new Set([...genresByBookId.values()].flat())).sort((a, b) => a.localeCompare(b)),
+    [genresByBookId],
   );
   const allAuthors = useMemo(
     () =>
@@ -54,14 +63,16 @@ export default function MyTbrScreen() {
           book.authors.some((author) => author.toLowerCase().includes(query)),
       );
     }
-    if (genreFilter) list = list.filter((book) => book.genres.includes(genreFilter));
+    if (genreFilter) {
+      list = list.filter((book) => genresByBookId.get(book.id)?.includes(genreFilter));
+    }
     if (authorFilter) list = list.filter((book) => book.authors.includes(authorFilter));
 
     return [...list].sort((a, b) => {
       if (sortBy === 'title') return a.title.localeCompare(b.title);
       return (a.authors[0] ?? '').localeCompare(b.authors[0] ?? '');
     });
-  }, [books, searchQuery, genreFilter, authorFilter, sortBy]);
+  }, [books, searchQuery, genreFilter, authorFilter, sortBy, genresByBookId]);
 
   function clearFilters() {
     setSearchQuery('');
@@ -161,7 +172,7 @@ export default function MyTbrScreen() {
             <BookCard
               title={item.title}
               author={item.authors.join(', ') || null}
-              genre={item.genres[0] ?? null}
+              genre={genresByBookId.get(item.id)?.[0] ?? null}
               statusLabel={READING_STATUS_LABELS[item.status]}
               thumbnailUrl={item.thumbnailUrl}
               onPress={() => router.push(`/book/${item.id}`)}

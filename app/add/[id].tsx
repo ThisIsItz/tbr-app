@@ -10,6 +10,7 @@ import { useGoogleBookDetails } from '@/features/search/hooks';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { normalizeGenres } from '@/lib/genres';
 import { toHttpsUrl } from '@/lib/google-books';
+import { sanitizeDescription } from '@/lib/sanitize-html';
 
 export default function AddBookScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -54,7 +55,7 @@ export default function AddBookScreen() {
       authors: authors ?? [],
       genres,
       thumbnailUrl: coverUrl,
-      description: description ?? null,
+      description: description ? sanitizeDescription(description) : null,
       publishedDate: publishedDate ?? null,
       pageCount: pageCount ?? null,
     });
