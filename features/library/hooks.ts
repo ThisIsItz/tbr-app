@@ -1,0 +1,71 @@
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+
+import { bookRepository } from '@/lib/repository';
+import type { NewBookInput, ReadingStatus } from '@/types/book';
+
+export const booksQueryKey = ['books'] as const;
+
+export function useBooks() {
+  return useQuery({
+    queryKey: booksQueryKey,
+    queryFn: () => bookRepository.getAll(),
+  });
+}
+
+export function useBook(id: string | undefined) {
+  return useQuery({
+    queryKey: [...booksQueryKey, id],
+    queryFn: () => bookRepository.getById(id as string),
+    enabled: !!id,
+  });
+}
+
+export function useBookExistsByGoogleId(googleBooksId: string | undefined) {
+  return useQuery({
+    queryKey: [...booksQueryKey, 'exists', googleBooksId],
+    queryFn: () => bookRepository.existsByGoogleBooksId(googleBooksId as string),
+    enabled: !!googleBooksId,
+  });
+}
+
+export function useAddBook() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (input: NewBookInput) => bookRepository.add(input),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: booksQueryKey });
+    },
+  });
+}
+
+export function useUpdateBookStatus() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, status }: { id: string; status: ReadingStatus }) =>
+      bookRepository.updateStatus(id, status),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: booksQueryKey });
+    },
+  });
+}
+
+export function useUpdateBookGenres() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, genres }: { id: string; genres: string[] }) =>
+      bookRepository.updateGenres(id, genres),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: booksQueryKey });
+    },
+  });
+}
+
+export function useDeleteBook() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => bookRepository.remove(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: booksQueryKey });
+    },
+  });
+}
