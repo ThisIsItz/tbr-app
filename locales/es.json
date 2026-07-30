@@ -1,0 +1,85 @@
+{
+  "common": {
+    "cancel": "Cancelar",
+    "remove": "Eliminar",
+    "done": "Listo",
+    "genericError": "Algo salió mal. Inténtalo de nuevo.",
+    "comingSoonTitle": "Próximamente",
+    "comingSoonBody": "{{feature}} aún no está disponible."
+  },
+  "library": {
+    "title": "Mi TBR",
+    "searchPlaceholder": "Buscar en tu TBR",
+    "genre": "Género",
+    "author": "Autor",
+    "sort": "Ordenar",
+    "allGenres": "Todos los géneros",
+    "allAuthors": "Todos los autores",
+    "sortTitle": "Título (A–Z)",
+    "sortAuthor": "Autor (A–Z)",
+    "emptyTitle": "Aún no has guardado nada",
+    "emptyText": "Toca + para añadir un libro que quieras leer.",
+    "noMatchTitle": "Ningún libro coincide",
+    "noMatchText": "Intenta ajustar tu búsqueda o filtros.",
+    "clearFilters": "Borrar filtros"
+  },
+  "search": {
+    "placeholder": "Busca por título, autor o ISBN",
+    "scanIsbn": "Escanear ISBN",
+    "addManually": "Añadir manualmente",
+    "emptyTitle": "Busca un libro",
+    "emptyText": "Busca por título, autor o ISBN para añadirlo a tu TBR.",
+    "noResultsFor": "Sin resultados para \"{{query}}\".",
+    "add": "+ Añadir",
+    "added": "Añadido"
+  },
+  "addConfirm": {
+    "loadError": "No se pudo cargar este libro. Inténtalo de nuevo.",
+    "genres": "Géneros",
+    "save": "Guardar en mi TBR",
+    "saving": "Guardando…"
+  },
+  "bookDetail": {
+    "description": "Descripción",
+    "genres": "Géneros",
+    "editGenres": "Editar géneros",
+    "noGenres": "Aún no hay géneros.",
+    "moreGenres": "+{{count}} más",
+    "remove": "Eliminar de mi TBR",
+    "removeTitle": "¿Eliminar libro?",
+    "removeBody": "«{{title}}» se eliminará de tu TBR.",
+    "onePage": "1 página",
+    "pagesCount": "{{count}} páginas"
+  },
+  "bookCard": {
+    "noCover": "Sin portada",
+    "unknownAuthor": "Autor desconocido"
+  },
+  "genreEditor": {
+    "empty": "Aún no hay géneros — añade uno abajo.",
+    "placeholder": "Añadir un género",
+    "add": "Añadir"
+  },
+  "settings": {
+    "title": "Ajustes",
+    "language": "Idioma",
+    "english": "English",
+    "spanish": "Español"
+  },
+  "status": {
+    "to_read": "Por leer",
+    "reading": "Leyendo",
+    "read": "Leído",
+    "dnf": "Abandonado"
+  },
+  "errors": {
+    "rateLimit": "Se alcanzó el límite de solicitudes de Google Books. Espera un momento e inténtalo de nuevo, o configura EXPO_PUBLIC_GOOGLE_BOOKS_API_KEY.",
+    "generic": "No se pudo conectar con Google Books. Inténtalo de nuevo."
+  },
+  "screenTitles": {
+    "bookDetails": "Detalles del libro",
+    "addBook": "Añadir un libro",
+    "addToTbr": "Añadir a mi TBR",
+    "settings": "Ajustes"
+  }
+}

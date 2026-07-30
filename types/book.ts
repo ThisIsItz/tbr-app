@@ -2,13 +2,6 @@ export type ReadingStatus = 'to_read' | 'reading' | 'read' | 'dnf';
 
 export const READING_STATUSES: ReadingStatus[] = ['to_read', 'reading', 'read', 'dnf'];
 
-export const READING_STATUS_LABELS: Record<ReadingStatus, string> = {
-  to_read: 'To Read',
-  reading: 'Reading',
-  read: 'Read',
-  dnf: 'Did Not Finish',
-};
-
 export interface Book {
   id: string;
   googleBooksId: string | null;

@@ -10,20 +10,23 @@ import { useBooks } from '@/features/library/hooks';
 import { useSearchBooks } from '@/features/search/hooks';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useDebouncedValue } from '@/hooks/use-debounced-value';
+import { useTranslation } from '@/hooks/use-translation';
 import { normalizeGenres } from '@/lib/genres';
-
-function showComingSoon(feature: string) {
-  Alert.alert('Coming soon', `${feature} isn't available yet.`);
-}
+import { getErrorTranslationKey } from '@/lib/google-books';
 
 export default function AddBookScreen() {
   const colorScheme = useColorScheme() ?? 'light';
   const colors = Palette[colorScheme];
+  const { t } = useTranslation();
   const [query, setQuery] = useState('');
   const debouncedQuery = useDebouncedValue(query, 400);
 
   const { data: results, isLoading, isError, error } = useSearchBooks(debouncedQuery);
   const { data: libraryBooks } = useBooks();
+
+  function showComingSoon(feature: string) {
+    Alert.alert(t('common.comingSoonTitle'), t('common.comingSoonBody', { feature }));
+  }
 
   const savedGoogleIds = useMemo(
     () => new Set(libraryBooks?.map((book) => book.googleBooksId).filter(Boolean)),
@@ -38,7 +41,7 @@ export default function AddBookScreen() {
         <TextInput
           value={query}
           onChangeText={setQuery}
-          placeholder="Search by title, author, or ISBN"
+          placeholder={t('search.placeholder')}
           placeholderTextColor={colors.textMuted}
           style={[styles.searchInput, { color: colors.textPrimary }]}
           autoCorrect={false}
@@ -50,21 +53,27 @@ export default function AddBookScreen() {
       <View style={styles.quickActionsRow}>
         <Pressable
           style={[styles.quickAction, { backgroundColor: colors.surfaceMuted }]}
-          onPress={() => showComingSoon('Scan ISBN')}>
-          <ThemedText style={{ color: colors.textPrimary, fontWeight: '600' }}>Scan ISBN</ThemedText>
+          onPress={() => showComingSoon(t('search.scanIsbn'))}>
+          <ThemedText style={{ color: colors.textPrimary, fontWeight: '600' }}>
+            {t('search.scanIsbn')}
+          </ThemedText>
         </Pressable>
         <Pressable
           style={[styles.quickAction, { backgroundColor: colors.surfaceMuted }]}
-          onPress={() => showComingSoon('Adding manually')}>
-          <ThemedText style={{ color: colors.textPrimary, fontWeight: '600' }}>Add Manually</ThemedText>
+          onPress={() => showComingSoon(t('search.addManually'))}>
+          <ThemedText style={{ color: colors.textPrimary, fontWeight: '600' }}>
+            {t('search.addManually')}
+          </ThemedText>
         </Pressable>
       </View>
 
       {!hasSearched && (
         <View style={styles.centered}>
-          <ThemedText style={[styles.emptyTitle, { color: colors.textPrimary }]}>Find a book</ThemedText>
+          <ThemedText style={[styles.emptyTitle, { color: colors.textPrimary }]}>
+            {t('search.emptyTitle')}
+          </ThemedText>
           <ThemedText style={[styles.emptyText, { color: colors.textMuted }]}>
-            Search by title, author, or ISBN to add it to your TBR.
+            {t('search.emptyText')}
           </ThemedText>
         </View>
       )}
@@ -74,7 +83,7 @@ export default function AddBookScreen() {
       {isError && (
         <View style={styles.centered}>
           <ThemedText style={{ color: colors.textPrimary, textAlign: 'center' }}>
-            {error instanceof Error ? error.message : 'Something went wrong. Try again.'}
+            {t(getErrorTranslationKey(error))}
           </ThemedText>
         </View>
       )}
@@ -82,7 +91,7 @@ export default function AddBookScreen() {
       {hasSearched && !isLoading && !isError && (results?.length ?? 0) === 0 && (
         <View style={styles.centered}>
           <ThemedText style={{ color: colors.textPrimary, textAlign: 'center' }}>
-            No results for &quot;{debouncedQuery}&quot;.
+            {t('search.noResultsFor', { query: debouncedQuery })}
           </ThemedText>
         </View>
       )}
@@ -105,7 +114,7 @@ export default function AddBookScreen() {
               colors={colors}
               onPress={goToDetails}
               action={{
-                label: alreadySaved ? 'Added' : '+ Add',
+                label: alreadySaved ? t('search.added') : t('search.add'),
                 disabled: alreadySaved,
                 onPress: goToDetails,
               }}

@@ -1,16 +1,9 @@
 import { type SQLiteDatabase } from 'expo-sqlite';
 
-const SCHEMA_VERSION = 1;
+const SCHEMA_VERSION = 2;
 
-export async function migrateDbIfNeeded(db: SQLiteDatabase): Promise<void> {
-  const result = await db.getFirstAsync<{ user_version: number }>('PRAGMA user_version');
-  const currentVersion = result?.user_version ?? 0;
-
-  if (currentVersion >= SCHEMA_VERSION) {
-    return;
-  }
-
-  await db.execAsync(`
+const MIGRATIONS: Record<number, string> = {
+  1: `
     PRAGMA journal_mode = WAL;
 
     CREATE TABLE IF NOT EXISTS books (
@@ -31,7 +24,24 @@ export async function migrateDbIfNeeded(db: SQLiteDatabase): Promise<void> {
 
     CREATE INDEX IF NOT EXISTS idx_books_title ON books (title COLLATE NOCASE);
     CREATE INDEX IF NOT EXISTS idx_books_status ON books (status);
-  `);
+  `,
+  2: `
+    CREATE TABLE IF NOT EXISTS settings (
+      key TEXT PRIMARY KEY,
+      value TEXT NOT NULL
+    );
+  `,
+};
 
-  await db.execAsync(`PRAGMA user_version = ${SCHEMA_VERSION}`);
+export async function migrateDbIfNeeded(db: SQLiteDatabase): Promise<void> {
+  const result = await db.getFirstAsync<{ user_version: number }>('PRAGMA user_version');
+  const currentVersion = result?.user_version ?? 0;
+
+  for (let version = currentVersion + 1; version <= SCHEMA_VERSION; version++) {
+    const step = MIGRATIONS[version];
+    if (!step) continue;
+
+    await db.execAsync(step);
+    await db.execAsync(`PRAGMA user_version = ${version}`);
+  }
 }

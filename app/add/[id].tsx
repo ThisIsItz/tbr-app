@@ -8,14 +8,16 @@ import { Palette } from '@/constants/palette';
 import { useAddBook } from '@/features/library/hooks';
 import { useGoogleBookDetails } from '@/features/search/hooks';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { useTranslation } from '@/hooks/use-translation';
 import { normalizeGenres } from '@/lib/genres';
-import { toHttpsUrl } from '@/lib/google-books';
+import { GoogleBooksApiError, toHttpsUrl } from '@/lib/google-books';
 import { sanitizeDescription } from '@/lib/sanitize-html';
 
 export default function AddBookScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const colorScheme = useColorScheme() ?? 'light';
   const colors = Palette[colorScheme];
+  const { t } = useTranslation();
 
   const { data: volume, isLoading, isError, error } = useGoogleBookDetails(id);
   const addBook = useAddBook();
@@ -36,11 +38,13 @@ export default function AddBookScreen() {
   }
 
   if (isError || !volume) {
+    const message =
+      error instanceof GoogleBooksApiError && error.status === 429
+        ? t('errors.rateLimit')
+        : t('addConfirm.loadError');
     return (
       <View style={[styles.centered, { backgroundColor: colors.background }]}>
-        <ThemedText style={{ color: colors.textPrimary }}>
-          {error instanceof Error ? error.message : "Couldn't load this book. Try again."}
-        </ThemedText>
+        <ThemedText style={{ color: colors.textPrimary }}>{message}</ThemedText>
       </View>
     );
   }
@@ -78,7 +82,7 @@ export default function AddBookScreen() {
           />
         ) : (
           <View style={[styles.thumbnail, styles.thumbnailPlaceholder, { backgroundColor: colors.surfaceMuted }]}>
-            <ThemedText style={{ color: colors.textMuted, fontSize: 11 }}>No cover</ThemedText>
+            <ThemedText style={{ color: colors.textMuted, fontSize: 11 }}>{t('bookCard.noCover')}</ThemedText>
           </View>
         )}
         <View style={styles.headerText}>
@@ -90,7 +94,9 @@ export default function AddBookScreen() {
       </View>
 
       <View style={styles.section}>
-        <ThemedText style={[styles.sectionLabel, { color: colors.textPrimary }]}>Genres</ThemedText>
+        <ThemedText style={[styles.sectionLabel, { color: colors.textPrimary }]}>
+          {t('addConfirm.genres')}
+        </ThemedText>
         <GenreEditor genres={genres} onChange={setGenres} colors={colors} />
       </View>
 
@@ -99,7 +105,7 @@ export default function AddBookScreen() {
         onPress={handleSave}
         disabled={addBook.isPending}>
         <ThemedText style={styles.saveButtonText}>
-          {addBook.isPending ? 'Saving…' : 'Save to My TBR'}
+          {addBook.isPending ? t('addConfirm.saving') : t('addConfirm.save')}
         </ThemedText>
       </Pressable>
     </ScrollView>

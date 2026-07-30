@@ -10,19 +10,16 @@ import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Palette } from '@/constants/palette';
 import { useBooks } from '@/features/library/hooks';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { useTranslation } from '@/hooks/use-translation';
 import { normalizeGenres } from '@/lib/genres';
-import { READING_STATUS_LABELS, type Book } from '@/types/book';
+import { type Book } from '@/types/book';
 
 type SortBy = 'title' | 'author';
-
-const SORT_OPTIONS = [
-  { value: 'title', label: 'Title (A–Z)' },
-  { value: 'author', label: 'Author (A–Z)' },
-];
 
 export default function MyTbrScreen() {
   const colorScheme = useColorScheme() ?? 'light';
   const colors = Palette[colorScheme];
+  const { t } = useTranslation();
 
   const { data: books, isLoading } = useBooks();
 
@@ -30,6 +27,11 @@ export default function MyTbrScreen() {
   const [genreFilter, setGenreFilter] = useState<string | null>(null);
   const [authorFilter, setAuthorFilter] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<SortBy>('title');
+
+  const sortOptions = [
+    { value: 'title', label: t('library.sortTitle') },
+    { value: 'author', label: t('library.sortAuthor') },
+  ];
 
   const genresByBookId = useMemo(() => {
     const map = new Map<string, string[]>();
@@ -93,20 +95,28 @@ export default function MyTbrScreen() {
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top']}>
       <View style={styles.header}>
-        <ThemedText style={[styles.title, { color: colors.textPrimary }]}>My TBR</ThemedText>
-        <Pressable
-          onPress={() => router.push('/add-book')}
-          hitSlop={8}
-          style={[styles.addButton, { backgroundColor: colors.accent }]}>
-          <IconSymbol name="plus.circle.fill" size={22} color="#fff" />
-        </Pressable>
+        <ThemedText style={[styles.title, { color: colors.textPrimary }]}>{t('library.title')}</ThemedText>
+        <View style={styles.headerActions}>
+          <Pressable
+            onPress={() => router.push('/settings')}
+            hitSlop={8}
+            style={[styles.iconButton, { backgroundColor: colors.surfaceMuted }]}>
+            <IconSymbol name="gearshape.fill" size={20} color={colors.textPrimary} />
+          </Pressable>
+          <Pressable
+            onPress={() => router.push('/add-book')}
+            hitSlop={8}
+            style={[styles.addButton, { backgroundColor: colors.accent }]}>
+            <IconSymbol name="plus.circle.fill" size={22} color="#fff" />
+          </Pressable>
+        </View>
       </View>
 
       <View style={[styles.searchBox, { backgroundColor: colors.surfaceMuted }]}>
         <TextInput
           value={searchQuery}
           onChangeText={setSearchQuery}
-          placeholder="Search your TBR"
+          placeholder={t('library.searchPlaceholder')}
           placeholderTextColor={colors.textMuted}
           style={[styles.searchInput, { color: colors.textPrimary }]}
           autoCorrect={false}
@@ -115,51 +125,61 @@ export default function MyTbrScreen() {
 
       <View style={styles.filterRow}>
         <FilterSheet
-          label="Genre"
+          label={t('library.genre')}
           colors={colors}
           selected={genreFilter}
           selectedLabel={genreFilter}
           disabled={allGenres.length === 0}
           onSelect={setGenreFilter}
-          options={[{ value: null, label: 'All genres' }, ...allGenres.map((g) => ({ value: g, label: g }))]}
+          options={[
+            { value: null, label: t('library.allGenres') },
+            ...allGenres.map((g) => ({ value: g, label: g })),
+          ]}
         />
         <FilterSheet
-          label="Author"
+          label={t('library.author')}
           colors={colors}
           selected={authorFilter}
           selectedLabel={authorFilter}
           disabled={allAuthors.length === 0}
           onSelect={setAuthorFilter}
-          options={[{ value: null, label: 'All authors' }, ...allAuthors.map((a) => ({ value: a, label: a }))]}
+          options={[
+            { value: null, label: t('library.allAuthors') },
+            ...allAuthors.map((a) => ({ value: a, label: a })),
+          ]}
         />
         <FilterSheet
-          label="Sort"
+          label={t('library.sort')}
           colors={colors}
           staticLabel
           selected={sortBy}
           onSelect={(value) => setSortBy((value as SortBy) ?? 'title')}
-          options={SORT_OPTIONS}
+          options={sortOptions}
         />
       </View>
 
       {isLibraryEmpty ? (
         <View style={styles.centered}>
           <ThemedText style={[styles.emptyTitle, { color: colors.textPrimary }]}>
-            Nothing saved yet
+            {t('library.emptyTitle')}
           </ThemedText>
           <ThemedText style={[styles.emptyText, { color: colors.textMuted }]}>
-            Tap + to add a book you want to read.
+            {t('library.emptyText')}
           </ThemedText>
         </View>
       ) : filteredBooks.length === 0 ? (
         <View style={styles.centered}>
-          <ThemedText style={[styles.emptyTitle, { color: colors.textPrimary }]}>No books match</ThemedText>
+          <ThemedText style={[styles.emptyTitle, { color: colors.textPrimary }]}>
+            {t('library.noMatchTitle')}
+          </ThemedText>
           <ThemedText style={[styles.emptyText, { color: colors.textMuted }]}>
-            Try adjusting your search or filters.
+            {t('library.noMatchText')}
           </ThemedText>
           {hasActiveFilters && (
             <Pressable onPress={clearFilters} style={[styles.clearButton, { backgroundColor: colors.accent }]}>
-              <ThemedText style={{ color: '#fff', fontWeight: '600' }}>Clear filters</ThemedText>
+              <ThemedText style={{ color: '#fff', fontWeight: '600' }}>
+                {t('library.clearFilters')}
+              </ThemedText>
             </Pressable>
           )}
         </View>
@@ -173,7 +193,7 @@ export default function MyTbrScreen() {
               title={item.title}
               author={item.authors.join(', ') || null}
               genre={genresByBookId.get(item.id)?.[0] ?? null}
-              statusLabel={READING_STATUS_LABELS[item.status]}
+              statusLabel={t(`status.${item.status}`)}
               thumbnailUrl={item.thumbnailUrl}
               onPress={() => router.push(`/book/${item.id}`)}
               colors={colors}
@@ -207,7 +227,18 @@ const styles = StyleSheet.create({
     fontSize: 26,
     fontWeight: '800',
   },
+  headerActions: {
+    flexDirection: 'row',
+    gap: 8,
+  },
   addButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  iconButton: {
     width: 44,
     height: 44,
     borderRadius: 22,

@@ -3,6 +3,7 @@ import { Pressable, StyleSheet, TextInput, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
 import type { PaletteColors } from '@/constants/palette';
+import { useTranslation } from '@/hooks/use-translation';
 import { normalizeGenres } from '@/lib/genres';
 
 interface GenreEditorProps {
@@ -12,6 +13,7 @@ interface GenreEditorProps {
 }
 
 export function GenreEditor({ genres, onChange, colors }: GenreEditorProps) {
+  const { t } = useTranslation();
   const [draft, setDraft] = useState('');
 
   function handleAdd() {
@@ -28,7 +30,7 @@ export function GenreEditor({ genres, onChange, colors }: GenreEditorProps) {
     <View style={styles.container}>
       <View style={styles.chipRow}>
         {genres.length === 0 && (
-          <ThemedText style={{ color: colors.textMuted }}>No genres yet — add one below.</ThemedText>
+          <ThemedText style={{ color: colors.textMuted }}>{t('genreEditor.empty')}</ThemedText>
         )}
         {genres.map((genre) => (
           <View key={genre} style={[styles.chip, { backgroundColor: colors.accentSoft }]}>
@@ -43,14 +45,14 @@ export function GenreEditor({ genres, onChange, colors }: GenreEditorProps) {
         <TextInput
           value={draft}
           onChangeText={setDraft}
-          placeholder="Add a genre"
+          placeholder={t('genreEditor.placeholder')}
           placeholderTextColor={colors.textMuted}
           style={[styles.input, { color: colors.textPrimary, backgroundColor: colors.surfaceMuted }]}
           onSubmitEditing={handleAdd}
           returnKeyType="done"
         />
         <Pressable onPress={handleAdd} style={[styles.addButton, { backgroundColor: colors.accent }]}>
-          <ThemedText style={styles.addButtonText}>Add</ThemedText>
+          <ThemedText style={styles.addButtonText}>{t('genreEditor.add')}</ThemedText>
         </Pressable>
       </View>
     </View>

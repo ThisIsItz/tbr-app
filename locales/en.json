@@ -1,0 +1,85 @@
+{
+  "common": {
+    "cancel": "Cancel",
+    "remove": "Remove",
+    "done": "Done",
+    "genericError": "Something went wrong. Try again.",
+    "comingSoonTitle": "Coming soon",
+    "comingSoonBody": "{{feature}} isn't available yet."
+  },
+  "library": {
+    "title": "My TBR",
+    "searchPlaceholder": "Search your TBR",
+    "genre": "Genre",
+    "author": "Author",
+    "sort": "Sort",
+    "allGenres": "All genres",
+    "allAuthors": "All authors",
+    "sortTitle": "Title (A–Z)",
+    "sortAuthor": "Author (A–Z)",
+    "emptyTitle": "Nothing saved yet",
+    "emptyText": "Tap + to add a book you want to read.",
+    "noMatchTitle": "No books match",
+    "noMatchText": "Try adjusting your search or filters.",
+    "clearFilters": "Clear filters"
+  },
+  "search": {
+    "placeholder": "Search by title, author, or ISBN",
+    "scanIsbn": "Scan ISBN",
+    "addManually": "Add Manually",
+    "emptyTitle": "Find a book",
+    "emptyText": "Search by title, author, or ISBN to add it to your TBR.",
+    "noResultsFor": "No results for \"{{query}}\".",
+    "add": "+ Add",
+    "added": "Added"
+  },
+  "addConfirm": {
+    "loadError": "Couldn't load this book. Try again.",
+    "genres": "Genres",
+    "save": "Save to My TBR",
+    "saving": "Saving…"
+  },
+  "bookDetail": {
+    "description": "Description",
+    "genres": "Genres",
+    "editGenres": "Edit genres",
+    "noGenres": "No genres yet.",
+    "moreGenres": "+{{count}} more",
+    "remove": "Remove from My TBR",
+    "removeTitle": "Remove book?",
+    "removeBody": "\"{{title}}\" will be removed from your TBR.",
+    "onePage": "1 page",
+    "pagesCount": "{{count}} pages"
+  },
+  "bookCard": {
+    "noCover": "No cover",
+    "unknownAuthor": "Unknown author"
+  },
+  "genreEditor": {
+    "empty": "No genres yet — add one below.",
+    "placeholder": "Add a genre",
+    "add": "Add"
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Language",
+    "english": "English",
+    "spanish": "Español"
+  },
+  "status": {
+    "to_read": "To Read",
+    "reading": "Reading",
+    "read": "Read",
+    "dnf": "Did Not Finish"
+  },
+  "errors": {
+    "rateLimit": "Google Books rate limit reached. Wait a moment and try again, or set EXPO_PUBLIC_GOOGLE_BOOKS_API_KEY.",
+    "generic": "Couldn't reach Google Books. Try again."
+  },
+  "screenTitles": {
+    "bookDetails": "Book Details",
+    "addBook": "Add a Book",
+    "addToTbr": "Add to My TBR",
+    "settings": "Settings"
+  }
+}

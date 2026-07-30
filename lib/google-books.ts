@@ -11,13 +11,18 @@ const MAX_RESULTS_PER_QUERY = 20;
 
 export class GoogleBooksApiError extends Error {
   constructor(public status: number) {
-    super(
-      status === 429
-        ? 'Google Books rate limit reached. Wait a moment and try again, or set EXPO_PUBLIC_GOOGLE_BOOKS_API_KEY.'
-        : `Google Books request failed (${status})`,
-    );
+    // This message is for logs/debugging only — never rendered directly in
+    // the UI, since this module has no access to the current locale. Screens
+    // should use `getErrorTranslationKey(error)` + `t(...)` to display it.
+    super(`Google Books request failed (${status})`);
     this.name = 'GoogleBooksApiError';
   }
+}
+
+export function getErrorTranslationKey(error: unknown): 'errors.rateLimit' | 'errors.generic' {
+  return error instanceof GoogleBooksApiError && error.status === 429
+    ? 'errors.rateLimit'
+    : 'errors.generic';
 }
 
 // Google Books returns cover URLs as `http://`, which iOS/Android block by

@@ -2,6 +2,7 @@ import { Image, Pressable, StyleSheet, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
 import type { PaletteColors } from '@/constants/palette';
+import { useTranslation } from '@/hooks/use-translation';
 import { toHttpsUrl } from '@/lib/google-books';
 
 interface BookCardAction {
@@ -37,6 +38,7 @@ export function BookCard({
   colors,
   variant = 'library',
 }: BookCardProps) {
+  const { t } = useTranslation();
   const coverUrl = toHttpsUrl(thumbnailUrl);
   const isResult = variant === 'result';
 
@@ -59,7 +61,7 @@ export function BookCard({
         />
       ) : (
         <View style={[styles.cover, styles.coverPlaceholder, { backgroundColor: colors.surfaceMuted }]}>
-          <ThemedText style={{ color: colors.textMuted, fontSize: 11 }}>No cover</ThemedText>
+          <ThemedText style={{ color: colors.textMuted, fontSize: 11 }}>{t('bookCard.noCover')}</ThemedText>
         </View>
       )}
 
@@ -71,7 +73,7 @@ export function BookCard({
         {isResult ? (
           <>
             <ThemedText numberOfLines={1} style={[styles.author, { color: colors.textMuted }]}>
-              {author || 'Unknown author'}
+              {author || t('bookCard.unknownAuthor')}
             </ThemedText>
             {!!genre && (
               <ThemedText numberOfLines={1} style={[styles.genreText, { color: colors.textMuted }]}>

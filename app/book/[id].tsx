@@ -7,6 +7,7 @@ import { ThemedText } from '@/components/themed-text';
 import { Palette } from '@/constants/palette';
 import { useBook, useDeleteBook, useUpdateBookGenres } from '@/features/library/hooks';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { useTranslation } from '@/hooks/use-translation';
 import { normalizeGenres } from '@/lib/genres';
 import { toHttpsUrl } from '@/lib/google-books';
 import { sanitizeDescription } from '@/lib/sanitize-html';
@@ -17,6 +18,7 @@ export default function BookDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const colorScheme = useColorScheme() ?? 'light';
   const colors = Palette[colorScheme];
+  const { t } = useTranslation();
 
   const { data: book, isLoading } = useBook(id);
   const updateGenres = useUpdateBookGenres();
@@ -28,17 +30,21 @@ export default function BookDetailScreen() {
   }
 
   function handleDelete() {
-    Alert.alert('Remove book?', `"${book!.title}" will be removed from your TBR.`, [
-      { text: 'Cancel', style: 'cancel' },
-      {
-        text: 'Remove',
-        style: 'destructive',
-        onPress: async () => {
-          await deleteBook.mutateAsync(book!.id);
-          router.back();
+    Alert.alert(
+      t('bookDetail.removeTitle'),
+      t('bookDetail.removeBody', { title: book!.title }),
+      [
+        { text: t('common.cancel'), style: 'cancel' },
+        {
+          text: t('common.remove'),
+          style: 'destructive',
+          onPress: async () => {
+            await deleteBook.mutateAsync(book!.id);
+            router.back();
+          },
         },
-      },
-    ]);
+      ],
+    );
   }
 
   const coverUrl = toHttpsUrl(book.thumbnailUrl);
@@ -62,7 +68,7 @@ export default function BookDetailScreen() {
           />
         ) : (
           <View style={[styles.thumbnail, styles.thumbnailPlaceholder, { backgroundColor: colors.surfaceMuted }]}>
-            <ThemedText style={{ color: colors.textMuted, fontSize: 11 }}>No cover</ThemedText>
+            <ThemedText style={{ color: colors.textMuted, fontSize: 11 }}>{t('bookCard.noCover')}</ThemedText>
           </View>
         )}
         <View style={styles.headerText}>
@@ -72,7 +78,14 @@ export default function BookDetailScreen() {
           )}
           {(book.publishedDate || book.pageCount != null) && (
             <ThemedText style={{ color: colors.textMuted, fontSize: 13 }}>
-              {[book.publishedDate, book.pageCount != null ? `${book.pageCount} pages` : null]
+              {[
+                book.publishedDate,
+                book.pageCount != null
+                  ? t(book.pageCount === 1 ? 'bookDetail.onePage' : 'bookDetail.pagesCount', {
+                      count: book.pageCount,
+                    })
+                  : null,
+              ]
                 .filter(Boolean)
                 .join(' · ')}
             </ThemedText>
@@ -82,7 +95,9 @@ export default function BookDetailScreen() {
 
       {book.description && (
         <View style={styles.section}>
-          <ThemedText style={[styles.sectionLabel, { color: colors.textPrimary }]}>Description</ThemedText>
+          <ThemedText style={[styles.sectionLabel, { color: colors.textPrimary }]}>
+            {t('bookDetail.description')}
+          </ThemedText>
           <ThemedText style={{ color: colors.textMuted, lineHeight: 20 }}>
             {sanitizeDescription(book.description)}
           </ThemedText>
@@ -91,15 +106,19 @@ export default function BookDetailScreen() {
 
       <View style={styles.section}>
         <View style={styles.sectionHeaderRow}>
-          <ThemedText style={[styles.sectionLabel, { color: colors.textPrimary }]}>Genres</ThemedText>
+          <ThemedText style={[styles.sectionLabel, { color: colors.textPrimary }]}>
+            {t('bookDetail.genres')}
+          </ThemedText>
           <Pressable onPress={() => setGenreModalVisible(true)} hitSlop={8}>
-            <ThemedText style={{ color: colors.accent, fontWeight: '600' }}>Edit genres</ThemedText>
+            <ThemedText style={{ color: colors.accent, fontWeight: '600' }}>
+              {t('bookDetail.editGenres')}
+            </ThemedText>
           </Pressable>
         </View>
 
         <View style={styles.genreChipRow}>
           {genres.length === 0 && (
-            <ThemedText style={{ color: colors.textMuted }}>No genres yet.</ThemedText>
+            <ThemedText style={{ color: colors.textMuted }}>{t('bookDetail.noGenres')}</ThemedText>
           )}
           {visibleGenres.map((genre) => (
             <View key={genre} style={[styles.genreChip, { backgroundColor: colors.accentSoft }]}>
@@ -111,7 +130,7 @@ export default function BookDetailScreen() {
               onPress={() => setGenreModalVisible(true)}
               style={[styles.genreChip, { backgroundColor: colors.surfaceMuted }]}>
               <ThemedText style={[styles.genreChipText, { color: colors.textMuted }]}>
-                +{extraGenreCount} more
+                {t('bookDetail.moreGenres', { count: extraGenreCount })}
               </ThemedText>
             </Pressable>
           )}
@@ -121,7 +140,7 @@ export default function BookDetailScreen() {
       <Pressable
         style={[styles.deleteButton, { backgroundColor: colors.surfaceMuted }]}
         onPress={handleDelete}>
-        <ThemedText style={{ color: '#C1442C', fontWeight: '600' }}>Remove from My TBR</ThemedText>
+        <ThemedText style={{ color: '#C1442C', fontWeight: '600' }}>{t('bookDetail.remove')}</ThemedText>
       </Pressable>
 
       <Modal
@@ -133,7 +152,9 @@ export default function BookDetailScreen() {
           <Pressable
             style={[styles.sheet, { backgroundColor: colors.surface }]}
             onPress={(e) => e.stopPropagation()}>
-            <ThemedText style={[styles.sheetTitle, { color: colors.textPrimary }]}>Genres</ThemedText>
+            <ThemedText style={[styles.sheetTitle, { color: colors.textPrimary }]}>
+              {t('bookDetail.genres')}
+            </ThemedText>
             <GenreEditor
               genres={genres}
               onChange={(updated) => updateGenres.mutate({ id: book.id, genres: updated })}
@@ -142,7 +163,7 @@ export default function BookDetailScreen() {
             <Pressable
               onPress={() => setGenreModalVisible(false)}
               style={[styles.doneButton, { backgroundColor: colors.accent }]}>
-              <ThemedText style={{ color: '#fff', fontWeight: '600' }}>Done</ThemedText>
+              <ThemedText style={{ color: '#fff', fontWeight: '600' }}>{t('common.done')}</ThemedText>
             </Pressable>
           </Pressable>
         </Pressable>
