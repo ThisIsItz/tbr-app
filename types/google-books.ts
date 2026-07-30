@@ -1,12 +1,21 @@
+export interface GoogleBooksIndustryIdentifier {
+  type: string;
+  identifier: string;
+}
+
 export interface GoogleBooksVolume {
   id: string;
   volumeInfo: {
     title: string;
+    subtitle?: string;
     authors?: string[];
     categories?: string[];
     description?: string;
     publishedDate?: string;
     pageCount?: number;
+    industryIdentifiers?: GoogleBooksIndustryIdentifier[];
+    averageRating?: number;
+    ratingsCount?: number;
     imageLinks?: {
       thumbnail?: string;
       smallThumbnail?: string;

@@ -1,6 +1,13 @@
+import { rankSearchResults } from '@/lib/book-relevance';
 import type { GoogleBooksSearchResponse, GoogleBooksVolume } from '@/types/google-books';
 
 const GOOGLE_BOOKS_API_URL = 'https://www.googleapis.com/books/v1/volumes';
+
+// If an `intitle:`-scoped search returns fewer than this many results, we
+// broaden to an unscoped search too — a title search alone can be too
+// narrow for typos, subtitles, or less literal queries.
+const MIN_RESULTS_BEFORE_FALLBACK = 5;
+const MAX_RESULTS_PER_QUERY = 20;
 
 export class GoogleBooksApiError extends Error {
   constructor(public status: number) {
@@ -28,11 +35,8 @@ function withApiKey(params: URLSearchParams): URLSearchParams {
   return params;
 }
 
-export async function searchGoogleBooks(query: string): Promise<GoogleBooksVolume[]> {
-  const trimmed = query.trim();
-  if (!trimmed) return [];
-
-  const params = withApiKey(new URLSearchParams({ q: trimmed, maxResults: '20' }));
+async function fetchVolumes(q: string): Promise<GoogleBooksVolume[]> {
+  const params = withApiKey(new URLSearchParams({ q, maxResults: String(MAX_RESULTS_PER_QUERY) }));
 
   const response = await fetch(`${GOOGLE_BOOKS_API_URL}?${params.toString()}`);
   if (!response.ok) {
@@ -41,6 +45,24 @@ export async function searchGoogleBooks(query: string): Promise<GoogleBooksVolum
 
   const data = (await response.json()) as GoogleBooksSearchResponse;
   return data.items ?? [];
+}
+
+export async function searchGoogleBooks(query: string): Promise<GoogleBooksVolume[]> {
+  const trimmed = query.trim();
+  if (!trimmed) return [];
+
+  // Prefer a title-scoped search — for a normal query like "Harry Potter"
+  // this surfaces the actual novels instead of unrelated books that merely
+  // mention the phrase in their description.
+  const titleResults = await fetchVolumes(`intitle:${trimmed}`);
+
+  let candidates = titleResults;
+  if (titleResults.length < MIN_RESULTS_BEFORE_FALLBACK) {
+    const broaderResults = await fetchVolumes(trimmed);
+    candidates = [...titleResults, ...broaderResults];
+  }
+
+  return rankSearchResults(candidates, trimmed);
 }
 
 export async function getGoogleBookById(volumeId: string): Promise<GoogleBooksVolume> {

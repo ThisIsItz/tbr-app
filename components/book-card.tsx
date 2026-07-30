@@ -19,6 +19,11 @@ interface BookCardProps {
   onPress?: () => void;
   action?: BookCardAction;
   colors: PaletteColors;
+  /** 'library' (default): saved-book row with genre/status chips.
+   *  'result': compact search-result row — plain-text genre, "Unknown
+   *  author" fallback, and a small bottom-right action button instead of
+   *  a full-width one. */
+  variant?: 'library' | 'result';
 }
 
 export function BookCard({
@@ -30,8 +35,10 @@ export function BookCard({
   onPress,
   action,
   colors,
+  variant = 'library',
 }: BookCardProps) {
   const coverUrl = toHttpsUrl(thumbnailUrl);
+  const isResult = variant === 'result';
 
   return (
     <Pressable
@@ -57,48 +64,59 @@ export function BookCard({
       )}
 
       <View style={styles.body}>
-        <ThemedText
-          numberOfLines={2}
-          style={[styles.title, { color: colors.textPrimary }]}>
+        <ThemedText numberOfLines={2} style={[styles.title, { color: colors.textPrimary }]}>
           {title}
         </ThemedText>
 
-        {!!author && (
-          <ThemedText numberOfLines={1} style={[styles.author, { color: colors.textMuted }]}>
-            {author}
-          </ThemedText>
-        )}
-
-        <View style={styles.tagRow}>
-          {!!genre && (
-            <View style={[styles.tag, { backgroundColor: colors.accentSoft }]}>
-              <ThemedText numberOfLines={1} style={[styles.tagText, { color: colors.accent }]}>
+        {isResult ? (
+          <>
+            <ThemedText numberOfLines={1} style={[styles.author, { color: colors.textMuted }]}>
+              {author || 'Unknown author'}
+            </ThemedText>
+            {!!genre && (
+              <ThemedText numberOfLines={1} style={[styles.genreText, { color: colors.textMuted }]}>
                 {genre}
               </ThemedText>
-            </View>
-          )}
-          {!!statusLabel && (
-            <View style={[styles.tag, { backgroundColor: colors.surfaceMuted }]}>
-              <ThemedText numberOfLines={1} style={[styles.tagText, { color: colors.textMuted }]}>
-                {statusLabel}
+            )}
+            {action && (
+              <Pressable
+                onPress={action.onPress}
+                disabled={action.disabled}
+                style={[
+                  styles.compactActionButton,
+                  { backgroundColor: action.disabled ? colors.surfaceMuted : colors.accent },
+                ]}>
+                <ThemedText
+                  style={[styles.actionText, { color: action.disabled ? colors.textMuted : '#fff' }]}>
+                  {action.label}
+                </ThemedText>
+              </Pressable>
+            )}
+          </>
+        ) : (
+          <>
+            {!!author && (
+              <ThemedText numberOfLines={1} style={[styles.author, { color: colors.textMuted }]}>
+                {author}
               </ThemedText>
+            )}
+            <View style={styles.tagRow}>
+              {!!genre && (
+                <View style={[styles.tag, { backgroundColor: colors.accentSoft }]}>
+                  <ThemedText numberOfLines={1} style={[styles.tagText, { color: colors.accent }]}>
+                    {genre}
+                  </ThemedText>
+                </View>
+              )}
+              {!!statusLabel && (
+                <View style={[styles.tag, { backgroundColor: colors.surfaceMuted }]}>
+                  <ThemedText numberOfLines={1} style={[styles.tagText, { color: colors.textMuted }]}>
+                    {statusLabel}
+                  </ThemedText>
+                </View>
+              )}
             </View>
-          )}
-        </View>
-
-        {action && (
-          <Pressable
-            onPress={action.onPress}
-            disabled={action.disabled}
-            style={[
-              styles.actionButton,
-              { backgroundColor: action.disabled ? colors.surfaceMuted : colors.accent },
-            ]}>
-            <ThemedText
-              style={[styles.actionText, { color: action.disabled ? colors.textMuted : '#fff' }]}>
-              {action.label}
-            </ThemedText>
-          </Pressable>
+          </>
         )}
       </View>
     </Pressable>
@@ -142,6 +160,10 @@ const styles = StyleSheet.create({
     fontSize: 13,
     lineHeight: 18,
   },
+  genreText: {
+    fontSize: 12,
+    lineHeight: 16,
+  },
   tagRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -158,16 +180,18 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '600',
   },
-  actionButton: {
-    marginTop: 8,
+  compactActionButton: {
+    alignSelf: 'flex-end',
+    marginTop: 6,
     borderRadius: 8,
-    paddingVertical: 10,
-    alignItems: 'center',
+    paddingHorizontal: 14,
     minHeight: 44,
+    minWidth: 44,
+    alignItems: 'center',
     justifyContent: 'center',
   },
   actionText: {
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: '600',
   },
 });

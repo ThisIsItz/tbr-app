@@ -10,6 +10,7 @@ import { useBooks } from '@/features/library/hooks';
 import { useSearchBooks } from '@/features/search/hooks';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useDebouncedValue } from '@/hooks/use-debounced-value';
+import { normalizeGenres } from '@/lib/genres';
 
 function showComingSoon(feature: string) {
   Alert.alert('Coming soon', `${feature} isn't available yet.`);
@@ -93,17 +94,20 @@ export default function AddBookScreen() {
         renderItem={({ item }) => {
           const alreadySaved = savedGoogleIds.has(item.id);
           const { title, authors, categories, imageLinks } = item.volumeInfo;
+          const goToDetails = () => router.push(`/add/${item.id}`);
           return (
             <BookCard
+              variant="result"
               title={title}
               author={authors?.join(', ') ?? null}
-              genre={categories?.[0] ?? null}
+              genre={normalizeGenres(categories ?? [])[0] ?? null}
               thumbnailUrl={imageLinks?.thumbnail ?? null}
               colors={colors}
+              onPress={goToDetails}
               action={{
-                label: alreadySaved ? 'Added' : 'Add to TBR',
+                label: alreadySaved ? 'Added' : '+ Add',
                 disabled: alreadySaved,
-                onPress: () => router.push(`/add/${item.id}`),
+                onPress: goToDetails,
               }}
             />
           );
