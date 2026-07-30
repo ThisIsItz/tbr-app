@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { exportAndShareBackup, importBackupFromUri } from '@/lib/backup';
 import { bookRepository } from '@/lib/repository';
+import type { BookDetailsUpdate } from '@/lib/repository/types';
 import type { NewBookInput, ReadingStatus } from '@/types/book';
 
 export const booksQueryKey = ['books'] as const;
@@ -55,6 +56,17 @@ export function useUpdateBookGenres() {
   return useMutation({
     mutationFn: ({ id, genres }: { id: string; genres: string[] }) =>
       bookRepository.updateGenres(id, genres),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: booksQueryKey });
+    },
+  });
+}
+
+export function useUpdateBookDetails() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, updates }: { id: string; updates: BookDetailsUpdate }) =>
+      bookRepository.updateDetails(id, updates),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: booksQueryKey });
     },

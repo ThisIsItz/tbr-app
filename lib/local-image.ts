@@ -11,3 +11,14 @@ export function persistLocalImage(sourceUri: string): string {
   source.copy(destination);
   return destination.uri;
 }
+
+// Best-effort cleanup when a manually-added book's cover is replaced —
+// avoids orphaned files piling up in the document directory. Safe to call
+// with any URI; failures (e.g. already gone) are silently ignored.
+export function deleteLocalImage(uri: string): void {
+  try {
+    new File(uri).delete();
+  } catch {
+    // ignore — not worth surfacing a failure to clean up an old file
+  }
+}

@@ -56,12 +56,15 @@
     "pageCountLabel": "Page count",
     "pageCountPlaceholder": "Optional",
     "save": "Add to My TBR",
-    "saving": "Adding…"
+    "saving": "Adding…",
+    "saveChanges": "Save Changes",
+    "savingChanges": "Saving…"
   },
   "bookDetail": {
     "description": "Description",
     "genres": "Genres",
     "editGenres": "Edit genres",
+    "editBook": "Edit Details",
     "noGenres": "No genres yet.",
     "moreGenres": "+{{count}} more",
     "remove": "Remove from My TBR",
@@ -123,6 +126,7 @@
     "addBook": "Add a Book",
     "addToTbr": "Add to My TBR",
     "addManually": "Add Manually",
+    "editBook": "Edit Book",
     "scanIsbn": "Scan ISBN",
     "settings": "Settings"
   }

@@ -1,25 +1,42 @@
 import * as ImagePicker from 'expo-image-picker';
-import { router } from 'expo-router';
-import { useState } from 'react';
-import { Alert, Image, Pressable, ScrollView, StyleSheet, TextInput, View } from 'react-native';
+import { router, Stack, useLocalSearchParams } from 'expo-router';
+import { useEffect, useState } from 'react';
+import {
+  ActivityIndicator,
+  Alert,
+  Image,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  TextInput,
+  View,
+} from 'react-native';
 
 import { GenreEditor } from '@/components/genre-editor';
 import { ThemedText } from '@/components/themed-text';
 import { Typography } from '@/constants/theme';
-import { useAddBook } from '@/features/library/hooks';
+import { useAddBook, useBook, useUpdateBookDetails } from '@/features/library/hooks';
 import { useThemeColor } from '@/hooks/use-theme-color';
 import { useTranslation } from '@/hooks/use-translation';
-import { persistLocalImage } from '@/lib/local-image';
+import { deleteLocalImage, persistLocalImage } from '@/lib/local-image';
 
 export default function AddManuallyScreen() {
+  const { id } = useLocalSearchParams<{ id?: string }>();
+  const isEditing = !!id;
   const { t } = useTranslation();
   const backgroundColor = useThemeColor({}, 'background');
   const surfaceMutedColor = useThemeColor({}, 'surfaceMuted');
   const textColor = useThemeColor({}, 'text');
   const textMutedColor = useThemeColor({}, 'textMuted');
   const accentColor = useThemeColor({}, 'accent');
-  const addBook = useAddBook();
 
+  const { data: existingBook, isLoading: isLoadingBook } = useBook(id);
+  const addBook = useAddBook();
+  const updateBookDetails = useUpdateBookDetails();
+  const isSaving = addBook.isPending || updateBookDetails.isPending;
+
+  const [isPrefilled, setIsPrefilled] = useState(false);
+  const [initialCoverUri, setInitialCoverUri] = useState<string | null>(null);
   const [coverUri, setCoverUri] = useState<string | null>(null);
   const [title, setTitle] = useState('');
   const [authorsText, setAuthorsText] = useState('');
@@ -27,6 +44,19 @@ export default function AddManuallyScreen() {
   const [description, setDescription] = useState('');
   const [publishedDate, setPublishedDate] = useState('');
   const [pageCountText, setPageCountText] = useState('');
+
+  useEffect(() => {
+    if (!isEditing || !existingBook || isPrefilled) return;
+    setCoverUri(existingBook.thumbnailUrl);
+    setInitialCoverUri(existingBook.thumbnailUrl);
+    setTitle(existingBook.title);
+    setAuthorsText(existingBook.authors.join(', '));
+    setGenres(existingBook.genres);
+    setDescription(existingBook.description ?? '');
+    setPublishedDate(existingBook.publishedDate ?? '');
+    setPageCountText(existingBook.pageCount != null ? String(existingBook.pageCount) : '');
+    setIsPrefilled(true);
+  }, [isEditing, existingBook, isPrefilled]);
 
   async function handlePickCover() {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -54,24 +84,58 @@ export default function AddManuallyScreen() {
       .filter(Boolean);
 
     const parsedPageCount = Number.parseInt(pageCountText.trim(), 10);
-    const thumbnailUrl = coverUri ? persistLocalImage(coverUri) : null;
+    const pageCount = Number.isFinite(parsedPageCount) ? parsedPageCount : null;
 
-    await addBook.mutateAsync({
-      googleBooksId: null,
-      title: trimmedTitle,
-      authors,
-      genres,
-      thumbnailUrl,
-      description: description.trim() || null,
-      publishedDate: publishedDate.trim() || null,
-      pageCount: Number.isFinite(parsedPageCount) ? parsedPageCount : null,
-    });
+    // Only persist a new file if the cover actually changed — re-persisting
+    // an already-local, unchanged URI would just copy it again pointlessly.
+    const coverChanged = coverUri !== initialCoverUri;
+    const thumbnailUrl = coverChanged && coverUri ? persistLocalImage(coverUri) : coverUri;
+
+    if (isEditing && id) {
+      await updateBookDetails.mutateAsync({
+        id,
+        updates: {
+          title: trimmedTitle,
+          authors,
+          description: description.trim() || null,
+          thumbnailUrl,
+          publishedDate: publishedDate.trim() || null,
+          pageCount,
+        },
+      });
+      if (coverChanged && initialCoverUri) {
+        deleteLocalImage(initialCoverUri);
+      }
+    } else {
+      await addBook.mutateAsync({
+        googleBooksId: null,
+        title: trimmedTitle,
+        authors,
+        genres,
+        thumbnailUrl,
+        description: description.trim() || null,
+        publishedDate: publishedDate.trim() || null,
+        pageCount,
+      });
+    }
 
     router.back();
   }
 
+  if (isEditing && (isLoadingBook || !isPrefilled)) {
+    return (
+      <View style={[styles.centered, { backgroundColor }]}>
+        <ActivityIndicator color={accentColor} />
+      </View>
+    );
+  }
+
   return (
     <ScrollView style={{ backgroundColor }} contentContainerStyle={styles.container}>
+      <Stack.Screen
+        options={{ title: isEditing ? t('screenTitles.editBook') : t('screenTitles.addManually') }}
+      />
+
       <View style={styles.field}>
         <ThemedText style={[Typography.caption, styles.label, { color: textColor }]}>
           {t('addManually.coverLabel')}
@@ -107,7 +171,7 @@ export default function AddManuallyScreen() {
           placeholder={t('addManually.titlePlaceholder')}
           placeholderTextColor={textMutedColor}
           style={[Typography.body, styles.input, { color: textColor, backgroundColor: surfaceMutedColor }]}
-          autoFocus
+          autoFocus={!isEditing}
         />
       </View>
 
@@ -124,12 +188,14 @@ export default function AddManuallyScreen() {
         />
       </View>
 
-      <View style={styles.field}>
-        <ThemedText style={[Typography.caption, styles.label, { color: textColor }]}>
-          {t('addManually.genres')}
-        </ThemedText>
-        <GenreEditor genres={genres} onChange={setGenres} />
-      </View>
+      {!isEditing && (
+        <View style={styles.field}>
+          <ThemedText style={[Typography.caption, styles.label, { color: textColor }]}>
+            {t('addManually.genres')}
+          </ThemedText>
+          <GenreEditor genres={genres} onChange={setGenres} />
+        </View>
+      )}
 
       <View style={styles.field}>
         <ThemedText style={[Typography.caption, styles.label, { color: textColor }]}>
@@ -182,9 +248,11 @@ export default function AddManuallyScreen() {
       <Pressable
         style={[styles.saveButton, { backgroundColor: accentColor }]}
         onPress={handleSave}
-        disabled={addBook.isPending}>
+        disabled={isSaving}>
         <ThemedText style={[Typography.button, styles.saveButtonText]}>
-          {addBook.isPending ? t('addManually.saving') : t('addManually.save')}
+          {isSaving
+            ? t(isEditing ? 'addManually.savingChanges' : 'addManually.saving')
+            : t(isEditing ? 'addManually.saveChanges' : 'addManually.save')}
         </ThemedText>
       </Pressable>
     </ScrollView>
@@ -195,6 +263,11 @@ const styles = StyleSheet.create({
   container: {
     padding: 16,
     gap: 16,
+  },
+  centered: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   row: {
     flexDirection: 'row',

@@ -3,7 +3,7 @@ import { randomUUID } from 'expo-crypto';
 import { getDb } from '@/lib/db/client';
 import type { Book, NewBookInput, ReadingStatus } from '@/types/book';
 
-import type { BookRepository, ImportBooksResult } from './types';
+import type { BookDetailsUpdate, BookRepository, ImportBooksResult } from './types';
 
 interface BookRow {
   id: string;
@@ -109,6 +109,31 @@ export const sqliteBookRepository: BookRepository = {
       now,
       id,
     ]);
+
+    const updated = await getById(id);
+    if (!updated) throw new Error(`Book not found: ${id}`);
+    return updated;
+  },
+
+  async updateDetails(id: string, updates: BookDetailsUpdate) {
+    const db = await getDb();
+    const now = new Date().toISOString();
+    await db.runAsync(
+      `UPDATE books SET
+        title = ?, authors = ?, description = ?, thumbnail_url = ?,
+        published_date = ?, page_count = ?, updated_at = ?
+      WHERE id = ?`,
+      [
+        updates.title,
+        JSON.stringify(updates.authors),
+        updates.description,
+        updates.thumbnailUrl,
+        updates.publishedDate,
+        updates.pageCount,
+        now,
+        id,
+      ],
+    );
 
     const updated = await getById(id);
     if (!updated) throw new Error(`Book not found: ${id}`);

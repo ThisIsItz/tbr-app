@@ -98,6 +98,16 @@ export default function BookDetailScreen() {
                 .join(' · ')}
             </ThemedText>
           )}
+          {book.googleBooksId === null && (
+            <Pressable
+              onPress={() => router.push({ pathname: '/add-manually', params: { id: book.id } })}
+              hitSlop={8}
+              style={styles.editBookLink}>
+              <ThemedText style={[Typography.button, { color: accentColor }]}>
+                {t('bookDetail.editBook')}
+              </ThemedText>
+            </Pressable>
+          )}
         </View>
       </View>
 
@@ -209,6 +219,10 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     gap: 4,
+  },
+  editBookLink: {
+    marginTop: 4,
+    alignSelf: 'flex-start',
   },
   section: {
     gap: 8,
