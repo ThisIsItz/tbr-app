@@ -40,6 +40,9 @@
     "saving": "Guardando…"
   },
   "addManually": {
+    "coverLabel": "Portada",
+    "addCoverHint": "Toca para añadir una portada",
+    "removeCover": "Quitar foto",
     "titleLabel": "Título",
     "titlePlaceholder": "Título del libro",
     "titleRequiredError": "Introduce un título.",

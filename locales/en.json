@@ -40,6 +40,9 @@
     "saving": "Saving…"
   },
   "addManually": {
+    "coverLabel": "Cover",
+    "addCoverHint": "Tap to add a cover",
+    "removeCover": "Remove Photo",
     "titleLabel": "Title",
     "titlePlaceholder": "Book title",
     "titleRequiredError": "Please enter a title.",
