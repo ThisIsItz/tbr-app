@@ -3,9 +3,10 @@ import { ActivityIndicator, Alert, Pressable, StyleSheet, View } from 'react-nat
 
 import { ThemedText } from '@/components/themed-text';
 import { IconSymbol } from '@/components/ui/icon-symbol';
-import { Palette, type PaletteColors } from '@/constants/palette';
+import { Typography } from '@/constants/theme';
 import { useExportBackup, useImportBackup } from '@/features/library/hooks';
 import { useAppColorScheme } from '@/hooks/use-app-color-scheme';
+import { useThemeColor } from '@/hooks/use-theme-color';
 import { useTranslation } from '@/hooks/use-translation';
 import { BackupFileError } from '@/lib/backup';
 import type { Locale } from '@/lib/i18n/translations';
@@ -29,13 +30,18 @@ interface OptionsCardProps<T extends string> {
   options: { value: T; labelKey: string }[];
   selected: T;
   onSelect: (value: T) => void;
-  colors: PaletteColors;
   t: (key: string) => string;
 }
 
-function OptionsCard<T extends string>({ options, selected, onSelect, colors, t }: OptionsCardProps<T>) {
+function OptionsCard<T extends string>({ options, selected, onSelect, t }: OptionsCardProps<T>) {
+  const surfaceColor = useThemeColor({}, 'surface');
+  const shadowColor = useThemeColor({}, 'shadow');
+  const textColor = useThemeColor({}, 'text');
+  const borderColor = useThemeColor({}, 'border');
+  const accentColor = useThemeColor({}, 'accent');
+
   return (
-    <View style={[styles.optionsCard, { backgroundColor: colors.surface, shadowColor: colors.shadow }]}>
+    <View style={[styles.optionsCard, { backgroundColor: surfaceColor, shadowColor }]}>
       {options.map((option, index) => {
         const isActive = option.value === selected;
         return (
@@ -44,12 +50,13 @@ function OptionsCard<T extends string>({ options, selected, onSelect, colors, t 
             onPress={() => onSelect(option.value)}
             style={[
               styles.optionRow,
-              index > 0 && { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: colors.border },
+              index > 0 && { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: borderColor },
             ]}>
-            <ThemedText style={{ color: colors.textPrimary, fontWeight: isActive ? '700' : '400' }}>
+            <ThemedText
+              style={[Typography.body, { color: textColor, fontWeight: isActive ? '700' : '400' }]}>
               {t(option.labelKey)}
             </ThemedText>
-            {isActive && <IconSymbol name="checkmark" size={18} color={colors.accent} />}
+            {isActive && <IconSymbol name="checkmark" size={18} color={accentColor} />}
           </Pressable>
         );
       })}
@@ -58,9 +65,14 @@ function OptionsCard<T extends string>({ options, selected, onSelect, colors, t 
 }
 
 export default function SettingsScreen() {
-  const { colorScheme, themePreference, setThemePreference } = useAppColorScheme();
-  const colors = Palette[colorScheme];
+  const { themePreference, setThemePreference } = useAppColorScheme();
   const { t, locale, setLocale } = useTranslation();
+  const backgroundColor = useThemeColor({}, 'background');
+  const surfaceColor = useThemeColor({}, 'surface');
+  const shadowColor = useThemeColor({}, 'shadow');
+  const textColor = useThemeColor({}, 'text');
+  const borderColor = useThemeColor({}, 'border');
+  const accentColor = useThemeColor({}, 'accent');
 
   const exportBackup = useExportBackup();
   const importBackup = useImportBackup();
@@ -97,37 +109,40 @@ export default function SettingsScreen() {
   const isBusy = exportBackup.isPending || importBackup.isPending;
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <ThemedText style={[styles.sectionLabel, { color: colors.textPrimary }]}>
+    <View style={[styles.container, { backgroundColor }]}>
+      <ThemedText style={[Typography.sectionTitle, styles.sectionLabel, { color: textColor }]}>
         {t('settings.language')}
       </ThemedText>
-      <OptionsCard options={LANGUAGE_OPTIONS} selected={locale} onSelect={setLocale} colors={colors} t={t} />
+      <OptionsCard options={LANGUAGE_OPTIONS} selected={locale} onSelect={setLocale} t={t} />
 
-      <ThemedText style={[styles.sectionLabel, { color: colors.textPrimary }]}>
+      <ThemedText style={[Typography.sectionTitle, styles.sectionLabel, { color: textColor }]}>
         {t('settings.appearance')}
       </ThemedText>
       <OptionsCard
         options={APPEARANCE_OPTIONS}
         selected={themePreference}
         onSelect={setThemePreference}
-        colors={colors}
         t={t}
       />
 
-      <ThemedText style={[styles.sectionLabel, { color: colors.textPrimary }]}>
+      <ThemedText style={[Typography.sectionTitle, styles.sectionLabel, { color: textColor }]}>
         {t('settings.data')}
       </ThemedText>
-      <View style={[styles.optionsCard, { backgroundColor: colors.surface, shadowColor: colors.shadow }]}>
+      <View style={[styles.optionsCard, { backgroundColor: surfaceColor, shadowColor }]}>
         <Pressable onPress={handleExport} disabled={isBusy} style={styles.optionRow}>
-          <ThemedText style={{ color: colors.textPrimary }}>{t('settings.exportBackup')}</ThemedText>
-          {exportBackup.isPending && <ActivityIndicator size="small" color={colors.accent} />}
+          <ThemedText style={[Typography.body, { color: textColor }]}>
+            {t('settings.exportBackup')}
+          </ThemedText>
+          {exportBackup.isPending && <ActivityIndicator size="small" color={accentColor} />}
         </Pressable>
         <Pressable
           onPress={handleImport}
           disabled={isBusy}
-          style={[styles.optionRow, { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: colors.border }]}>
-          <ThemedText style={{ color: colors.textPrimary }}>{t('settings.importBackup')}</ThemedText>
-          {importBackup.isPending && <ActivityIndicator size="small" color={colors.accent} />}
+          style={[styles.optionRow, { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: borderColor }]}>
+          <ThemedText style={[Typography.body, { color: textColor }]}>
+            {t('settings.importBackup')}
+          </ThemedText>
+          {importBackup.isPending && <ActivityIndicator size="small" color={accentColor} />}
         </Pressable>
       </View>
     </View>
@@ -141,8 +156,6 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   sectionLabel: {
-    fontSize: 15,
-    fontWeight: '700',
     marginTop: 8,
   },
   optionsCard: {

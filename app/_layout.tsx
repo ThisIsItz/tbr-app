@@ -7,8 +7,8 @@ import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
 import 'react-native-reanimated';
 
-import { Palette } from '@/constants/palette';
 import { useAppColorScheme } from '@/hooks/use-app-color-scheme';
+import { useThemeColor } from '@/hooks/use-theme-color';
 import { useTranslation } from '@/hooks/use-translation';
 import { getDb } from '@/lib/db/client';
 import { GoogleBooksApiError } from '@/lib/google-books';
@@ -79,11 +79,13 @@ export default function RootLayout() {
 function RootLayoutNav() {
   const { colorScheme } = useAppColorScheme();
   const { t } = useTranslation();
-  const colors = Palette[colorScheme];
+  const backgroundColor = useThemeColor({}, 'background');
+  const accentColor = useThemeColor({}, 'accent');
+  const textColor = useThemeColor({}, 'text');
   const warmHeaderOptions = {
-    headerStyle: { backgroundColor: colors.background },
-    headerTintColor: colors.accent,
-    headerTitleStyle: { color: colors.textPrimary },
+    headerStyle: { backgroundColor },
+    headerTintColor: accentColor,
+    headerTitleStyle: { color: textColor },
     headerShadowVisible: false,
   };
 

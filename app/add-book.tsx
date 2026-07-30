@@ -5,19 +5,22 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { BookCard } from '@/components/book-card';
 import { ThemedText } from '@/components/themed-text';
-import { Palette } from '@/constants/palette';
+import { Typography } from '@/constants/theme';
 import { useBooks } from '@/features/library/hooks';
 import { useSearchBooks } from '@/features/search/hooks';
-import { useAppColorScheme } from '@/hooks/use-app-color-scheme';
 import { useDebouncedValue } from '@/hooks/use-debounced-value';
+import { useThemeColor } from '@/hooks/use-theme-color';
 import { useTranslation } from '@/hooks/use-translation';
 import { normalizeGenres } from '@/lib/genres';
 import { getErrorTranslationKey } from '@/lib/google-books';
 
 export default function AddBookScreen() {
-  const { colorScheme } = useAppColorScheme();
-  const colors = Palette[colorScheme];
   const { t } = useTranslation();
+  const backgroundColor = useThemeColor({}, 'background');
+  const surfaceMutedColor = useThemeColor({}, 'surfaceMuted');
+  const textColor = useThemeColor({}, 'text');
+  const textMutedColor = useThemeColor({}, 'textMuted');
+  const accentColor = useThemeColor({}, 'accent');
   const [query, setQuery] = useState('');
   const debouncedQuery = useDebouncedValue(query, 400);
 
@@ -36,14 +39,14 @@ export default function AddBookScreen() {
   const hasSearched = debouncedQuery.trim().length > 0;
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['bottom']}>
-      <View style={[styles.searchBox, { backgroundColor: colors.surfaceMuted }]}>
+    <SafeAreaView style={[styles.container, { backgroundColor }]} edges={['bottom']}>
+      <View style={[styles.searchBox, { backgroundColor: surfaceMutedColor }]}>
         <TextInput
           value={query}
           onChangeText={setQuery}
           placeholder={t('search.placeholder')}
-          placeholderTextColor={colors.textMuted}
-          style={[styles.searchInput, { color: colors.textPrimary }]}
+          placeholderTextColor={textMutedColor}
+          style={[Typography.body, styles.searchInput, { color: textColor }]}
           autoCorrect={false}
           returnKeyType="search"
           autoFocus
@@ -52,16 +55,16 @@ export default function AddBookScreen() {
 
       <View style={styles.quickActionsRow}>
         <Pressable
-          style={[styles.quickAction, { backgroundColor: colors.surfaceMuted }]}
+          style={[styles.quickAction, { backgroundColor: surfaceMutedColor }]}
           onPress={() => showComingSoon(t('search.scanIsbn'))}>
-          <ThemedText style={{ color: colors.textPrimary, fontWeight: '600' }}>
+          <ThemedText style={[Typography.button, { color: textColor }]}>
             {t('search.scanIsbn')}
           </ThemedText>
         </Pressable>
         <Pressable
-          style={[styles.quickAction, { backgroundColor: colors.surfaceMuted }]}
+          style={[styles.quickAction, { backgroundColor: surfaceMutedColor }]}
           onPress={() => router.push('/add-manually')}>
-          <ThemedText style={{ color: colors.textPrimary, fontWeight: '600' }}>
+          <ThemedText style={[Typography.button, { color: textColor }]}>
             {t('search.addManually')}
           </ThemedText>
         </Pressable>
@@ -69,20 +72,20 @@ export default function AddBookScreen() {
 
       {!hasSearched && (
         <View style={styles.centered}>
-          <ThemedText style={[styles.emptyTitle, { color: colors.textPrimary }]}>
+          <ThemedText style={[Typography.bookTitle, { color: textColor }]}>
             {t('search.emptyTitle')}
           </ThemedText>
-          <ThemedText style={[styles.emptyText, { color: colors.textMuted }]}>
+          <ThemedText style={[Typography.metadata, styles.centeredText, { color: textMutedColor }]}>
             {t('search.emptyText')}
           </ThemedText>
         </View>
       )}
 
-      {isLoading && <ActivityIndicator style={{ marginTop: 24 }} color={colors.accent} />}
+      {isLoading && <ActivityIndicator style={{ marginTop: 24 }} color={accentColor} />}
 
       {isError && (
         <View style={styles.centered}>
-          <ThemedText style={{ color: colors.textPrimary, textAlign: 'center' }}>
+          <ThemedText style={[Typography.body, styles.centeredText, { color: textColor }]}>
             {t(getErrorTranslationKey(error))}
           </ThemedText>
         </View>
@@ -90,7 +93,7 @@ export default function AddBookScreen() {
 
       {hasSearched && !isLoading && !isError && (results?.length ?? 0) === 0 && (
         <View style={styles.centered}>
-          <ThemedText style={{ color: colors.textPrimary, textAlign: 'center' }}>
+          <ThemedText style={[Typography.body, styles.centeredText, { color: textColor }]}>
             {t('search.noResultsFor', { query: debouncedQuery })}
           </ThemedText>
         </View>
@@ -111,7 +114,6 @@ export default function AddBookScreen() {
               author={authors?.join(', ') ?? null}
               genre={normalizeGenres(categories ?? [])[0] ?? null}
               thumbnailUrl={imageLinks?.thumbnail ?? null}
-              colors={colors}
               onPress={goToDetails}
               action={{
                 label: alreadySaved ? t('search.added') : t('search.add'),
@@ -139,7 +141,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
   },
   searchInput: {
-    fontSize: 15,
     paddingVertical: 8,
   },
   quickActionsRow: {
@@ -161,12 +162,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingTop: 48,
   },
-  emptyTitle: {
-    fontSize: 17,
-    fontWeight: '700',
-  },
-  emptyText: {
-    fontSize: 14,
+  centeredText: {
     textAlign: 'center',
   },
   listContent: {

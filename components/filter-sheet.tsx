@@ -3,7 +3,8 @@ import { FlatList, Modal, Pressable, StyleSheet } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
 import { IconSymbol } from '@/components/ui/icon-symbol';
-import type { PaletteColors } from '@/constants/palette';
+import { Typography } from '@/constants/theme';
+import { useThemeColor } from '@/hooks/use-theme-color';
 
 export interface FilterOption {
   value: string | null;
@@ -21,7 +22,6 @@ interface FilterSheetProps {
    * active/selected styling — for controls like Sort that always have a
    * value rather than an on/off filter. */
   staticLabel?: boolean;
-  colors: PaletteColors;
 }
 
 export function FilterSheet({
@@ -32,10 +32,16 @@ export function FilterSheet({
   selectedLabel,
   disabled,
   staticLabel,
-  colors,
 }: FilterSheetProps) {
   const [visible, setVisible] = useState(false);
   const isActive = !staticLabel && selected !== null && selected !== undefined;
+
+  const surfaceColor = useThemeColor({}, 'surface');
+  const surfaceMutedColor = useThemeColor({}, 'surfaceMuted');
+  const textColor = useThemeColor({}, 'text');
+  const textMutedColor = useThemeColor({}, 'textMuted');
+  const accentColor = useThemeColor({}, 'accent');
+  const accentSoftColor = useThemeColor({}, 'accentSoft');
 
   return (
     <>
@@ -45,28 +51,26 @@ export function FilterSheet({
         style={[
           styles.trigger,
           {
-            backgroundColor: isActive ? colors.accentSoft : colors.surfaceMuted,
+            backgroundColor: isActive ? accentSoftColor : surfaceMutedColor,
             opacity: disabled ? 0.5 : 1,
           },
         ]}>
         <ThemedText
           numberOfLines={1}
-          style={[styles.triggerText, { color: isActive ? colors.accent : colors.textPrimary }]}>
+          style={[Typography.button, { color: isActive ? accentColor : textColor }]}>
           {isActive ? (selectedLabel ?? label) : label}
         </ThemedText>
-        <IconSymbol
-          name="chevron.down"
-          size={16}
-          color={isActive ? colors.accent : colors.textMuted}
-        />
+        <IconSymbol name="chevron.down" size={16} color={isActive ? accentColor : textMutedColor} />
       </Pressable>
 
       <Modal visible={visible} transparent animationType="fade" onRequestClose={() => setVisible(false)}>
         <Pressable style={styles.backdrop} onPress={() => setVisible(false)}>
           <Pressable
-            style={[styles.sheet, { backgroundColor: colors.surface }]}
+            style={[styles.sheet, { backgroundColor: surfaceColor }]}
             onPress={(e) => e.stopPropagation()}>
-            <ThemedText style={[styles.sheetTitle, { color: colors.textPrimary }]}>{label}</ThemedText>
+            <ThemedText style={[Typography.sectionTitle, styles.sheetTitle, { color: textColor }]}>
+              {label}
+            </ThemedText>
             <FlatList
               data={options}
               keyExtractor={(item) => item.label}
@@ -81,13 +85,16 @@ export function FilterSheet({
                     }}
                     style={styles.optionRow}>
                     <ThemedText
-                      style={{
-                        color: isSelected ? colors.accent : colors.textPrimary,
-                        fontWeight: isSelected ? '700' : '400',
-                      }}>
+                      style={[
+                        Typography.body,
+                        {
+                          color: isSelected ? accentColor : textColor,
+                          fontWeight: isSelected ? '700' : '400',
+                        },
+                      ]}>
                       {item.label}
                     </ThemedText>
-                    {isSelected && <IconSymbol name="checkmark" size={18} color={colors.accent} />}
+                    {isSelected && <IconSymbol name="checkmark" size={18} color={accentColor} />}
                   </Pressable>
                 );
               }}
@@ -110,10 +117,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     paddingHorizontal: 10,
   },
-  triggerText: {
-    fontSize: 14,
-    fontWeight: '600',
-  },
   backdrop: {
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.35)',
@@ -128,8 +131,6 @@ const styles = StyleSheet.create({
     maxHeight: '70%',
   },
   sheetTitle: {
-    fontSize: 16,
-    fontWeight: '700',
     marginBottom: 8,
   },
   optionList: {

@@ -7,9 +7,9 @@ import { BookCard } from '@/components/book-card';
 import { FilterSheet } from '@/components/filter-sheet';
 import { ThemedText } from '@/components/themed-text';
 import { IconSymbol } from '@/components/ui/icon-symbol';
-import { Palette } from '@/constants/palette';
+import { Typography } from '@/constants/theme';
 import { useBooks } from '@/features/library/hooks';
-import { useAppColorScheme } from '@/hooks/use-app-color-scheme';
+import { useThemeColor } from '@/hooks/use-theme-color';
 import { useTranslation } from '@/hooks/use-translation';
 import { normalizeGenres } from '@/lib/genres';
 import { type Book } from '@/types/book';
@@ -17,9 +17,12 @@ import { type Book } from '@/types/book';
 type SortBy = 'title' | 'author';
 
 export default function MyTbrScreen() {
-  const { colorScheme } = useAppColorScheme();
-  const colors = Palette[colorScheme];
   const { t } = useTranslation();
+  const backgroundColor = useThemeColor({}, 'background');
+  const textColor = useThemeColor({}, 'text');
+  const textMutedColor = useThemeColor({}, 'textMuted');
+  const accentColor = useThemeColor({}, 'accent');
+  const surfaceMutedColor = useThemeColor({}, 'surfaceMuted');
 
   const { data: books, isLoading } = useBooks();
 
@@ -84,8 +87,8 @@ export default function MyTbrScreen() {
 
   if (isLoading) {
     return (
-      <SafeAreaView style={[styles.centered, { backgroundColor: colors.background }]} edges={['top']}>
-        <ActivityIndicator color={colors.accent} />
+      <SafeAreaView style={[styles.centered, { backgroundColor }]} edges={['top']}>
+        <ActivityIndicator color={accentColor} />
       </SafeAreaView>
     );
   }
@@ -93,32 +96,34 @@ export default function MyTbrScreen() {
   const isLibraryEmpty = (books?.length ?? 0) === 0;
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top']}>
+    <SafeAreaView style={[styles.container, { backgroundColor }]} edges={['top']}>
       <View style={styles.header}>
-        <ThemedText style={[styles.title, { color: colors.textPrimary }]}>{t('library.title')}</ThemedText>
+        <ThemedText style={[Typography.screenTitle, { color: textColor }]}>
+          {t('library.title')}
+        </ThemedText>
         <View style={styles.headerActions}>
           <Pressable
             onPress={() => router.push('/settings')}
             hitSlop={8}
-            style={[styles.iconButton, { backgroundColor: colors.surfaceMuted }]}>
-            <IconSymbol name="gearshape.fill" size={20} color={colors.textPrimary} />
+            style={[styles.iconButton, { backgroundColor: surfaceMutedColor }]}>
+            <IconSymbol name="gearshape.fill" size={20} color={textColor} />
           </Pressable>
           <Pressable
             onPress={() => router.push('/add-book')}
             hitSlop={8}
-            style={[styles.addButton, { backgroundColor: colors.accent }]}>
+            style={[styles.addButton, { backgroundColor: accentColor }]}>
             <IconSymbol name="plus.circle.fill" size={22} color="#fff" />
           </Pressable>
         </View>
       </View>
 
-      <View style={[styles.searchBox, { backgroundColor: colors.surfaceMuted }]}>
+      <View style={[styles.searchBox, { backgroundColor: surfaceMutedColor }]}>
         <TextInput
           value={searchQuery}
           onChangeText={setSearchQuery}
           placeholder={t('library.searchPlaceholder')}
-          placeholderTextColor={colors.textMuted}
-          style={[styles.searchInput, { color: colors.textPrimary }]}
+          placeholderTextColor={textMutedColor}
+          style={[Typography.body, styles.searchInput, { color: textColor }]}
           autoCorrect={false}
         />
       </View>
@@ -126,7 +131,6 @@ export default function MyTbrScreen() {
       <View style={styles.filterRow}>
         <FilterSheet
           label={t('library.genre')}
-          colors={colors}
           selected={genreFilter}
           selectedLabel={genreFilter}
           disabled={allGenres.length === 0}
@@ -138,7 +142,6 @@ export default function MyTbrScreen() {
         />
         <FilterSheet
           label={t('library.author')}
-          colors={colors}
           selected={authorFilter}
           selectedLabel={authorFilter}
           disabled={allAuthors.length === 0}
@@ -150,7 +153,6 @@ export default function MyTbrScreen() {
         />
         <FilterSheet
           label={t('library.sort')}
-          colors={colors}
           staticLabel
           selected={sortBy}
           onSelect={(value) => setSortBy((value as SortBy) ?? 'title')}
@@ -160,24 +162,24 @@ export default function MyTbrScreen() {
 
       {isLibraryEmpty ? (
         <View style={styles.centered}>
-          <ThemedText style={[styles.emptyTitle, { color: colors.textPrimary }]}>
+          <ThemedText style={[Typography.bookTitle, styles.centeredText, { color: textColor }]}>
             {t('library.emptyTitle')}
           </ThemedText>
-          <ThemedText style={[styles.emptyText, { color: colors.textMuted }]}>
+          <ThemedText style={[Typography.metadata, styles.centeredText, { color: textMutedColor }]}>
             {t('library.emptyText')}
           </ThemedText>
         </View>
       ) : filteredBooks.length === 0 ? (
         <View style={styles.centered}>
-          <ThemedText style={[styles.emptyTitle, { color: colors.textPrimary }]}>
+          <ThemedText style={[Typography.bookTitle, styles.centeredText, { color: textColor }]}>
             {t('library.noMatchTitle')}
           </ThemedText>
-          <ThemedText style={[styles.emptyText, { color: colors.textMuted }]}>
+          <ThemedText style={[Typography.metadata, styles.centeredText, { color: textMutedColor }]}>
             {t('library.noMatchText')}
           </ThemedText>
           {hasActiveFilters && (
-            <Pressable onPress={clearFilters} style={[styles.clearButton, { backgroundColor: colors.accent }]}>
-              <ThemedText style={{ color: '#fff', fontWeight: '600' }}>
+            <Pressable onPress={clearFilters} style={[styles.clearButton, { backgroundColor: accentColor }]}>
+              <ThemedText style={[Typography.button, { color: '#fff' }]}>
                 {t('library.clearFilters')}
               </ThemedText>
             </Pressable>
@@ -196,7 +198,6 @@ export default function MyTbrScreen() {
               statusLabel={t(`status.${item.status}`)}
               thumbnailUrl={item.thumbnailUrl}
               onPress={() => router.push(`/book/${item.id}`)}
-              colors={colors}
             />
           )}
         />
@@ -217,15 +218,14 @@ const styles = StyleSheet.create({
     gap: 6,
     paddingHorizontal: 24,
   },
+  centeredText: {
+    textAlign: 'center',
+  },
   header: {
     paddingTop: 12,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-  },
-  title: {
-    fontSize: 26,
-    fontWeight: '800',
   },
   headerActions: {
     flexDirection: 'row',
@@ -253,7 +253,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
   },
   searchInput: {
-    fontSize: 15,
     paddingVertical: 8,
   },
   filterRow: {
@@ -261,15 +260,6 @@ const styles = StyleSheet.create({
     gap: 8,
     marginTop: 12,
     paddingBottom: 14,
-  },
-  emptyTitle: {
-    fontSize: 17,
-    fontWeight: '700',
-    textAlign: 'center',
-  },
-  emptyText: {
-    fontSize: 14,
-    textAlign: 'center',
   },
   clearButton: {
     marginTop: 8,

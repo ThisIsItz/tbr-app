@@ -2,19 +2,25 @@ import { useState } from 'react';
 import { Pressable, StyleSheet, TextInput, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
-import type { PaletteColors } from '@/constants/palette';
+import { Typography } from '@/constants/theme';
+import { useThemeColor } from '@/hooks/use-theme-color';
 import { useTranslation } from '@/hooks/use-translation';
 import { normalizeGenres } from '@/lib/genres';
 
 interface GenreEditorProps {
   genres: string[];
   onChange: (genres: string[]) => void;
-  colors: PaletteColors;
 }
 
-export function GenreEditor({ genres, onChange, colors }: GenreEditorProps) {
+export function GenreEditor({ genres, onChange }: GenreEditorProps) {
   const { t } = useTranslation();
   const [draft, setDraft] = useState('');
+
+  const textColor = useThemeColor({}, 'text');
+  const textMutedColor = useThemeColor({}, 'textMuted');
+  const accentColor = useThemeColor({}, 'accent');
+  const accentSoftColor = useThemeColor({}, 'accentSoft');
+  const surfaceMutedColor = useThemeColor({}, 'surfaceMuted');
 
   function handleAdd() {
     if (!draft.trim()) return;
@@ -30,13 +36,17 @@ export function GenreEditor({ genres, onChange, colors }: GenreEditorProps) {
     <View style={styles.container}>
       <View style={styles.chipRow}>
         {genres.length === 0 && (
-          <ThemedText style={{ color: colors.textMuted }}>{t('genreEditor.empty')}</ThemedText>
+          <ThemedText style={[Typography.body, { color: textMutedColor }]}>
+            {t('genreEditor.empty')}
+          </ThemedText>
         )}
         {genres.map((genre) => (
-          <View key={genre} style={[styles.chip, { backgroundColor: colors.accentSoft }]}>
-            <ThemedText style={[styles.chipText, { color: colors.accent }]}>{genre}</ThemedText>
+          <View key={genre} style={[styles.chip, { backgroundColor: accentSoftColor }]}>
+            <ThemedText style={[Typography.caption, { color: accentColor }]}>{genre}</ThemedText>
             <Pressable onPress={() => handleRemove(genre)} hitSlop={8}>
-              <ThemedText style={[styles.chipRemove, { color: colors.accent }]}>×</ThemedText>
+              <ThemedText style={[Typography.button, styles.chipRemove, { color: accentColor }]}>
+                ×
+              </ThemedText>
             </Pressable>
           </View>
         ))}
@@ -46,13 +56,19 @@ export function GenreEditor({ genres, onChange, colors }: GenreEditorProps) {
           value={draft}
           onChangeText={setDraft}
           placeholder={t('genreEditor.placeholder')}
-          placeholderTextColor={colors.textMuted}
-          style={[styles.input, { color: colors.textPrimary, backgroundColor: colors.surfaceMuted }]}
+          placeholderTextColor={textMutedColor}
+          style={[
+            Typography.body,
+            styles.input,
+            { color: textColor, backgroundColor: surfaceMutedColor },
+          ]}
           onSubmitEditing={handleAdd}
           returnKeyType="done"
         />
-        <Pressable onPress={handleAdd} style={[styles.addButton, { backgroundColor: colors.accent }]}>
-          <ThemedText style={styles.addButtonText}>{t('genreEditor.add')}</ThemedText>
+        <Pressable onPress={handleAdd} style={[styles.addButton, { backgroundColor: accentColor }]}>
+          <ThemedText style={[Typography.button, styles.addButtonText]}>
+            {t('genreEditor.add')}
+          </ThemedText>
         </Pressable>
       </View>
     </View>
@@ -76,13 +92,8 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     paddingHorizontal: 12,
   },
-  chipText: {
-    fontSize: 14,
-    fontWeight: '600',
-  },
   chipRemove: {
-    fontSize: 16,
-    fontWeight: '700',
+    lineHeight: 18,
   },
   inputRow: {
     flexDirection: 'row',
@@ -94,7 +105,6 @@ const styles = StyleSheet.create({
     minHeight: 44,
     paddingVertical: 8,
     paddingHorizontal: 12,
-    fontSize: 16,
   },
   addButton: {
     borderRadius: 10,
@@ -105,6 +115,5 @@ const styles = StyleSheet.create({
   },
   addButtonText: {
     color: '#fff',
-    fontWeight: '600',
   },
 });

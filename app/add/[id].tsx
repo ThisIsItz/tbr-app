@@ -4,10 +4,10 @@ import { ActivityIndicator, Image, Pressable, ScrollView, StyleSheet, View } fro
 
 import { GenreEditor } from '@/components/genre-editor';
 import { ThemedText } from '@/components/themed-text';
-import { Palette } from '@/constants/palette';
+import { Typography } from '@/constants/theme';
 import { useAddBook } from '@/features/library/hooks';
 import { useGoogleBookDetails } from '@/features/search/hooks';
-import { useAppColorScheme } from '@/hooks/use-app-color-scheme';
+import { useThemeColor } from '@/hooks/use-theme-color';
 import { useTranslation } from '@/hooks/use-translation';
 import { normalizeGenres } from '@/lib/genres';
 import { GoogleBooksApiError, toHttpsUrl } from '@/lib/google-books';
@@ -15,9 +15,12 @@ import { sanitizeDescription } from '@/lib/sanitize-html';
 
 export default function AddBookScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { colorScheme } = useAppColorScheme();
-  const colors = Palette[colorScheme];
   const { t } = useTranslation();
+  const backgroundColor = useThemeColor({}, 'background');
+  const surfaceMutedColor = useThemeColor({}, 'surfaceMuted');
+  const textColor = useThemeColor({}, 'text');
+  const textMutedColor = useThemeColor({}, 'textMuted');
+  const accentColor = useThemeColor({}, 'accent');
 
   const { data: volume, isLoading, isError, error } = useGoogleBookDetails(id);
   const addBook = useAddBook();
@@ -31,8 +34,8 @@ export default function AddBookScreen() {
 
   if (isLoading) {
     return (
-      <View style={[styles.centered, { backgroundColor: colors.background }]}>
-        <ActivityIndicator color={colors.accent} />
+      <View style={[styles.centered, { backgroundColor }]}>
+        <ActivityIndicator color={accentColor} />
       </View>
     );
   }
@@ -43,8 +46,8 @@ export default function AddBookScreen() {
         ? t('errors.rateLimit')
         : t('addConfirm.loadError');
     return (
-      <View style={[styles.centered, { backgroundColor: colors.background }]}>
-        <ThemedText style={{ color: colors.textPrimary }}>{message}</ThemedText>
+      <View style={[styles.centered, { backgroundColor }]}>
+        <ThemedText style={[Typography.body, { color: textColor }]}>{message}</ThemedText>
       </View>
     );
   }
@@ -67,9 +70,7 @@ export default function AddBookScreen() {
   }
 
   return (
-    <ScrollView
-      style={{ backgroundColor: colors.background }}
-      contentContainerStyle={styles.container}>
+    <ScrollView style={{ backgroundColor }} contentContainerStyle={styles.container}>
       <View style={styles.header}>
         {coverUrl ? (
           <Image
@@ -81,30 +82,34 @@ export default function AddBookScreen() {
             }
           />
         ) : (
-          <View style={[styles.thumbnail, styles.thumbnailPlaceholder, { backgroundColor: colors.surfaceMuted }]}>
-            <ThemedText style={{ color: colors.textMuted, fontSize: 11 }}>{t('bookCard.noCover')}</ThemedText>
+          <View style={[styles.thumbnail, styles.thumbnailPlaceholder, { backgroundColor: surfaceMutedColor }]}>
+            <ThemedText style={[Typography.caption, { color: textMutedColor }]}>
+              {t('bookCard.noCover')}
+            </ThemedText>
           </View>
         )}
         <View style={styles.headerText}>
-          <ThemedText style={[styles.bookTitle, { color: colors.textPrimary }]}>{title}</ThemedText>
+          <ThemedText style={[Typography.bookTitle, { color: textColor }]}>{title}</ThemedText>
           {authors && authors.length > 0 && (
-            <ThemedText style={{ color: colors.textMuted }}>{authors.join(', ')}</ThemedText>
+            <ThemedText style={[Typography.metadata, { color: textMutedColor }]}>
+              {authors.join(', ')}
+            </ThemedText>
           )}
         </View>
       </View>
 
       <View style={styles.section}>
-        <ThemedText style={[styles.sectionLabel, { color: colors.textPrimary }]}>
+        <ThemedText style={[Typography.sectionTitle, { color: textColor }]}>
           {t('addConfirm.genres')}
         </ThemedText>
-        <GenreEditor genres={genres} onChange={setGenres} colors={colors} />
+        <GenreEditor genres={genres} onChange={setGenres} />
       </View>
 
       <Pressable
-        style={[styles.saveButton, { backgroundColor: colors.accent }]}
+        style={[styles.saveButton, { backgroundColor: accentColor }]}
         onPress={handleSave}
         disabled={addBook.isPending}>
-        <ThemedText style={styles.saveButtonText}>
+        <ThemedText style={[Typography.button, styles.saveButtonText]}>
           {addBook.isPending ? t('addConfirm.saving') : t('addConfirm.save')}
         </ThemedText>
       </Pressable>
@@ -141,18 +146,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 4,
   },
-  bookTitle: {
-    fontSize: 19,
-    fontWeight: '700',
-    lineHeight: 24,
-  },
   section: {
     gap: 4,
-  },
-  sectionLabel: {
-    fontSize: 15,
-    fontWeight: '700',
-    marginBottom: 4,
   },
   saveButton: {
     borderRadius: 10,
@@ -163,7 +158,5 @@ const styles = StyleSheet.create({
   },
   saveButtonText: {
     color: '#fff',
-    fontWeight: '600',
-    fontSize: 16,
   },
 });

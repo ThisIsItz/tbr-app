@@ -3,8 +3,7 @@ import React from 'react';
 
 import { HapticTab } from '@/components/haptic-tab';
 import { IconSymbol } from '@/components/ui/icon-symbol';
-import { Colors } from '@/constants/theme';
-import { useAppColorScheme } from '@/hooks/use-app-color-scheme';
+import { useThemeColor } from '@/hooks/use-theme-color';
 import { useTranslation } from '@/hooks/use-translation';
 
 // Single-tab today by product design (the TBR list is the whole app; adding
@@ -12,13 +11,13 @@ import { useTranslation } from '@/hooks/use-translation';
 // is kept in place, with its bar hidden, so a second tab can be reintroduced
 // later by removing `tabBarStyle` below and adding one more `Tabs.Screen`.
 export default function TabLayout() {
-  const { colorScheme } = useAppColorScheme();
+  const tintColor = useThemeColor({}, 'tint');
   const { t } = useTranslation();
 
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme].tint,
+        tabBarActiveTintColor: tintColor,
         headerShown: false,
         tabBarButton: HapticTab,
         tabBarStyle: { display: 'none' },

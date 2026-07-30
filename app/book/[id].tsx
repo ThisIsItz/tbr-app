@@ -4,9 +4,9 @@ import { Alert, Image, Modal, Pressable, ScrollView, StyleSheet, View } from 're
 
 import { GenreEditor } from '@/components/genre-editor';
 import { ThemedText } from '@/components/themed-text';
-import { Palette } from '@/constants/palette';
+import { Typography } from '@/constants/theme';
 import { useBook, useDeleteBook, useUpdateBookGenres } from '@/features/library/hooks';
-import { useAppColorScheme } from '@/hooks/use-app-color-scheme';
+import { useThemeColor } from '@/hooks/use-theme-color';
 import { useTranslation } from '@/hooks/use-translation';
 import { normalizeGenres } from '@/lib/genres';
 import { toHttpsUrl } from '@/lib/google-books';
@@ -16,9 +16,15 @@ const MAX_VISIBLE_GENRES = 3;
 
 export default function BookDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { colorScheme } = useAppColorScheme();
-  const colors = Palette[colorScheme];
   const { t } = useTranslation();
+  const backgroundColor = useThemeColor({}, 'background');
+  const surfaceColor = useThemeColor({}, 'surface');
+  const surfaceMutedColor = useThemeColor({}, 'surfaceMuted');
+  const textColor = useThemeColor({}, 'text');
+  const textMutedColor = useThemeColor({}, 'textMuted');
+  const accentColor = useThemeColor({}, 'accent');
+  const accentSoftColor = useThemeColor({}, 'accentSoft');
+  const dangerColor = useThemeColor({}, 'danger');
 
   const { data: book, isLoading } = useBook(id);
   const updateGenres = useUpdateBookGenres();
@@ -26,7 +32,7 @@ export default function BookDetailScreen() {
   const [isGenreModalVisible, setGenreModalVisible] = useState(false);
 
   if (isLoading || !book) {
-    return <View style={[styles.centered, { backgroundColor: colors.background }]} />;
+    return <View style={[styles.centered, { backgroundColor }]} />;
   }
 
   function handleDelete() {
@@ -53,9 +59,7 @@ export default function BookDetailScreen() {
   const extraGenreCount = genres.length - visibleGenres.length;
 
   return (
-    <ScrollView
-      style={{ backgroundColor: colors.background }}
-      contentContainerStyle={styles.container}>
+    <ScrollView style={{ backgroundColor }} contentContainerStyle={styles.container}>
       <View style={styles.header}>
         {coverUrl ? (
           <Image
@@ -67,17 +71,21 @@ export default function BookDetailScreen() {
             }
           />
         ) : (
-          <View style={[styles.thumbnail, styles.thumbnailPlaceholder, { backgroundColor: colors.surfaceMuted }]}>
-            <ThemedText style={{ color: colors.textMuted, fontSize: 11 }}>{t('bookCard.noCover')}</ThemedText>
+          <View style={[styles.thumbnail, styles.thumbnailPlaceholder, { backgroundColor: surfaceMutedColor }]}>
+            <ThemedText style={[Typography.caption, { color: textMutedColor }]}>
+              {t('bookCard.noCover')}
+            </ThemedText>
           </View>
         )}
         <View style={styles.headerText}>
-          <ThemedText style={[styles.bookTitle, { color: colors.textPrimary }]}>{book.title}</ThemedText>
+          <ThemedText style={[Typography.bookTitle, { color: textColor }]}>{book.title}</ThemedText>
           {book.authors.length > 0 && (
-            <ThemedText style={{ color: colors.textMuted }}>{book.authors.join(', ')}</ThemedText>
+            <ThemedText style={[Typography.metadata, { color: textMutedColor }]}>
+              {book.authors.join(', ')}
+            </ThemedText>
           )}
           {(book.publishedDate || book.pageCount != null) && (
-            <ThemedText style={{ color: colors.textMuted, fontSize: 13 }}>
+            <ThemedText style={[Typography.metadata, { color: textMutedColor }]}>
               {[
                 book.publishedDate,
                 book.pageCount != null
@@ -95,10 +103,10 @@ export default function BookDetailScreen() {
 
       {book.description && (
         <View style={styles.section}>
-          <ThemedText style={[styles.sectionLabel, { color: colors.textPrimary }]}>
+          <ThemedText style={[Typography.sectionTitle, { color: textColor }]}>
             {t('bookDetail.description')}
           </ThemedText>
-          <ThemedText style={{ color: colors.textMuted, lineHeight: 20 }}>
+          <ThemedText style={[Typography.body, { color: textMutedColor }]}>
             {sanitizeDescription(book.description)}
           </ThemedText>
         </View>
@@ -106,11 +114,11 @@ export default function BookDetailScreen() {
 
       <View style={styles.section}>
         <View style={styles.sectionHeaderRow}>
-          <ThemedText style={[styles.sectionLabel, { color: colors.textPrimary }]}>
+          <ThemedText style={[Typography.sectionTitle, { color: textColor }]}>
             {t('bookDetail.genres')}
           </ThemedText>
           <Pressable onPress={() => setGenreModalVisible(true)} hitSlop={8}>
-            <ThemedText style={{ color: colors.accent, fontWeight: '600' }}>
+            <ThemedText style={[Typography.button, { color: accentColor }]}>
               {t('bookDetail.editGenres')}
             </ThemedText>
           </Pressable>
@@ -118,18 +126,20 @@ export default function BookDetailScreen() {
 
         <View style={styles.genreChipRow}>
           {genres.length === 0 && (
-            <ThemedText style={{ color: colors.textMuted }}>{t('bookDetail.noGenres')}</ThemedText>
+            <ThemedText style={[Typography.body, { color: textMutedColor }]}>
+              {t('bookDetail.noGenres')}
+            </ThemedText>
           )}
           {visibleGenres.map((genre) => (
-            <View key={genre} style={[styles.genreChip, { backgroundColor: colors.accentSoft }]}>
-              <ThemedText style={[styles.genreChipText, { color: colors.accent }]}>{genre}</ThemedText>
+            <View key={genre} style={[styles.genreChip, { backgroundColor: accentSoftColor }]}>
+              <ThemedText style={[Typography.caption, { color: accentColor }]}>{genre}</ThemedText>
             </View>
           ))}
           {extraGenreCount > 0 && (
             <Pressable
               onPress={() => setGenreModalVisible(true)}
-              style={[styles.genreChip, { backgroundColor: colors.surfaceMuted }]}>
-              <ThemedText style={[styles.genreChipText, { color: colors.textMuted }]}>
+              style={[styles.genreChip, { backgroundColor: surfaceMutedColor }]}>
+              <ThemedText style={[Typography.caption, { color: textMutedColor }]}>
                 {t('bookDetail.moreGenres', { count: extraGenreCount })}
               </ThemedText>
             </Pressable>
@@ -138,9 +148,11 @@ export default function BookDetailScreen() {
       </View>
 
       <Pressable
-        style={[styles.deleteButton, { backgroundColor: colors.surfaceMuted }]}
+        style={[styles.deleteButton, { backgroundColor: surfaceMutedColor }]}
         onPress={handleDelete}>
-        <ThemedText style={{ color: '#C1442C', fontWeight: '600' }}>{t('bookDetail.remove')}</ThemedText>
+        <ThemedText style={[Typography.button, { color: dangerColor }]}>
+          {t('bookDetail.remove')}
+        </ThemedText>
       </Pressable>
 
       <Modal
@@ -150,20 +162,19 @@ export default function BookDetailScreen() {
         onRequestClose={() => setGenreModalVisible(false)}>
         <Pressable style={styles.backdrop} onPress={() => setGenreModalVisible(false)}>
           <Pressable
-            style={[styles.sheet, { backgroundColor: colors.surface }]}
+            style={[styles.sheet, { backgroundColor: surfaceColor }]}
             onPress={(e) => e.stopPropagation()}>
-            <ThemedText style={[styles.sheetTitle, { color: colors.textPrimary }]}>
+            <ThemedText style={[Typography.sectionTitle, { color: textColor }]}>
               {t('bookDetail.genres')}
             </ThemedText>
             <GenreEditor
               genres={genres}
               onChange={(updated) => updateGenres.mutate({ id: book.id, genres: updated })}
-              colors={colors}
             />
             <Pressable
               onPress={() => setGenreModalVisible(false)}
-              style={[styles.doneButton, { backgroundColor: colors.accent }]}>
-              <ThemedText style={{ color: '#fff', fontWeight: '600' }}>{t('common.done')}</ThemedText>
+              style={[styles.doneButton, { backgroundColor: accentColor }]}>
+              <ThemedText style={[Typography.button, { color: '#fff' }]}>{t('common.done')}</ThemedText>
             </Pressable>
           </Pressable>
         </Pressable>
@@ -199,11 +210,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 4,
   },
-  bookTitle: {
-    fontSize: 19,
-    fontWeight: '700',
-    lineHeight: 24,
-  },
   section: {
     gap: 8,
   },
@@ -211,10 +217,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-  },
-  sectionLabel: {
-    fontSize: 15,
-    fontWeight: '700',
   },
   genreChipRow: {
     flexDirection: 'row',
@@ -225,10 +227,6 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     paddingVertical: 6,
     paddingHorizontal: 12,
-  },
-  genreChipText: {
-    fontSize: 13,
-    fontWeight: '600',
   },
   deleteButton: {
     borderRadius: 10,
@@ -250,10 +248,6 @@ const styles = StyleSheet.create({
     paddingBottom: 32,
     gap: 16,
     maxHeight: '80%',
-  },
-  sheetTitle: {
-    fontSize: 16,
-    fontWeight: '700',
   },
   doneButton: {
     borderRadius: 10,

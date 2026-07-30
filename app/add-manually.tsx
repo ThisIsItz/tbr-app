@@ -4,15 +4,18 @@ import { Alert, Pressable, ScrollView, StyleSheet, TextInput, View } from 'react
 
 import { GenreEditor } from '@/components/genre-editor';
 import { ThemedText } from '@/components/themed-text';
-import { Palette } from '@/constants/palette';
+import { Typography } from '@/constants/theme';
 import { useAddBook } from '@/features/library/hooks';
-import { useAppColorScheme } from '@/hooks/use-app-color-scheme';
+import { useThemeColor } from '@/hooks/use-theme-color';
 import { useTranslation } from '@/hooks/use-translation';
 
 export default function AddManuallyScreen() {
-  const { colorScheme } = useAppColorScheme();
-  const colors = Palette[colorScheme];
   const { t } = useTranslation();
+  const backgroundColor = useThemeColor({}, 'background');
+  const surfaceMutedColor = useThemeColor({}, 'surfaceMuted');
+  const textColor = useThemeColor({}, 'text');
+  const textMutedColor = useThemeColor({}, 'textMuted');
+  const accentColor = useThemeColor({}, 'accent');
   const addBook = useAddBook();
 
   const [title, setTitle] = useState('');
@@ -51,56 +54,55 @@ export default function AddManuallyScreen() {
   }
 
   return (
-    <ScrollView
-      style={{ backgroundColor: colors.background }}
-      contentContainerStyle={styles.container}>
+    <ScrollView style={{ backgroundColor }} contentContainerStyle={styles.container}>
       <View style={styles.field}>
-        <ThemedText style={[styles.label, { color: colors.textPrimary }]}>
+        <ThemedText style={[Typography.caption, styles.label, { color: textColor }]}>
           {t('addManually.titleLabel')}
         </ThemedText>
         <TextInput
           value={title}
           onChangeText={setTitle}
           placeholder={t('addManually.titlePlaceholder')}
-          placeholderTextColor={colors.textMuted}
-          style={[styles.input, { color: colors.textPrimary, backgroundColor: colors.surfaceMuted }]}
+          placeholderTextColor={textMutedColor}
+          style={[Typography.body, styles.input, { color: textColor, backgroundColor: surfaceMutedColor }]}
           autoFocus
         />
       </View>
 
       <View style={styles.field}>
-        <ThemedText style={[styles.label, { color: colors.textPrimary }]}>
+        <ThemedText style={[Typography.caption, styles.label, { color: textColor }]}>
           {t('addManually.authorLabel')}
         </ThemedText>
         <TextInput
           value={authorsText}
           onChangeText={setAuthorsText}
           placeholder={t('addManually.authorPlaceholder')}
-          placeholderTextColor={colors.textMuted}
-          style={[styles.input, { color: colors.textPrimary, backgroundColor: colors.surfaceMuted }]}
+          placeholderTextColor={textMutedColor}
+          style={[Typography.body, styles.input, { color: textColor, backgroundColor: surfaceMutedColor }]}
         />
       </View>
 
       <View style={styles.field}>
-        <ThemedText style={[styles.label, { color: colors.textPrimary }]}>
+        <ThemedText style={[Typography.caption, styles.label, { color: textColor }]}>
           {t('addManually.genres')}
         </ThemedText>
-        <GenreEditor genres={genres} onChange={setGenres} colors={colors} />
+        <GenreEditor genres={genres} onChange={setGenres} />
       </View>
 
       <View style={styles.field}>
-        <ThemedText style={[styles.label, { color: colors.textPrimary }]}>
+        <ThemedText style={[Typography.caption, styles.label, { color: textColor }]}>
           {t('addManually.descriptionLabel')}
         </ThemedText>
         <TextInput
           value={description}
           onChangeText={setDescription}
           placeholder={t('addManually.descriptionPlaceholder')}
-          placeholderTextColor={colors.textMuted}
+          placeholderTextColor={textMutedColor}
           style={[
+            Typography.body,
             styles.input,
             styles.multilineInput,
-            { color: colors.textPrimary, backgroundColor: colors.surfaceMuted },
+            { color: textColor, backgroundColor: surfaceMutedColor },
           ]}
           multiline
           textAlignVertical="top"
@@ -109,37 +111,37 @@ export default function AddManuallyScreen() {
 
       <View style={styles.row}>
         <View style={[styles.field, styles.flexField]}>
-          <ThemedText style={[styles.label, { color: colors.textPrimary }]}>
+          <ThemedText style={[Typography.caption, styles.label, { color: textColor }]}>
             {t('addManually.publishedDateLabel')}
           </ThemedText>
           <TextInput
             value={publishedDate}
             onChangeText={setPublishedDate}
             placeholder={t('addManually.publishedDatePlaceholder')}
-            placeholderTextColor={colors.textMuted}
-            style={[styles.input, { color: colors.textPrimary, backgroundColor: colors.surfaceMuted }]}
+            placeholderTextColor={textMutedColor}
+            style={[Typography.body, styles.input, { color: textColor, backgroundColor: surfaceMutedColor }]}
           />
         </View>
         <View style={[styles.field, styles.flexField]}>
-          <ThemedText style={[styles.label, { color: colors.textPrimary }]}>
+          <ThemedText style={[Typography.caption, styles.label, { color: textColor }]}>
             {t('addManually.pageCountLabel')}
           </ThemedText>
           <TextInput
             value={pageCountText}
             onChangeText={setPageCountText}
             placeholder={t('addManually.pageCountPlaceholder')}
-            placeholderTextColor={colors.textMuted}
+            placeholderTextColor={textMutedColor}
             keyboardType="number-pad"
-            style={[styles.input, { color: colors.textPrimary, backgroundColor: colors.surfaceMuted }]}
+            style={[Typography.body, styles.input, { color: textColor, backgroundColor: surfaceMutedColor }]}
           />
         </View>
       </View>
 
       <Pressable
-        style={[styles.saveButton, { backgroundColor: colors.accent }]}
+        style={[styles.saveButton, { backgroundColor: accentColor }]}
         onPress={handleSave}
         disabled={addBook.isPending}>
-        <ThemedText style={styles.saveButtonText}>
+        <ThemedText style={[Typography.button, styles.saveButtonText]}>
           {addBook.isPending ? t('addManually.saving') : t('addManually.save')}
         </ThemedText>
       </Pressable>
@@ -163,7 +165,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   label: {
-    fontSize: 14,
     fontWeight: '700',
   },
   input: {
@@ -171,7 +172,6 @@ const styles = StyleSheet.create({
     minHeight: 44,
     paddingVertical: 10,
     paddingHorizontal: 12,
-    fontSize: 16,
   },
   multilineInput: {
     minHeight: 96,
@@ -187,7 +187,5 @@ const styles = StyleSheet.create({
   },
   saveButtonText: {
     color: '#fff',
-    fontWeight: '600',
-    fontSize: 16,
   },
 });
