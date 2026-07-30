@@ -105,6 +105,10 @@ function RootLayoutNav() {
             options={{ title: t('screenTitles.addToTbr'), presentation: 'modal', ...warmHeaderOptions }}
           />
           <Stack.Screen
+            name="add-manually"
+            options={{ title: t('screenTitles.addManually'), presentation: 'modal', ...warmHeaderOptions }}
+          />
+          <Stack.Screen
             name="settings"
             options={{ title: t('screenTitles.settings'), ...warmHeaderOptions }}
           />

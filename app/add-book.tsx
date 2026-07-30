@@ -60,7 +60,7 @@ export default function AddBookScreen() {
         </Pressable>
         <Pressable
           style={[styles.quickAction, { backgroundColor: colors.surfaceMuted }]}
-          onPress={() => showComingSoon(t('search.addManually'))}>
+          onPress={() => router.push('/add-manually')}>
           <ThemedText style={{ color: colors.textPrimary, fontWeight: '600' }}>
             {t('search.addManually')}
           </ThemedText>

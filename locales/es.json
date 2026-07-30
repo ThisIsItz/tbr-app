@@ -39,6 +39,22 @@
     "save": "Guardar en mi TBR",
     "saving": "Guardando…"
   },
+  "addManually": {
+    "titleLabel": "Título",
+    "titlePlaceholder": "Título del libro",
+    "titleRequiredError": "Introduce un título.",
+    "authorLabel": "Autor(es)",
+    "authorPlaceholder": "Separa varios autores con comas",
+    "genres": "Géneros",
+    "descriptionLabel": "Descripción",
+    "descriptionPlaceholder": "Opcional",
+    "publishedDateLabel": "Fecha de publicación",
+    "publishedDatePlaceholder": "p. ej. 2020",
+    "pageCountLabel": "Número de páginas",
+    "pageCountPlaceholder": "Opcional",
+    "save": "Añadir a mi TBR",
+    "saving": "Añadiendo…"
+  },
   "bookDetail": {
     "description": "Descripción",
     "genres": "Géneros",
@@ -92,6 +108,7 @@
     "bookDetails": "Detalles del libro",
     "addBook": "Añadir un libro",
     "addToTbr": "Añadir a mi TBR",
+    "addManually": "Añadir manualmente",
     "settings": "Ajustes"
   }
 }
