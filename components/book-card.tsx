@@ -1,5 +1,4 @@
-import { Image } from 'expo-image';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Image, Pressable, StyleSheet, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
 import type { PaletteColors } from '@/constants/palette';
@@ -45,7 +44,12 @@ export function BookCard({
         },
       ]}>
       {coverUrl ? (
-        <Image source={{ uri: coverUrl }} style={styles.cover} contentFit="cover" />
+        <Image
+          source={{ uri: coverUrl }}
+          style={styles.cover}
+          resizeMode="cover"
+          onError={(e) => console.warn('[BookCard] cover failed to load:', coverUrl, e.nativeEvent.error)}
+        />
       ) : (
         <View style={[styles.cover, styles.coverPlaceholder, { backgroundColor: colors.surfaceMuted }]}>
           <ThemedText style={{ color: colors.textMuted, fontSize: 11 }}>No cover</ThemedText>

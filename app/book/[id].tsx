@@ -1,6 +1,5 @@
-import { Image } from 'expo-image';
 import { router, useLocalSearchParams } from 'expo-router';
-import { Alert, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { Alert, Image, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 
 import { GenreEditor } from '@/components/genre-editor';
 import { ThemedText } from '@/components/themed-text';
@@ -44,7 +43,14 @@ export default function BookDetailScreen() {
       contentContainerStyle={styles.container}>
       <View style={styles.header}>
         {coverUrl ? (
-          <Image source={{ uri: coverUrl }} style={styles.thumbnail} contentFit="cover" />
+          <Image
+            source={{ uri: coverUrl }}
+            style={styles.thumbnail}
+            resizeMode="cover"
+            onError={(e) =>
+              console.warn('[BookDetail] cover failed to load:', coverUrl, e.nativeEvent.error)
+            }
+          />
         ) : (
           <View style={[styles.thumbnail, styles.thumbnailPlaceholder, { backgroundColor: colors.surfaceMuted }]}>
             <ThemedText style={{ color: colors.textMuted, fontSize: 11 }}>No cover</ThemedText>
