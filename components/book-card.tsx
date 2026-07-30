@@ -1,6 +1,7 @@
 import { Image, Pressable, StyleSheet, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
+import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Typography } from '@/constants/theme';
 import { useThemeColor } from '@/hooks/use-theme-color';
 import { useTranslation } from '@/hooks/use-translation';
@@ -78,25 +79,34 @@ export function BookCard({
             <ThemedText numberOfLines={1} style={[Typography.metadata, { color: textMutedColor }]}>
               {author || t('bookCard.unknownAuthor')}
             </ThemedText>
-            {!!genre && (
-              <ThemedText numberOfLines={1} style={[Typography.caption, { color: textMutedColor }]}>
-                {genre}
-              </ThemedText>
-            )}
-            {action && (
-              <Pressable
-                onPress={action.onPress}
-                disabled={action.disabled}
-                style={[
-                  styles.compactActionButton,
-                  { backgroundColor: action.disabled ? surfaceMutedColor : accentColor },
-                ]}>
-                <ThemedText
-                  style={[Typography.button, { color: action.disabled ? textMutedColor : '#fff' }]}>
-                  {action.label}
-                </ThemedText>
-              </Pressable>
-            )}
+            <View style={styles.resultFooterRow}>
+              {!!genre && (
+                <View style={[styles.tag, { backgroundColor: accentSoftColor }]}>
+                  <ThemedText numberOfLines={1} style={[Typography.caption, { color: accentColor }]}>
+                    {genre}
+                  </ThemedText>
+                </View>
+              )}
+              {action && (
+                <Pressable
+                  onPress={action.onPress}
+                  disabled={action.disabled}
+                  hitSlop={10}
+                  style={[
+                    styles.compactActionButton,
+                    { backgroundColor: action.disabled ? surfaceMutedColor : accentColor },
+                  ]}>
+                  <ThemedText
+                    style={[
+                      Typography.caption,
+                      styles.compactActionText,
+                      { color: action.disabled ? textMutedColor : '#fff' },
+                    ]}>
+                    {action.label}
+                  </ThemedText>
+                </Pressable>
+              )}
+            </View>
           </>
         ) : (
           <>
@@ -124,6 +134,8 @@ export function BookCard({
           </>
         )}
       </View>
+
+      {!isResult && <IconSymbol name="chevron.right" size={20} color={textMutedColor} style={styles.chevron} />}
     </Pressable>
   );
 }
@@ -131,6 +143,7 @@ export function BookCard({
 const styles = StyleSheet.create({
   card: {
     flexDirection: 'row',
+    alignItems: 'center',
     borderRadius: 14,
     padding: 10,
     gap: 12,
@@ -168,14 +181,23 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     maxWidth: '100%',
   },
-  compactActionButton: {
-    alignSelf: 'flex-end',
+  resultFooterRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
     marginTop: 6,
+  },
+  compactActionButton: {
+    marginLeft: 'auto',
     borderRadius: 8,
-    paddingHorizontal: 14,
-    minHeight: 44,
-    minWidth: 44,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  compactActionText: {
+    fontWeight: '700',
+  },
+  chevron: {
+    alignSelf: 'center',
   },
 });
