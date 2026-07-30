@@ -1,41 +1,59 @@
-import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import { useMemo, useState } from 'react';
-import { ActivityIndicator, FlatList, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, FlatList, Pressable, StyleSheet, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { BookCard } from '@/components/book-card';
+import { FilterSheet } from '@/components/filter-sheet';
 import { ThemedText } from '@/components/themed-text';
-import { Colors } from '@/constants/theme';
+import { IconSymbol } from '@/components/ui/icon-symbol';
+import { Palette } from '@/constants/palette';
 import { useBooks } from '@/features/library/hooks';
 import { useColorScheme } from '@/hooks/use-color-scheme';
-import { READING_STATUS_LABELS, READING_STATUSES, type Book, type ReadingStatus } from '@/types/book';
+import { READING_STATUS_LABELS, type Book } from '@/types/book';
 
-type StatusFilter = ReadingStatus | 'all';
 type SortBy = 'title' | 'author';
+
+const SORT_OPTIONS = [
+  { value: 'title', label: 'Title (A–Z)' },
+  { value: 'author', label: 'Author (A–Z)' },
+];
 
 export default function MyTbrScreen() {
   const colorScheme = useColorScheme() ?? 'light';
-  const colors = Colors[colorScheme];
+  const colors = Palette[colorScheme];
 
   const { data: books, isLoading } = useBooks();
 
-  const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
+  const [searchQuery, setSearchQuery] = useState('');
   const [genreFilter, setGenreFilter] = useState<string | null>(null);
   const [authorFilter, setAuthorFilter] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<SortBy>('title');
 
   const allGenres = useMemo(
-    () => Array.from(new Set(books?.flatMap((book) => book.genres) ?? [])).sort((a, b) => a.localeCompare(b)),
+    () =>
+      Array.from(new Set(books?.flatMap((book) => book.genres) ?? [])).sort((a, b) => a.localeCompare(b)),
     [books],
   );
   const allAuthors = useMemo(
-    () => Array.from(new Set(books?.flatMap((book) => book.authors) ?? [])).sort((a, b) => a.localeCompare(b)),
+    () =>
+      Array.from(new Set(books?.flatMap((book) => book.authors) ?? [])).sort((a, b) => a.localeCompare(b)),
     [books],
   );
 
+  const hasActiveFilters = !!genreFilter || !!authorFilter || searchQuery.trim().length > 0;
+
   const filteredBooks = useMemo(() => {
     let list = books ?? [];
-    if (statusFilter !== 'all') list = list.filter((book) => book.status === statusFilter);
+
+    const query = searchQuery.trim().toLowerCase();
+    if (query) {
+      list = list.filter(
+        (book) =>
+          book.title.toLowerCase().includes(query) ||
+          book.authors.some((author) => author.toLowerCase().includes(query)),
+      );
+    }
     if (genreFilter) list = list.filter((book) => book.genres.includes(genreFilter));
     if (authorFilter) list = list.filter((book) => book.authors.includes(authorFilter));
 
@@ -43,12 +61,18 @@ export default function MyTbrScreen() {
       if (sortBy === 'title') return a.title.localeCompare(b.title);
       return (a.authors[0] ?? '').localeCompare(b.authors[0] ?? '');
     });
-  }, [books, statusFilter, genreFilter, authorFilter, sortBy]);
+  }, [books, searchQuery, genreFilter, authorFilter, sortBy]);
+
+  function clearFilters() {
+    setSearchQuery('');
+    setGenreFilter(null);
+    setAuthorFilter(null);
+  }
 
   if (isLoading) {
     return (
       <SafeAreaView style={[styles.centered, { backgroundColor: colors.background }]} edges={['top']}>
-        <ActivityIndicator />
+        <ActivityIndicator color={colors.accent} />
       </SafeAreaView>
     );
   }
@@ -57,126 +81,96 @@ export default function MyTbrScreen() {
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top']}>
-      <View style={styles.filters}>
-        <ChipRow
-          options={[{ value: 'all', label: 'All' }, ...READING_STATUSES.map((status) => ({
-            value: status,
-            label: READING_STATUS_LABELS[status],
-          }))]}
-          selected={statusFilter}
-          onSelect={(value) => setStatusFilter(value as StatusFilter)}
-          colors={colors}
+      <View style={styles.header}>
+        <ThemedText style={[styles.title, { color: colors.textPrimary }]}>My TBR</ThemedText>
+        <Pressable
+          onPress={() => router.push('/add-book')}
+          hitSlop={8}
+          style={[styles.addButton, { backgroundColor: colors.accent }]}>
+          <IconSymbol name="plus.circle.fill" size={22} color="#fff" />
+        </Pressable>
+      </View>
+
+      <View style={[styles.searchBox, { backgroundColor: colors.surfaceMuted }]}>
+        <TextInput
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          placeholder="Search your TBR"
+          placeholderTextColor={colors.textMuted}
+          style={[styles.searchInput, { color: colors.textPrimary }]}
+          autoCorrect={false}
         />
+      </View>
 
-        {allGenres.length > 0 && (
-          <ChipRow
-            options={[{ value: null, label: 'All genres' }, ...allGenres.map((g) => ({ value: g, label: g }))]}
-            selected={genreFilter}
-            onSelect={(value) => setGenreFilter(value as string | null)}
-            colors={colors}
-          />
-        )}
-
-        {allAuthors.length > 0 && (
-          <ChipRow
-            options={[{ value: null, label: 'All authors' }, ...allAuthors.map((a) => ({ value: a, label: a }))]}
-            selected={authorFilter}
-            onSelect={(value) => setAuthorFilter(value as string | null)}
-            colors={colors}
-          />
-        )}
-
-        <View style={styles.sortRow}>
-          <ThemedText style={{ opacity: 0.7 }}>Sort by:</ThemedText>
-          <Pressable onPress={() => setSortBy('title')}>
-            <ThemedText style={sortBy === 'title' ? { color: colors.tint, fontWeight: '600' } : undefined}>
-              Title
-            </ThemedText>
-          </Pressable>
-          <Pressable onPress={() => setSortBy('author')}>
-            <ThemedText style={sortBy === 'author' ? { color: colors.tint, fontWeight: '600' } : undefined}>
-              Author
-            </ThemedText>
-          </Pressable>
-        </View>
+      <View style={styles.filterRow}>
+        <FilterSheet
+          label="Genre"
+          colors={colors}
+          selected={genreFilter}
+          selectedLabel={genreFilter}
+          disabled={allGenres.length === 0}
+          onSelect={setGenreFilter}
+          options={[{ value: null, label: 'All genres' }, ...allGenres.map((g) => ({ value: g, label: g }))]}
+        />
+        <FilterSheet
+          label="Author"
+          colors={colors}
+          selected={authorFilter}
+          selectedLabel={authorFilter}
+          disabled={allAuthors.length === 0}
+          onSelect={setAuthorFilter}
+          options={[{ value: null, label: 'All authors' }, ...allAuthors.map((a) => ({ value: a, label: a }))]}
+        />
+        <FilterSheet
+          label="Sort"
+          colors={colors}
+          staticLabel
+          selected={sortBy}
+          onSelect={(value) => setSortBy((value as SortBy) ?? 'title')}
+          options={SORT_OPTIONS}
+        />
       </View>
 
       {isLibraryEmpty ? (
         <View style={styles.centered}>
-          <ThemedText style={{ textAlign: 'center' }}>
-            Your TBR is empty.{'\n'}Search for books to add them.
+          <ThemedText style={[styles.emptyTitle, { color: colors.textPrimary }]}>
+            Nothing saved yet
+          </ThemedText>
+          <ThemedText style={[styles.emptyText, { color: colors.textMuted }]}>
+            Tap + to add a book you want to read.
           </ThemedText>
         </View>
       ) : filteredBooks.length === 0 ? (
         <View style={styles.centered}>
-          <ThemedText>No books match these filters.</ThemedText>
+          <ThemedText style={[styles.emptyTitle, { color: colors.textPrimary }]}>No books match</ThemedText>
+          <ThemedText style={[styles.emptyText, { color: colors.textMuted }]}>
+            Try adjusting your search or filters.
+          </ThemedText>
+          {hasActiveFilters && (
+            <Pressable onPress={clearFilters} style={[styles.clearButton, { backgroundColor: colors.accent }]}>
+              <ThemedText style={{ color: '#fff', fontWeight: '600' }}>Clear filters</ThemedText>
+            </Pressable>
+          )}
         </View>
       ) : (
         <FlatList
           data={filteredBooks}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item: Book) => item.id}
           contentContainerStyle={styles.listContent}
-          renderItem={({ item }) => <BookRow book={item} colors={colors} />}
+          renderItem={({ item }) => (
+            <BookCard
+              title={item.title}
+              author={item.authors.join(', ') || null}
+              genre={item.genres[0] ?? null}
+              statusLabel={READING_STATUS_LABELS[item.status]}
+              thumbnailUrl={item.thumbnailUrl}
+              onPress={() => router.push(`/book/${item.id}`)}
+              colors={colors}
+            />
+          )}
         />
       )}
     </SafeAreaView>
-  );
-}
-
-function ChipRow({
-  options,
-  selected,
-  onSelect,
-  colors,
-}: {
-  options: { value: string | null; label: string }[];
-  selected: string | null;
-  onSelect: (value: string | null) => void;
-  colors: (typeof Colors)['light'];
-}) {
-  return (
-    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chipRow}>
-      {options.map((option) => {
-        const isActive = option.value === selected;
-        return (
-          <Pressable
-            key={option.label}
-            onPress={() => onSelect(option.value)}
-            style={[
-              styles.chip,
-              { borderColor: colors.icon },
-              isActive && { backgroundColor: colors.tint, borderColor: colors.tint },
-            ]}>
-            <ThemedText style={isActive ? styles.chipTextActive : undefined}>{option.label}</ThemedText>
-          </Pressable>
-        );
-      })}
-    </ScrollView>
-  );
-}
-
-function BookRow({ book, colors }: { book: Book; colors: (typeof Colors)['light'] }) {
-  return (
-    <Pressable style={styles.row} onPress={() => router.push(`/book/${book.id}`)}>
-      {book.thumbnailUrl ? (
-        <Image source={{ uri: book.thumbnailUrl }} style={styles.thumbnail} contentFit="cover" />
-      ) : (
-        <View style={[styles.thumbnail, { borderColor: colors.icon, borderWidth: 1 }]} />
-      )}
-      <View style={styles.rowText}>
-        <ThemedText type="defaultSemiBold" numberOfLines={2}>
-          {book.title}
-        </ThemedText>
-        {book.authors.length > 0 && (
-          <ThemedText numberOfLines={1} style={{ opacity: 0.7 }}>
-            {book.authors.join(', ')}
-          </ThemedText>
-        )}
-        <ThemedText style={[styles.statusBadge, { color: colors.tint }]}>
-          {READING_STATUS_LABELS[book.status]}
-        </ThemedText>
-      </View>
-    </Pressable>
   );
 }
 
@@ -189,51 +183,62 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    gap: 6,
+    paddingHorizontal: 24,
   },
-  filters: {
-    gap: 8,
-    paddingTop: 8,
-    paddingBottom: 12,
-  },
-  chipRow: {
-    gap: 8,
-  },
-  chip: {
-    borderWidth: 1,
-    borderRadius: 16,
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-  },
-  chipTextActive: {
-    color: '#fff',
-    fontWeight: '600',
-  },
-  sortRow: {
+  header: {
+    paddingTop: 12,
     flexDirection: 'row',
-    gap: 12,
     alignItems: 'center',
-    paddingTop: 4,
+    justifyContent: 'space-between',
+  },
+  title: {
+    fontSize: 26,
+    fontWeight: '800',
+  },
+  addButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  searchBox: {
+    marginTop: 14,
+    borderRadius: 12,
+    minHeight: 44,
+    justifyContent: 'center',
+    paddingHorizontal: 14,
+  },
+  searchInput: {
+    fontSize: 15,
+    paddingVertical: 8,
+  },
+  filterRow: {
+    flexDirection: 'row',
+    gap: 8,
+    marginTop: 12,
+    paddingBottom: 14,
+  },
+  emptyTitle: {
+    fontSize: 17,
+    fontWeight: '700',
+    textAlign: 'center',
+  },
+  emptyText: {
+    fontSize: 14,
+    textAlign: 'center',
+  },
+  clearButton: {
+    marginTop: 8,
+    borderRadius: 10,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    minHeight: 44,
+    justifyContent: 'center',
   },
   listContent: {
-    gap: 12,
+    gap: 10,
     paddingBottom: 24,
-  },
-  row: {
-    flexDirection: 'row',
-    gap: 12,
-  },
-  thumbnail: {
-    width: 48,
-    height: 72,
-    borderRadius: 4,
-  },
-  rowText: {
-    flex: 1,
-    gap: 2,
-  },
-  statusBadge: {
-    fontSize: 13,
-    fontWeight: '600',
-    marginTop: 2,
   },
 });

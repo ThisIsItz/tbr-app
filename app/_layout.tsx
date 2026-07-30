@@ -47,6 +47,7 @@ export default function RootLayout() {
         <Stack>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen name="book/[id]" options={{ title: 'Book Details' }} />
+          <Stack.Screen name="add-book" options={{ title: 'Add a Book', presentation: 'modal' }} />
           <Stack.Screen name="add/[id]" options={{ title: 'Add to My TBR', presentation: 'modal' }} />
         </Stack>
         <StatusBar style="auto" />

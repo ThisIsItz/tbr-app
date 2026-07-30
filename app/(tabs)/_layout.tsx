@@ -6,6 +6,10 @@ import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 
+// Single-tab today by product design (the TBR list is the whole app; adding
+// a book is a modal, not a tab — see app/add-book.tsx). The Tabs navigator
+// is kept in place, with its bar hidden, so a second tab can be reintroduced
+// later by removing `tabBarStyle` below and adding one more `Tabs.Screen`.
 export default function TabLayout() {
   const colorScheme = useColorScheme();
 
@@ -15,19 +19,13 @@ export default function TabLayout() {
         tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
         headerShown: false,
         tabBarButton: HapticTab,
+        tabBarStyle: { display: 'none' },
       }}>
       <Tabs.Screen
         name="index"
         options={{
           title: 'My TBR',
           tabBarIcon: ({ color }) => <IconSymbol size={28} name="books.vertical.fill" color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="search"
-        options={{
-          title: 'Search',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="magnifyingglass" color={color} />,
         }}
       />
     </Tabs>
