@@ -93,6 +93,8 @@
   "recognizeCover": {
     "explainerTitle": "Scan a book cover",
     "explainerBody": "Take a photo or choose one from your gallery. We'll read the text on the cover and search for matching books — you'll always confirm before anything is saved.",
+    "cameraPermissionTitle": "Camera access needed",
+    "cameraPermissionBody": "To take a photo of a cover, this app needs permission to use your camera.",
     "takePhoto": "Take Photo",
     "chooseFromGallery": "Choose from Gallery",
     "extracting": "Reading the cover…",
@@ -107,6 +109,7 @@
     "choosePhoto": "Choose Another Photo",
     "searchManually": "Search Manually",
     "matchesLabel": "Possible matches",
+    "noneOfThese": "None of these — Add Manually",
     "noMatchesTitle": "No matches found",
     "noMatchesBody": "We couldn't find a book matching the detected text. Edit the title or author above and try again, or add the book manually.",
     "noTextTitle": "Couldn't read this cover",

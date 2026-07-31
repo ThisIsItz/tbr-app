@@ -3,7 +3,9 @@ import { router, Stack } from 'expo-router';
 import { useState } from 'react';
 import {
   ActivityIndicator,
+  Alert,
   Image,
+  Linking,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -66,20 +68,51 @@ export default function RecognizeCoverScreen() {
   const savedGoogleIds = new Set(libraryBooks?.map((book) => book.googleBooksId).filter(Boolean));
 
   async function handlePick(source: 'camera' | 'gallery') {
-    const options: ImagePicker.ImagePickerOptions = { mediaTypes: ['images'], quality: 0.7 };
-    const result =
-      source === 'camera'
-        ? await ImagePicker.launchCameraAsync(options)
-        : await ImagePicker.launchImageLibraryAsync(options);
-    if (result.canceled) return;
+    try {
+      if (source === 'camera' && !(await ensureCameraPermission())) {
+        return;
+      }
 
-    const uri = result.assets[0]?.uri;
-    if (!uri) return;
+      const options: ImagePicker.ImagePickerOptions = { mediaTypes: ['images'], quality: 0.7 };
+      const result =
+        source === 'camera'
+          ? await ImagePicker.launchCameraAsync(options)
+          : await ImagePicker.launchImageLibraryAsync(options);
+      if (result.canceled) return;
 
-    setImageUri(uri);
-    setMatches([]);
-    setSearchStatus('idle');
-    await recognizeAndSearch(uri);
+      const uri = result.assets[0]?.uri;
+      if (!uri) return;
+
+      setImageUri(uri);
+      setMatches([]);
+      setSearchStatus('idle');
+      await recognizeAndSearch(uri);
+    } catch (error) {
+      // Covers permission rejections and any other native picker failure —
+      // without this, an unhandled rejection here crashes the whole screen.
+      console.warn('[RecognizeCover] image pick failed:', error);
+      Alert.alert(t('common.genericError'));
+    }
+  }
+
+  // Checks (and if needed, requests) camera permission up front so a denial
+  // shows a friendly prompt instead of letting launchCameraAsync reject.
+  async function ensureCameraPermission(): Promise<boolean> {
+    const current = await ImagePicker.getCameraPermissionsAsync();
+    if (current.granted) return true;
+
+    const requested = current.canAskAgain ? await ImagePicker.requestCameraPermissionsAsync() : current;
+    if (requested.granted) return true;
+
+    Alert.alert(
+      t('recognizeCover.cameraPermissionTitle'),
+      t('recognizeCover.cameraPermissionBody'),
+      [
+        { text: t('common.cancel'), style: 'cancel' },
+        { text: t('scanIsbn.openSettings'), onPress: () => Linking.openSettings() },
+      ],
+    );
+    return false;
   }
 
   async function recognizeAndSearch(uri: string) {
@@ -152,7 +185,13 @@ export default function RecognizeCoverScreen() {
       keyboardShouldPersistTaps="handled">
       <Stack.Screen options={{ title: t('screenTitles.recognizeCover') }} />
 
-      {imageUri && <Image source={{ uri: imageUri }} style={styles.preview} resizeMode="cover" />}
+      {imageUri && (
+        <Image
+          source={{ uri: imageUri }}
+          style={[styles.preview, { backgroundColor: surfaceMutedColor }]}
+          resizeMode="contain"
+        />
+      )}
 
       {stage === 'idle' && (
         <View style={styles.section}>
@@ -346,6 +385,13 @@ export default function RecognizeCoverScreen() {
                   );
                 })}
               </View>
+              <Pressable
+                style={[styles.secondaryButton, { backgroundColor: surfaceMutedColor }]}
+                onPress={goToAddManually}>
+                <ThemedText style={[Typography.button, { color: textColor }]}>
+                  {t('recognizeCover.noneOfThese')}
+                </ThemedText>
+              </Pressable>
             </View>
           )}
 
@@ -357,6 +403,13 @@ export default function RecognizeCoverScreen() {
               <ThemedText style={[Typography.body, { color: textMutedColor }]}>
                 {t('recognizeCover.noMatchesBody')}
               </ThemedText>
+              <Pressable
+                style={[styles.primaryButton, { backgroundColor: accentColor }]}
+                onPress={goToAddManually}>
+                <ThemedText style={[Typography.button, { color: '#fff' }]}>
+                  {t('search.addManually')}
+                </ThemedText>
+              </Pressable>
             </View>
           )}
 
@@ -399,7 +452,7 @@ const styles = StyleSheet.create({
   },
   preview: {
     width: '100%',
-    height: 220,
+    height: 320,
     borderRadius: 14,
   },
   section: {

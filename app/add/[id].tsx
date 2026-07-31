@@ -66,7 +66,10 @@ export default function AddBookScreen() {
       publishedDate: publishedDate ?? null,
       pageCount: pageCount ?? null,
     });
-    router.back();
+    // Collapse back to the main TBR screen regardless of how deep this
+    // screen was reached (search, scan, or cover recognition), rather than
+    // just popping one step back into an intermediate modal.
+    router.dismissTo('/');
   }
 
   return (

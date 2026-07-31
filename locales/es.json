@@ -93,6 +93,8 @@
   "recognizeCover": {
     "explainerTitle": "Escanea la portada de un libro",
     "explainerBody": "Haz una foto o elige una de tu galería. Leeremos el texto de la portada y buscaremos libros que coincidan — siempre confirmarás antes de guardar nada.",
+    "cameraPermissionTitle": "Se necesita acceso a la cámara",
+    "cameraPermissionBody": "Para hacer una foto de una portada, esta app necesita permiso para usar tu cámara.",
     "takePhoto": "Hacer foto",
     "chooseFromGallery": "Elegir de la galería",
     "extracting": "Leyendo la portada…",
@@ -107,6 +109,7 @@
     "choosePhoto": "Elegir otra foto",
     "searchManually": "Buscar manualmente",
     "matchesLabel": "Posibles coincidencias",
+    "noneOfThese": "Ninguno de estos — Añadir manualmente",
     "noMatchesTitle": "No se encontraron coincidencias",
     "noMatchesBody": "No encontramos ningún libro que coincida con el texto detectado. Edita el título o el autor arriba e inténtalo de nuevo, o añade el libro manualmente.",
     "noTextTitle": "No se pudo leer esta portada",
