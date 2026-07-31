@@ -26,6 +26,7 @@
   "search": {
     "placeholder": "Busca por título, autor o ISBN",
     "scanIsbn": "Escanear ISBN",
+    "scanCover": "Escanear portada",
     "addManually": "Añadir manualmente",
     "emptyTitle": "Busca un libro",
     "emptyText": "Busca por título, autor o ISBN para añadirlo a tu TBR.",
@@ -49,6 +50,7 @@
     "authorLabel": "Autor(es)",
     "authorPlaceholder": "Separa varios autores con comas",
     "genres": "Géneros",
+    "addGenres": "+ Añadir géneros",
     "descriptionLabel": "Descripción",
     "descriptionPlaceholder": "Opcional",
     "publishedDateLabel": "Fecha de publicación",
@@ -87,6 +89,30 @@
     "notFoundTitle": "Sin coincidencias",
     "notFoundBody": "No encontramos ningún libro para este código de barras.",
     "scanAgain": "Escanear de nuevo"
+  },
+  "recognizeCover": {
+    "explainerTitle": "Escanea la portada de un libro",
+    "explainerBody": "Haz una foto o elige una de tu galería. Leeremos el texto de la portada y buscaremos libros que coincidan — siempre confirmarás antes de guardar nada.",
+    "takePhoto": "Hacer foto",
+    "chooseFromGallery": "Elegir de la galería",
+    "extracting": "Leyendo la portada…",
+    "searching": "Buscando en Google Books…",
+    "detectedTextLabel": "Texto detectado",
+    "titleLabel": "Título",
+    "titlePlaceholder": "Título detectado",
+    "authorLabel": "Autor",
+    "authorPlaceholder": "Autor detectado",
+    "searchAgain": "Buscar de nuevo",
+    "retakePhoto": "Repetir foto",
+    "choosePhoto": "Elegir otra foto",
+    "searchManually": "Buscar manualmente",
+    "matchesLabel": "Posibles coincidencias",
+    "noMatchesTitle": "No se encontraron coincidencias",
+    "noMatchesBody": "No encontramos ningún libro que coincida con el texto detectado. Edita el título o el autor arriba e inténtalo de nuevo, o añade el libro manualmente.",
+    "noTextTitle": "No se pudo leer esta portada",
+    "noTextBody": "Prueba con mejor iluminación y sujeta la cámara firme y recta sobre la portada.",
+    "unsupportedTitle": "El escaneo de portadas no está disponible",
+    "unsupportedBody": "Este dispositivo no admite reconocimiento de texto en el propio dispositivo. Aun así puedes buscar o añadir el libro manualmente."
   },
   "genreEditor": {
     "empty": "Aún no hay géneros — añade uno abajo.",
@@ -128,6 +154,7 @@
     "addManually": "Añadir manualmente",
     "editBook": "Editar libro",
     "scanIsbn": "Escanear ISBN",
+    "recognizeCover": "Escanear portada",
     "settings": "Ajustes"
   }
 }

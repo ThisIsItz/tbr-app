@@ -26,6 +26,7 @@
   "search": {
     "placeholder": "Search by title, author, or ISBN",
     "scanIsbn": "Scan ISBN",
+    "scanCover": "Scan Cover",
     "addManually": "Add Manually",
     "emptyTitle": "Find a book",
     "emptyText": "Search by title, author, or ISBN to add it to your TBR.",
@@ -49,6 +50,7 @@
     "authorLabel": "Author(s)",
     "authorPlaceholder": "Separate multiple authors with commas",
     "genres": "Genres",
+    "addGenres": "+ Add genres",
     "descriptionLabel": "Description",
     "descriptionPlaceholder": "Optional",
     "publishedDateLabel": "Published date",
@@ -87,6 +89,30 @@
     "notFoundTitle": "No match found",
     "notFoundBody": "We couldn't find a book for this barcode.",
     "scanAgain": "Scan Again"
+  },
+  "recognizeCover": {
+    "explainerTitle": "Scan a book cover",
+    "explainerBody": "Take a photo or choose one from your gallery. We'll read the text on the cover and search for matching books — you'll always confirm before anything is saved.",
+    "takePhoto": "Take Photo",
+    "chooseFromGallery": "Choose from Gallery",
+    "extracting": "Reading the cover…",
+    "searching": "Searching Google Books…",
+    "detectedTextLabel": "Detected text",
+    "titleLabel": "Title",
+    "titlePlaceholder": "Detected title",
+    "authorLabel": "Author",
+    "authorPlaceholder": "Detected author",
+    "searchAgain": "Search Again",
+    "retakePhoto": "Retake Photo",
+    "choosePhoto": "Choose Another Photo",
+    "searchManually": "Search Manually",
+    "matchesLabel": "Possible matches",
+    "noMatchesTitle": "No matches found",
+    "noMatchesBody": "We couldn't find a book matching the detected text. Edit the title or author above and try again, or add the book manually.",
+    "noTextTitle": "Couldn't read this cover",
+    "noTextBody": "Try better lighting and hold the camera steady and straight over the cover.",
+    "unsupportedTitle": "Cover scanning isn't available",
+    "unsupportedBody": "This device doesn't support on-device text recognition. You can still search or add the book manually."
   },
   "genreEditor": {
     "empty": "No genres yet — add one below.",
@@ -128,6 +154,7 @@
     "addManually": "Add Manually",
     "editBook": "Edit Book",
     "scanIsbn": "Scan ISBN",
+    "recognizeCover": "Scan Cover",
     "settings": "Settings"
   }
 }

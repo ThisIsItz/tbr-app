@@ -59,6 +59,13 @@ export default function AddBookScreen() {
         </Pressable>
         <Pressable
           style={[styles.quickAction, { backgroundColor: surfaceMutedColor }]}
+          onPress={() => router.push('/recognize-cover')}>
+          <ThemedText style={[Typography.button, { color: textColor }]}>
+            {t('search.scanCover')}
+          </ThemedText>
+        </Pressable>
+        <Pressable
+          style={[styles.quickAction, { backgroundColor: surfaceMutedColor }]}
           onPress={() => router.push('/add-manually')}>
           <ThemedText style={[Typography.button, { color: textColor }]}>
             {t('search.addManually')}
