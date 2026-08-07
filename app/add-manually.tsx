@@ -28,10 +28,11 @@ import { deleteLocalImage, persistLocalImage } from '@/lib/local-image';
 const NARROW_SCREEN_WIDTH = 360;
 
 export default function AddManuallyScreen() {
-  const { id, prefillTitle, prefillAuthor } = useLocalSearchParams<{
+  const { id, prefillTitle, prefillAuthor, prefillCoverUri } = useLocalSearchParams<{
     id?: string;
     prefillTitle?: string;
     prefillAuthor?: string;
+    prefillCoverUri?: string;
   }>();
   const isEditing = !!id;
   const { t } = useTranslation();
@@ -54,9 +55,11 @@ export default function AddManuallyScreen() {
 
   const [isPrefilled, setIsPrefilled] = useState(false);
   const [initialCoverUri, setInitialCoverUri] = useState<string | null>(null);
-  const [coverUri, setCoverUri] = useState<string | null>(null);
   // Prefill from cover-recognition results (add mode only) — the values are
   // read once at mount since a fresh navigation creates a fresh screen.
+  // initialCoverUri stays null here so handleSave's coverChanged check
+  // correctly persists this photo as the book's cover.
+  const [coverUri, setCoverUri] = useState<string | null>(prefillCoverUri ?? null);
   const [title, setTitle] = useState(prefillTitle ?? '');
   const [authorsText, setAuthorsText] = useState(prefillAuthor ?? '');
   const [genres, setGenres] = useState<string[]>([]);

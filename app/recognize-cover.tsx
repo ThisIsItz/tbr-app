@@ -15,7 +15,6 @@ import {
 
 import { BookCard } from '@/components/book-card';
 import { ThemedText } from '@/components/themed-text';
-import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Typography } from '@/constants/theme';
 import { useBooks } from '@/features/library/hooks';
 import { useThemeColor } from '@/hooks/use-theme-color';
@@ -50,8 +49,6 @@ export default function RecognizeCoverScreen() {
     bookCoverRecognitionService.isSupported ? 'idle' : 'unsupported',
   );
   const [imageUri, setImageUri] = useState<string | null>(null);
-  const [rawText, setRawText] = useState<string[]>([]);
-  const [isRawTextExpanded, setRawTextExpanded] = useState(false);
   const [confidence, setConfidence] = useState<RecognitionConfidence>('low');
   const [source, setSource] = useState<'vision' | 'ocr'>('ocr');
   const [title, setTitle] = useState('');
@@ -113,15 +110,12 @@ export default function RecognizeCoverScreen() {
   // explicitly triggers the search themselves via handleSearch.
   async function recognizeCover(uri: string) {
     setStage('recognizing');
-    setRawText([]);
-    setRawTextExpanded(false);
     setMatches([]);
     setSearchStatus('idle');
 
     try {
       const result = await bookCoverRecognitionService.recognizeCover(uri);
       const guess = result.books[0];
-      setRawText(result.rawText ?? []);
       setTitle(guess?.title ?? '');
       setAuthor(guess?.author ?? '');
       setConfidence(guess?.confidence ?? 'low');
@@ -161,8 +155,6 @@ export default function RecognizeCoverScreen() {
   function handleReset() {
     setStage(bookCoverRecognitionService.isSupported ? 'idle' : 'unsupported');
     setImageUri(null);
-    setRawText([]);
-    setRawTextExpanded(false);
     setConfidence('low');
     setSource('ocr');
     setTitle('');
@@ -174,7 +166,11 @@ export default function RecognizeCoverScreen() {
   function goToAddManually() {
     router.push({
       pathname: '/add-manually',
-      params: { prefillTitle: title || undefined, prefillAuthor: author || undefined },
+      params: {
+        prefillTitle: title || undefined,
+        prefillAuthor: author || undefined,
+        prefillCoverUri: imageUri || undefined,
+      },
     });
   }
 
@@ -358,30 +354,6 @@ export default function RecognizeCoverScreen() {
             </Pressable>
           </View>
 
-          {rawText.length > 0 && (
-            <View style={styles.section}>
-              <Pressable
-                style={styles.detectedTextToggle}
-                onPress={() => setRawTextExpanded((expanded) => !expanded)}>
-                <ThemedText style={[Typography.metadata, { color: textMutedColor }]}>
-                  {t('recognizeCover.detectedTextLabel')}
-                </ThemedText>
-                <IconSymbol
-                  name={isRawTextExpanded ? 'chevron.down' : 'chevron.right'}
-                  size={16}
-                  color={textMutedColor}
-                />
-              </Pressable>
-              {isRawTextExpanded && (
-                <View style={[styles.detectedTextBox, { backgroundColor: surfaceMutedColor }]}>
-                  <ThemedText style={[Typography.caption, { color: textMutedColor }]}>
-                    {rawText.join('  ·  ')}
-                  </ThemedText>
-                </View>
-              )}
-            </View>
-          )}
-
           {searchStatus === 'loading' && (
             <View style={styles.centered}>
               <ActivityIndicator color={accentColor} />
@@ -515,15 +487,6 @@ const styles = StyleSheet.create({
     paddingVertical: 24,
   },
   noticeBox: {
-    borderRadius: 10,
-    padding: 12,
-  },
-  detectedTextToggle: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-  },
-  detectedTextBox: {
     borderRadius: 10,
     padding: 12,
   },
