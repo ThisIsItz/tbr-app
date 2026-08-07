@@ -67,7 +67,7 @@ curl -i -X POST http://localhost:8787/v1/recognize-cover \
 npm run deploy
 ```
 
-Then set `EXPO_PUBLIC_RECOGNIZE_COVER_API_URL` in the app's `.env` to the deployed Worker URL (e.g. `https://tbr-cover-recognition.<your-subdomain>.workers.dev`).
+Then set `EXPO_PUBLIC_RECOGNIZE_COVER_API_URL` in the app's `.env` **including the endpoint path** (e.g. `https://tbr-cover-recognition.<your-subdomain>.workers.dev/v1/recognize-cover`) — the client fetches this URL directly with no path appended, so the base domain alone will 404. If building via EAS, also update it in EAS's own env store (`eas env:create --environment preview --name EXPO_PUBLIC_RECOGNIZE_COVER_API_URL --value <url> --force`), since cloud builds don't read the local `.env`.
 
 ## Tuning cost controls
 
