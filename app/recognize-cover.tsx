@@ -54,9 +54,6 @@ export default function RecognizeCoverScreen() {
   const [isRawTextExpanded, setRawTextExpanded] = useState(false);
   const [confidence, setConfidence] = useState<RecognitionConfidence>('low');
   const [source, setSource] = useState<'vision' | 'ocr'>('ocr');
-  // TEMPORARY diagnostic state — remove once the Play-build fallback issue
-  // is root-caused (see lib/recognition/types.ts's debugFallbackReason).
-  const [debugFallbackReason, setDebugFallbackReason] = useState<string | undefined>();
   const [title, setTitle] = useState('');
   const [author, setAuthor] = useState('');
   const [matches, setMatches] = useState<GoogleBooksVolume[]>([]);
@@ -129,7 +126,6 @@ export default function RecognizeCoverScreen() {
       setAuthor(guess?.author ?? '');
       setConfidence(guess?.confidence ?? 'low');
       setSource(result.source);
-      setDebugFallbackReason(result.debugFallbackReason);
 
       if (result.books.length === 0) {
         setStage('noText');
@@ -169,7 +165,6 @@ export default function RecognizeCoverScreen() {
     setRawTextExpanded(false);
     setConfidence('low');
     setSource('ocr');
-    setDebugFallbackReason(undefined);
     setTitle('');
     setAuthor('');
     setMatches([]);
@@ -306,8 +301,6 @@ export default function RecognizeCoverScreen() {
               <View style={[styles.noticeBox, { backgroundColor: surfaceMutedColor }]}>
                 <ThemedText style={[Typography.caption, { color: textMutedColor }]}>
                   {t('recognizeCover.onDeviceFallbackNotice')}
-                  {/* TEMPORARY debug line — remove once root-caused */}
-                  {debugFallbackReason ? `\n[debug] ${debugFallbackReason}` : ''}
                 </ThemedText>
               </View>
             )}
