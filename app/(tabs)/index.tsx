@@ -5,6 +5,7 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 
 import { BookCard } from '@/components/book-card';
 import { FilterSheet } from '@/components/filter-sheet';
+import { MultiFilterSheet } from '@/components/multi-filter-sheet';
 import { ThemedText } from '@/components/themed-text';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Typography } from '@/constants/theme';
@@ -28,7 +29,7 @@ export default function MyTbrScreen() {
   const { data: books, isLoading } = useBooks();
 
   const [searchQuery, setSearchQuery] = useState('');
-  const [genreFilter, setGenreFilter] = useState<string | null>(null);
+  const [genreFilters, setGenreFilters] = useState<string[]>([]);
   const [authorFilter, setAuthorFilter] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<SortBy>('title-asc');
 
@@ -58,7 +59,7 @@ export default function MyTbrScreen() {
     [books],
   );
 
-  const hasActiveFilters = !!genreFilter || !!authorFilter || searchQuery.trim().length > 0;
+  const hasActiveFilters = genreFilters.length > 0 || !!authorFilter || searchQuery.trim().length > 0;
 
   const filteredBooks = useMemo(() => {
     let list = books ?? [];
@@ -71,8 +72,9 @@ export default function MyTbrScreen() {
           book.authors.some((author) => author.toLowerCase().includes(query)),
       );
     }
-    if (genreFilter) {
-      list = list.filter((book) => genresByBookId.get(book.id)?.includes(genreFilter));
+    if (genreFilters.length > 0) {
+      // A book matches if it has any of the selected genres.
+      list = list.filter((book) => genresByBookId.get(book.id)?.some((g) => genreFilters.includes(g)));
     }
     if (authorFilter) list = list.filter((book) => book.authors.includes(authorFilter));
 
@@ -83,11 +85,11 @@ export default function MyTbrScreen() {
       return aValue.localeCompare(bValue);
     });
     return direction === 'desc' ? sorted.reverse() : sorted;
-  }, [books, searchQuery, genreFilter, authorFilter, sortBy, genresByBookId]);
+  }, [books, searchQuery, genreFilters, authorFilter, sortBy, genresByBookId]);
 
   function clearFilters() {
     setSearchQuery('');
-    setGenreFilter(null);
+    setGenreFilters([]);
     setAuthorFilter(null);
   }
 
@@ -130,16 +132,12 @@ export default function MyTbrScreen() {
       </View>
 
       <View style={styles.filterRow}>
-        <FilterSheet
+        <MultiFilterSheet
           label={t('library.genre')}
-          selected={genreFilter}
-          selectedLabel={genreFilter}
+          selected={genreFilters}
           disabled={allGenres.length === 0}
-          onSelect={setGenreFilter}
-          options={[
-            { value: null, label: t('library.allGenres') },
-            ...allGenres.map((g) => ({ value: g, label: g })),
-          ]}
+          onChange={setGenreFilters}
+          options={allGenres}
         />
         <FilterSheet
           label={t('library.author')}

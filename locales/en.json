@@ -1,6 +1,7 @@
 {
   "common": {
     "cancel": "Cancel",
+    "clear": "Clear",
     "remove": "Remove",
     "done": "Done",
     "genericError": "Something went wrong. Try again.",
@@ -13,7 +14,6 @@
     "genre": "Genre",
     "author": "Author",
     "sort": "Sort",
-    "allGenres": "All genres",
     "allAuthors": "All authors",
     "sortTitleAsc": "Title (A–Z)",
     "sortTitleDesc": "Title (Z–A)",

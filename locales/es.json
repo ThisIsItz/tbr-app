@@ -1,6 +1,7 @@
 {
   "common": {
     "cancel": "Cancelar",
+    "clear": "Borrar",
     "remove": "Eliminar",
     "done": "Listo",
     "genericError": "Algo salió mal. Inténtalo de nuevo.",
@@ -13,7 +14,6 @@
     "genre": "Género",
     "author": "Autor",
     "sort": "Ordenar",
-    "allGenres": "Todos los géneros",
     "allAuthors": "Todos los autores",
     "sortTitleAsc": "Título (A–Z)",
     "sortTitleDesc": "Título (Z–A)",
