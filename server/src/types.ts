@@ -13,8 +13,6 @@ export interface Env {
   RECOGNITION_KV: KVNamespace;
   AI: Ai;
   GEMINI_API_KEY: string;
-  /** Which vision backend is active — see providers/index.ts. Gemini is
-   *  kept fully implemented but not selected by default. */
   VISION_PROVIDER: 'workers-ai' | 'gemini';
   DAILY_BUDGET_LIMIT: number;
   PER_TOKEN_DAILY_LIMIT: number;

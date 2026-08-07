@@ -93,9 +93,7 @@ export default function MyTbrScreen() {
     setAuthorFilter(null);
   }
 
-  // Once every book is removed, stale search/filter/sort state would just
-  // sit there hiding whatever gets added next — reset to defaults so
-  // there's a clean slate rather than a confusing empty state to debug.
+  // Reset filters once the library is empty, so they don't hide new books.
   const isLibraryEmpty = (books?.length ?? 0) === 0;
   useEffect(() => {
     if (!isLibraryEmpty) return;

@@ -4,8 +4,6 @@ import { getOrCreateDeviceToken } from '@/lib/device-token';
 
 import type { BookGuess, CoverRecognitionResult } from './types';
 
-// Bounds tokens/bytes per request regardless of the source photo's size —
-// the single biggest cost lever on the backend, per the approved plan.
 const MAX_DIMENSION = 1024;
 const JPEG_QUALITY = 0.6;
 const REQUEST_TIMEOUT_MS = 15_000;
@@ -22,10 +20,8 @@ interface RecognizeCoverApiResponse {
   error?: string;
 }
 
-// Talks to the server/ Worker (see server/README.md). Throws on any
-// failure — missing config, network error, timeout, or a non-2xx/malformed
-// response — so the caller (lib/recognition/index.ts) can fall back to
-// on-device OCR rather than dead-ending.
+// Talks to the server/ Worker. Throws on any failure so the caller can
+// fall back to on-device OCR.
 export async function recognizeCoverWithVisionApi(imageUri: string): Promise<CoverRecognitionResult> {
   const apiUrl = process.env.EXPO_PUBLIC_RECOGNIZE_COVER_API_URL;
   if (!apiUrl) {

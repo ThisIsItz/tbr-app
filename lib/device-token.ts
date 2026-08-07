@@ -4,9 +4,7 @@ import { getSetting, setSetting } from '@/lib/repository/settings-repository';
 
 const DEVICE_TOKEN_SETTING_KEY = 'deviceToken';
 
-// A per-install identifier used only to key the backend's rate-limit
-// bucket — trivially spoofable, not an authenticated identity. Minted once
-// and persisted the same way locale/theme preferences are.
+// Per-install id used only to key the backend's rate-limit bucket.
 export async function getOrCreateDeviceToken(): Promise<string> {
   const existing = await getSetting(DEVICE_TOKEN_SETTING_KEY);
   if (existing) return existing;

@@ -6,12 +6,7 @@ export type { BookCoverRecognitionService, BookGuess, CoverRecognitionResult, Re
 
 const isVisionConfigured = !!process.env.EXPO_PUBLIC_RECOGNIZE_COVER_API_URL;
 
-// The single entry point the UI uses. Tries the vision backend first (when
-// configured); any failure there — network error, timeout, unconfigured
-// URL, a bad response — falls back to on-device OCR rather than dead-ending,
-// per the "OCR as optional fallback" requirement. The result is always
-// tagged with which path actually produced it so the UI can show a "less
-// reliable, on-device guess" notice instead of silently swapping providers.
+// Tries vision first, falls back to OCR on any failure.
 export const bookCoverRecognitionService: BookCoverRecognitionService = {
   isSupported: isVisionConfigured || ocrBookCoverRecognitionService.isSupported,
   async recognizeCover(imageUri: string): Promise<CoverRecognitionResult> {

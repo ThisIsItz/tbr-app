@@ -1,13 +1,7 @@
 import { extractJsonText, validateBooks, VisionProviderError, withTimeout, type VisionProvider } from './types';
 
-// Verified directly against Cloudflare's docs + a filed docs bug
-// (github.com/cloudflare/cloudflare-docs/issues/19185) on 2026-07-31: the
-// model's own doc page omits how to pass an image at all — the working
-// shape is `{ image: <plain byte array>, prompt: <string> }`, NOT
-// `messages`, and the two are mutually exclusive. No native JSON-schema
-// enforcement exists for this model (unlike Gemini's response_schema), so
-// output is prompt-engineered JSON, validated strictly server-side via the
-// same validateBooks() every provider uses.
+// Image must be a plain byte array via `image` + `prompt` (not `messages`).
+// No native JSON-schema support, so output is validated via validateBooks().
 const MODEL = '@cf/meta/llama-3.2-11b-vision-instruct';
 const MAX_TOKENS = 300;
 const REQUEST_TIMEOUT_MS = 12_000;
@@ -23,9 +17,7 @@ const PROMPT =
   'markdown code fences, no explanation, no extra text:\n' +
   '{"books": [{"title": "...", "author": "..." | null, "confidence": "low" | "medium" | "high"}]}';
 
-// `response` is typically a string the model wrote, but Workers AI has been
-// observed returning it already parsed as an object when the text looked
-// like JSON — handle both rather than assuming it's always a string.
+// response can come back as a string or already-parsed object.
 interface WorkersAiTextResponse {
   response?: string | Record<string, unknown>;
 }

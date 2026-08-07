@@ -25,7 +25,6 @@ export default {
       return jsonResponse({ error: 'not_found' }, 404);
     }
 
-    // Reject as early as possible, before ever reading the body.
     const contentType = request.headers.get('content-type');
     if (contentType !== ALLOWED_CONTENT_TYPE) {
       return jsonResponse({ error: 'unsupported_content_type' }, 415);
@@ -42,8 +41,6 @@ export default {
     }
 
     const imageBytes = await request.arrayBuffer();
-    // Defense in depth: re-check the actual byte length even if
-    // Content-Length was missing, wrong, or understated.
     if (imageBytes.byteLength > env.MAX_BODY_BYTES) {
       return jsonResponse({ error: 'payload_too_large' }, 413);
     }
@@ -51,15 +48,11 @@ export default {
       return jsonResponse({ error: 'empty_body' }, 400);
     }
 
-    // Primary cost safeguard first — fails every request once the daily
-    // ceiling is hit, regardless of anything else being healthy.
     const withinGlobalBudget = await checkGlobalBudget(env);
     if (!withinGlobalBudget) {
       return jsonResponse({ error: 'daily_budget_exceeded' }, 503);
     }
 
-    // Secondary, soft per-client limit — see rate-limit.ts for why this
-    // isn't a real abuse boundary on its own.
     const withinTokenLimit = await checkPerTokenLimit(env, clientToken);
     if (!withinTokenLimit) {
       return jsonResponse({ error: 'rate_limited' }, 429);

@@ -24,17 +24,10 @@ import { searchGoogleBooks } from '@/lib/google-books';
 import { bookCoverRecognitionService, type RecognitionConfidence } from '@/lib/recognition';
 import type { GoogleBooksVolume } from '@/types/google-books';
 
-// Stages of the flow. "reviewing" covers both the matches-found and
-// no-matches-found cases — the editable fields and detected text stay on
-// screen either way so the user is never left at a dead end.
 type Stage = 'idle' | 'unsupported' | 'recognizing' | 'reviewing' | 'noText';
 type SearchStatus = 'idle' | 'loading' | 'done';
 
-// A recognized title/author is only ever a suggestion (see
-// lib/recognition) — before showing a Google Books result as a plausible
-// match, its relevance score against the searched text must clear this bar
-// (the score for merely containing the query's words in title order).
-// Anything below this is discarded rather than shown as a "match."
+// Minimum relevance score for a Google Books result to count as a match.
 const MIN_RELIABLE_SCORE = 30;
 
 export default function RecognizeCoverScreen() {
@@ -78,15 +71,11 @@ export default function RecognizeCoverScreen() {
       setImageUri(uri);
       await recognizeCover(uri);
     } catch (error) {
-      // Covers permission rejections and any other native picker failure —
-      // without this, an unhandled rejection here crashes the whole screen.
       console.warn('[RecognizeCover] image pick failed:', error);
       Alert.alert(t('common.genericError'));
     }
   }
 
-  // Checks (and if needed, requests) camera permission up front so a denial
-  // shows a friendly prompt instead of letting launchCameraAsync reject.
   async function ensureCameraPermission(): Promise<boolean> {
     const current = await ImagePicker.getCameraPermissionsAsync();
     if (current.granted) return true;
@@ -105,9 +94,6 @@ export default function RecognizeCoverScreen() {
     return false;
   }
 
-  // OCR only produces a *suggestion* — this never searches on its own. The
-  // user always reviews (and can edit) the guessed title/author, then
-  // explicitly triggers the search themselves via handleSearch.
   async function recognizeCover(uri: string) {
     setStage('recognizing');
     setMatches([]);
@@ -132,19 +118,13 @@ export default function RecognizeCoverScreen() {
   }
 
   async function handleSearch() {
-    // Search and score by title only — Google's intitle: operator (and the
-    // relevance scoring, which checks the result's title) only ever matches
-    // against a book's actual title text. Mixing the author's name into
-    // that same query made it match almost nothing, since a title never
-    // contains the author's name.
+    // Search/score by title only — mixing in the author breaks matching.
     const trimmedTitle = title.trim();
     if (!trimmedTitle) return;
 
     setSearchStatus('loading');
     try {
       const found = await searchGoogleBooks(trimmedTitle);
-      // Validate against Google Books rather than trusting the guess: only
-      // results that actually resemble the searched title are shown.
       const reliable = found.filter((volume) => scoreVolume(volume, trimmedTitle) >= MIN_RELIABLE_SCORE);
       setMatches(reliable);
     } catch {

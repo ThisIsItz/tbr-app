@@ -15,9 +15,7 @@ interface MultiFilterSheetProps {
   disabled?: boolean;
 }
 
-// A multi-select counterpart to FilterSheet — used where a book can match
-// more than one value at once (genres), unlike author/sort which are
-// inherently single-choice.
+// Multi-select counterpart to FilterSheet, used for genre.
 export function MultiFilterSheet({ label, options, selected, onChange, disabled }: MultiFilterSheetProps) {
   const { t } = useTranslation();
   const [visible, setVisible] = useState(false);

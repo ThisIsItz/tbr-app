@@ -1,8 +1,5 @@
 import type { BookGuess } from '../types';
 
-// Common shape every vision backend implements, so the request handler
-// never needs to know which one is active — swapping providers (Gemini,
-// Workers AI, or a future one) is a one-file change plus a config flip.
 export interface VisionProvider {
   recognizeBookCover(imageBytes: ArrayBuffer): Promise<BookGuess[]>;
 }
@@ -28,9 +25,6 @@ function isBookGuess(value: unknown): value is BookGuess {
   );
 }
 
-// Never trust a model's JSON output directly — shared by every provider so
-// a malformed shape is always treated as a provider error, not passed
-// through to the client, regardless of which backend produced it.
 export function validateBooks(parsed: unknown): BookGuess[] {
   if (!parsed || typeof parsed !== 'object' || !Array.isArray((parsed as { books?: unknown }).books)) {
     throw new VisionProviderError('Model response missing a valid "books" array', 'invalid_response');
@@ -45,9 +39,7 @@ export function validateBooks(parsed: unknown): BookGuess[] {
   });
 }
 
-// Defensive: some models wrap JSON in a markdown code fence despite being
-// told not to (observed with Workers AI's Llama vision model) — strip it
-// before parsing rather than failing on an otherwise-valid response.
+// Some models wrap JSON in a markdown code fence despite being told not to.
 export function extractJsonText(text: string): string {
   const trimmed = text.trim();
   const fenced = trimmed.match(/^```(?:json)?\s*([\s\S]*?)\s*```$/i);

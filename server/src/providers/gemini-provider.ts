@@ -1,16 +1,7 @@
 import { extractJsonText, validateBooks, VisionProviderError, withTimeout, type VisionProvider } from './types';
 
-// Kept fully working but not active by default (see providers/index.ts) —
-// billing was never enabled for this key, and the user asked not to enable
-// it/purchase credits. Reactivating later is a config flip
-// (VISION_PROVIDER = "gemini" in wrangler.toml), no code changes needed.
-//
-// Model choice verified directly against the live API on 2026-07-31 (doc
-// pages proved stale/inconsistent, so this was confirmed empirically, not
-// from docs): `gemini-2.5-flash-lite` 404s ("no longer available to new
-// users"). ListModels for the test key confirmed `gemini-2.0-flash-lite` is
-// still live and accepts this exact request shape (structured-output
-// schema included). Re-verify with `GET /v1beta/models` if this 404s later.
+// Not active by default — see providers/index.ts.
+// gemini-2.5-flash-lite 404s (deprecated); this model is confirmed live.
 const GEMINI_MODEL = 'gemini-2.0-flash-lite';
 const GEMINI_ENDPOINT = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`;
 const REQUEST_TIMEOUT_MS = 12_000;

@@ -55,10 +55,6 @@ export default function AddManuallyScreen() {
 
   const [isPrefilled, setIsPrefilled] = useState(false);
   const [initialCoverUri, setInitialCoverUri] = useState<string | null>(null);
-  // Prefill from cover-recognition results (add mode only) — the values are
-  // read once at mount since a fresh navigation creates a fresh screen.
-  // initialCoverUri stays null here so handleSave's coverChanged check
-  // correctly persists this photo as the book's cover.
   const [coverUri, setCoverUri] = useState<string | null>(prefillCoverUri ?? null);
   const [title, setTitle] = useState(prefillTitle ?? '');
   const [authorsText, setAuthorsText] = useState(prefillAuthor ?? '');
@@ -109,8 +105,6 @@ export default function AddManuallyScreen() {
     const parsedPageCount = Number.parseInt(pageCountText.trim(), 10);
     const pageCount = Number.isFinite(parsedPageCount) ? parsedPageCount : null;
 
-    // Only persist a new file if the cover actually changed — re-persisting
-    // an already-local, unchanged URI would just copy it again pointlessly.
     const coverChanged = coverUri !== initialCoverUri;
     const thumbnailUrl = coverChanged && coverUri ? persistLocalImage(coverUri) : coverUri;
 
@@ -129,8 +123,6 @@ export default function AddManuallyScreen() {
       if (coverChanged && initialCoverUri) {
         deleteLocalImage(initialCoverUri);
       }
-      // Editing returns to wherever the user came from (the book detail
-      // screen) — a normal back-navigation, not a full-stack collapse.
       router.back();
     } else {
       await addBook.mutateAsync({
@@ -143,9 +135,6 @@ export default function AddManuallyScreen() {
         publishedDate: publishedDate.trim() || null,
         pageCount,
       });
-      // Collapse back to the main TBR screen regardless of how deep this
-      // screen was reached (search, scan ISBN, or cover recognition),
-      // matching the same behavior as the Google Books add-confirm screen.
       router.dismissTo('/');
     }
   }
@@ -398,9 +387,7 @@ const styles = StyleSheet.create({
   },
   cover: {
     width: 80,
-    // Matches the combined height of the Title + Author fields (label +
-    // gap + input, twice, plus the gap between them) so the cover's bottom
-    // edge lines up with the Author input's bottom edge.
+    // Matches Title+Author fields' combined height so bottoms line up.
     height: 142,
     borderRadius: 10,
   },
