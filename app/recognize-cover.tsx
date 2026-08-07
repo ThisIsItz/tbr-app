@@ -132,18 +132,20 @@ export default function RecognizeCoverScreen() {
   }
 
   async function handleSearch() {
-    const query = [title, author]
-      .map((v) => v.trim())
-      .filter(Boolean)
-      .join(' ');
-    if (!query) return;
+    // Search and score by title only — Google's intitle: operator (and the
+    // relevance scoring, which checks the result's title) only ever matches
+    // against a book's actual title text. Mixing the author's name into
+    // that same query made it match almost nothing, since a title never
+    // contains the author's name.
+    const trimmedTitle = title.trim();
+    if (!trimmedTitle) return;
 
     setSearchStatus('loading');
     try {
-      const found = await searchGoogleBooks(query);
+      const found = await searchGoogleBooks(trimmedTitle);
       // Validate against Google Books rather than trusting the guess: only
-      // results that actually resemble the searched title/author are shown.
-      const reliable = found.filter((volume) => scoreVolume(volume, query) >= MIN_RELIABLE_SCORE);
+      // results that actually resemble the searched title are shown.
+      const reliable = found.filter((volume) => scoreVolume(volume, trimmedTitle) >= MIN_RELIABLE_SCORE);
       setMatches(reliable);
     } catch {
       setMatches([]);
