@@ -1,0 +1,4 @@
+# Copy this file to `.dev.vars` (gitignored) for local `wrangler dev` testing.
+# In production, the real key is set via `wrangler secret put GEMINI_API_KEY`
+# instead — it is never stored in a file that could be committed.
+GEMINI_API_KEY=your-gemini-api-key-here

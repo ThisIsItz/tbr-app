@@ -1,0 +1,28 @@
+name = "tbr-cover-recognition"
+main = "src/index.ts"
+compatibility_date = "2026-07-31"
+
+# Create with `wrangler kv namespace create RECOGNITION_KV` and paste the
+# returned id below — see server/README.md.
+[[kv_namespaces]]
+binding = "RECOGNITION_KV"
+id = "19d97fa02e194758a408ab34047c787b"
+
+# Workers AI binding — invoked in-process via env.AI.run(), no client-exposed
+# API token involved. See server/src/providers/workers-ai-provider.ts.
+[ai]
+binding = "AI"
+
+[vars]
+# Which vision backend is active. Gemini is fully implemented in
+# providers/gemini-provider.ts but stays inactive — billing was never
+# enabled for it and shouldn't be. Flip to "gemini" + redeploy to reactivate.
+VISION_PROVIDER = "workers-ai"
+# Primary cost safeguard: total recognize-cover requests allowed per UTC day
+# across all clients. Once hit, every client falls back to on-device OCR.
+DAILY_BUDGET_LIMIT = 500
+# Secondary, soft per-client-token daily limit. The token is a
+# client-generated UUID, not an authenticated identity.
+PER_TOKEN_DAILY_LIMIT = 20
+# Reject request bodies larger than this (bytes) before ever reading them.
+MAX_BODY_BYTES = 2097152

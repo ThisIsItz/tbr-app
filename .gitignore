@@ -44,3 +44,7 @@ app-example
 
 .env
 .env.local
+
+# Cloudflare Worker local secrets (server/)
+.dev.vars
+.wrangler/

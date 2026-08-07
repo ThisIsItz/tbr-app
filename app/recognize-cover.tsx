@@ -15,12 +15,14 @@ import {
 
 import { BookCard } from '@/components/book-card';
 import { ThemedText } from '@/components/themed-text';
+import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Typography } from '@/constants/theme';
 import { useBooks } from '@/features/library/hooks';
 import { useThemeColor } from '@/hooks/use-theme-color';
 import { useTranslation } from '@/hooks/use-translation';
+import { scoreVolume } from '@/lib/book-relevance';
 import { searchGoogleBooks } from '@/lib/google-books';
-import { bookCoverRecognitionService } from '@/lib/recognition';
+import { bookCoverRecognitionService, type RecognitionConfidence } from '@/lib/recognition';
 import type { GoogleBooksVolume } from '@/types/google-books';
 
 // Stages of the flow. "reviewing" covers both the matches-found and
@@ -29,27 +31,17 @@ import type { GoogleBooksVolume } from '@/types/google-books';
 type Stage = 'idle' | 'unsupported' | 'recognizing' | 'reviewing' | 'noText';
 type SearchStatus = 'idle' | 'loading' | 'done';
 
-async function searchMultiple(queries: string[]): Promise<GoogleBooksVolume[]> {
-  const resultsPerQuery = await Promise.all(queries.map((q) => searchGoogleBooks(q).catch(() => [])));
-  const merged: GoogleBooksVolume[] = [];
-  const seen = new Set<string>();
-  for (const results of resultsPerQuery) {
-    for (const volume of results) {
-      if (!seen.has(volume.id)) {
-        seen.add(volume.id);
-        merged.push(volume);
-      }
-    }
-  }
-  return merged;
-}
+// A recognized title/author is only ever a suggestion (see
+// lib/recognition) — before showing a Google Books result as a plausible
+// match, its relevance score against the searched text must clear this bar
+// (the score for merely containing the query's words in title order).
+// Anything below this is discarded rather than shown as a "match."
+const MIN_RELIABLE_SCORE = 30;
 
 export default function RecognizeCoverScreen() {
   const { t } = useTranslation();
   const backgroundColor = useThemeColor({}, 'background');
-  const surfaceColor = useThemeColor({}, 'surface');
   const surfaceMutedColor = useThemeColor({}, 'surfaceMuted');
-  const shadowColor = useThemeColor({}, 'shadow');
   const textColor = useThemeColor({}, 'text');
   const textMutedColor = useThemeColor({}, 'textMuted');
   const accentColor = useThemeColor({}, 'accent');
@@ -59,6 +51,9 @@ export default function RecognizeCoverScreen() {
   );
   const [imageUri, setImageUri] = useState<string | null>(null);
   const [rawText, setRawText] = useState<string[]>([]);
+  const [isRawTextExpanded, setRawTextExpanded] = useState(false);
+  const [confidence, setConfidence] = useState<RecognitionConfidence>('low');
+  const [source, setSource] = useState<'vision' | 'ocr'>('ocr');
   const [title, setTitle] = useState('');
   const [author, setAuthor] = useState('');
   const [matches, setMatches] = useState<GoogleBooksVolume[]>([]);
@@ -84,9 +79,7 @@ export default function RecognizeCoverScreen() {
       if (!uri) return;
 
       setImageUri(uri);
-      setMatches([]);
-      setSearchStatus('idle');
-      await recognizeAndSearch(uri);
+      await recognizeCover(uri);
     } catch (error) {
       // Covers permission rejections and any other native picker failure —
       // without this, an unhandled rejection here crashes the whole screen.
@@ -115,41 +108,49 @@ export default function RecognizeCoverScreen() {
     return false;
   }
 
-  async function recognizeAndSearch(uri: string) {
+  // OCR only produces a *suggestion* — this never searches on its own. The
+  // user always reviews (and can edit) the guessed title/author, then
+  // explicitly triggers the search themselves via handleSearch.
+  async function recognizeCover(uri: string) {
     setStage('recognizing');
+    setRawText([]);
+    setRawTextExpanded(false);
+    setMatches([]);
+    setSearchStatus('idle');
+
     try {
       const result = await bookCoverRecognitionService.recognizeCover(uri);
-      setRawText(result.rawText);
-      const initialTitle = result.candidateTitles[0] ?? '';
-      const initialAuthor = result.candidateAuthors[0] ?? '';
-      setTitle(initialTitle);
-      setAuthor(initialAuthor);
+      const guess = result.books[0];
+      setRawText(result.rawText ?? []);
+      setTitle(guess?.title ?? '');
+      setAuthor(guess?.author ?? '');
+      setConfidence(guess?.confidence ?? 'low');
+      setSource(result.source);
 
-      if (result.rawText.length === 0) {
+      if (result.books.length === 0) {
         setStage('noText');
         return;
       }
-
       setStage('reviewing');
-      if (result.searchQueries.length > 0) {
-        setSearchStatus('loading');
-        const found = await searchMultiple(result.searchQueries);
-        setMatches(found);
-        setSearchStatus('done');
-      }
     } catch {
       setStage('noText');
     }
   }
 
-  async function handleSearchAgain() {
-    const query = [title, author].filter((v) => v.trim()).join(' ').trim();
+  async function handleSearch() {
+    const query = [title, author]
+      .map((v) => v.trim())
+      .filter(Boolean)
+      .join(' ');
     if (!query) return;
 
     setSearchStatus('loading');
     try {
       const found = await searchGoogleBooks(query);
-      setMatches(found);
+      // Validate against Google Books rather than trusting the guess: only
+      // results that actually resemble the searched title/author are shown.
+      const reliable = found.filter((volume) => scoreVolume(volume, query) >= MIN_RELIABLE_SCORE);
+      setMatches(reliable);
     } catch {
       setMatches([]);
     } finally {
@@ -161,6 +162,9 @@ export default function RecognizeCoverScreen() {
     setStage(bookCoverRecognitionService.isSupported ? 'idle' : 'unsupported');
     setImageUri(null);
     setRawText([]);
+    setRawTextExpanded(false);
+    setConfidence('low');
+    setSource('ocr');
     setTitle('');
     setAuthor('');
     setMatches([]);
@@ -269,7 +273,7 @@ export default function RecognizeCoverScreen() {
               style={[styles.primaryButton, { backgroundColor: surfaceMutedColor }]}
               onPress={handleReset}>
               <ThemedText style={[Typography.button, { color: textColor }]}>
-                {t('recognizeCover.retakePhoto')}
+                {t('recognizeCover.tryAnotherPhoto')}
               </ThemedText>
             </Pressable>
             <Pressable
@@ -293,6 +297,21 @@ export default function RecognizeCoverScreen() {
       {stage === 'reviewing' && (
         <>
           <View style={styles.section}>
+            {source === 'ocr' && (
+              <View style={[styles.noticeBox, { backgroundColor: surfaceMutedColor }]}>
+                <ThemedText style={[Typography.caption, { color: textMutedColor }]}>
+                  {t('recognizeCover.onDeviceFallbackNotice')}
+                </ThemedText>
+              </View>
+            )}
+            {confidence === 'low' && (
+              <View style={[styles.noticeBox, { backgroundColor: surfaceMutedColor }]}>
+                <ThemedText style={[Typography.caption, { color: textMutedColor }]}>
+                  {t('recognizeCover.lowConfidenceNotice')}
+                </ThemedText>
+              </View>
+            )}
+
             <View style={styles.field}>
               <ThemedText style={[Typography.metadata, { color: textColor }]}>
                 {t('recognizeCover.titleLabel')}
@@ -326,25 +345,40 @@ export default function RecognizeCoverScreen() {
               />
             </View>
             <Pressable
-              style={[styles.primaryButton, { backgroundColor: accentColor }]}
-              onPress={handleSearchAgain}
-              disabled={searchStatus === 'loading'}>
-              <ThemedText style={[Typography.button, { color: '#fff' }]}>
-                {t('recognizeCover.searchAgain')}
+              style={[
+                styles.primaryButton,
+                { backgroundColor: !title.trim() ? surfaceMutedColor : accentColor },
+              ]}
+              onPress={handleSearch}
+              disabled={searchStatus === 'loading' || !title.trim()}>
+              <ThemedText
+                style={[Typography.button, { color: !title.trim() ? textMutedColor : '#fff' }]}>
+                {t('recognizeCover.searchWithDetails')}
               </ThemedText>
             </Pressable>
           </View>
 
           {rawText.length > 0 && (
             <View style={styles.section}>
-              <ThemedText style={[Typography.metadata, { color: textMutedColor }]}>
-                {t('recognizeCover.detectedTextLabel')}
-              </ThemedText>
-              <View style={[styles.detectedTextBox, { backgroundColor: surfaceMutedColor }]}>
-                <ThemedText style={[Typography.caption, { color: textMutedColor }]}>
-                  {rawText.join('  ·  ')}
+              <Pressable
+                style={styles.detectedTextToggle}
+                onPress={() => setRawTextExpanded((expanded) => !expanded)}>
+                <ThemedText style={[Typography.metadata, { color: textMutedColor }]}>
+                  {t('recognizeCover.detectedTextLabel')}
                 </ThemedText>
-              </View>
+                <IconSymbol
+                  name={isRawTextExpanded ? 'chevron.down' : 'chevron.right'}
+                  size={16}
+                  color={textMutedColor}
+                />
+              </Pressable>
+              {isRawTextExpanded && (
+                <View style={[styles.detectedTextBox, { backgroundColor: surfaceMutedColor }]}>
+                  <ThemedText style={[Typography.caption, { color: textMutedColor }]}>
+                    {rawText.join('  ·  ')}
+                  </ThemedText>
+                </View>
+              )}
             </View>
           )}
 
@@ -414,27 +448,11 @@ export default function RecognizeCoverScreen() {
           )}
 
           <View style={styles.section}>
-            <View style={styles.actionsRow}>
-              <Pressable
-                style={[styles.secondaryButton, { backgroundColor: surfaceMutedColor }]}
-                onPress={handleReset}>
-                <ThemedText style={[Typography.button, { color: textColor }]}>
-                  {t('recognizeCover.retakePhoto')}
-                </ThemedText>
-              </Pressable>
-              <Pressable
-                style={[styles.secondaryButton, { backgroundColor: surfaceMutedColor }]}
-                onPress={() => handlePick('gallery')}>
-                <ThemedText style={[Typography.button, { color: textColor }]}>
-                  {t('recognizeCover.choosePhoto')}
-                </ThemedText>
-              </Pressable>
-            </View>
             <Pressable
-              style={[styles.primaryButton, { backgroundColor: surfaceColor, shadowColor }]}
-              onPress={goToAddManually}>
-              <ThemedText style={[Typography.button, { color: accentColor }]}>
-                {t('search.addManually')}
+              style={[styles.secondaryButton, { backgroundColor: surfaceMutedColor }]}
+              onPress={handleReset}>
+              <ThemedText style={[Typography.button, { color: textColor }]}>
+                {t('recognizeCover.tryAnotherPhoto')}
               </ThemedText>
             </Pressable>
           </View>
@@ -484,7 +502,6 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   secondaryButton: {
-    flex: 1,
     minHeight: 44,
     borderRadius: 10,
     alignItems: 'center',
@@ -496,6 +513,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 10,
     paddingVertical: 24,
+  },
+  noticeBox: {
+    borderRadius: 10,
+    padding: 12,
+  },
+  detectedTextToggle: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
   },
   detectedTextBox: {
     borderRadius: 10,

@@ -1,11 +1,8 @@
 import { extractTextFromImage, isSupported } from 'expo-text-extractor';
 
-import type { BookCoverRecognitionService, CoverRecognitionResult } from './types';
+import type { BookCoverRecognitionService, BookGuess, CoverRecognitionResult, RecognitionConfidence } from './types';
 
 const MIN_LINE_LENGTH = 2;
-const MAX_CANDIDATE_AUTHORS = 3;
-const MAX_CANDIDATE_TITLES = 3;
-const MAX_SEARCH_QUERIES = 3;
 
 // ISBNs, barcodes, and prices show up as OCR lines that are mostly digits —
 // they're never a useful title/author candidate.
@@ -28,58 +25,52 @@ function cleanLines(rawText: string[]): string[] {
     .filter((line) => !BARCODE_OR_NUMERIC_LINE.test(line));
 }
 
-function dedupe(values: string[]): string[] {
-  return values.filter((value, index) => values.indexOf(value) === index);
-}
-
-export function deriveCandidates(rawText: string[]): {
-  candidateTitles: string[];
-  candidateAuthors: string[];
+// OCR line order/length is a weak signal on its own — promotional blurbs
+// and back-cover copy are often the most prominent text in a photo, so this
+// produces a single best-effort guess with an explicit confidence level
+// rather than a ranked list presented as if it were structured metadata.
+function deriveGuess(rawText: string[]): {
+  title: string | null;
+  author: string | null;
+  confidence: RecognitionConfidence;
 } {
   const lines = cleanLines(rawText);
+  if (lines.length === 0) {
+    return { title: null, author: null, confidence: 'low' };
+  }
 
   // An explicit "by <name>" line (common on front covers) is the strongest
-  // possible author signal, so it's pulled out before the generic heuristic.
+  // possible author signal.
   const byLine = lines.find((line) => BY_PREFIX.test(line));
-  const explicitAuthor = byLine?.replace(BY_PREFIX, '').trim();
+  const explicitAuthor = byLine?.replace(BY_PREFIX, '').trim() || null;
 
   const remaining = lines.filter((line) => line !== byLine);
-  const nameLines = remaining.filter(looksLikeName);
+  const nameLine = remaining.find(looksLikeName) ?? null;
+  const author = explicitAuthor ?? nameLine;
 
-  const candidateAuthors = dedupe(
-    [explicitAuthor, ...nameLines].filter((value): value is string => !!value),
-  ).slice(0, MAX_CANDIDATE_AUTHORS);
+  // Whatever's left, longest line first — a book's title is usually the
+  // most prominent (and often longest) text on the cover. This is still
+  // just a guess, which is why it's never auto-searched.
+  const title = remaining.filter((line) => line !== author).sort((a, b) => b.length - a.length)[0] ?? null;
 
-  // Whatever's left, longest lines first — a book's title is usually the
-  // most prominent (and often longest) text on the cover.
-  const candidateTitles = dedupe(
-    remaining
-      .filter((line) => !candidateAuthors.includes(line))
-      .sort((a, b) => b.length - a.length),
-  ).slice(0, MAX_CANDIDATE_TITLES);
+  let confidence: RecognitionConfidence = 'low';
+  if (explicitAuthor && title) {
+    confidence = 'high';
+  } else if (author && title) {
+    confidence = 'medium';
+  }
 
-  return { candidateTitles, candidateAuthors };
-}
-
-export function buildSearchQueries(candidateTitles: string[], candidateAuthors: string[]): string[] {
-  const [primaryTitle, secondaryTitle] = candidateTitles;
-  const [primaryAuthor] = candidateAuthors;
-
-  const queries = [
-    primaryTitle && primaryAuthor ? `${primaryTitle} ${primaryAuthor}` : null,
-    primaryTitle,
-    secondaryTitle,
-  ].filter((value): value is string => !!value);
-
-  return dedupe(queries).slice(0, MAX_SEARCH_QUERIES);
+  return { title, author, confidence };
 }
 
 export const ocrBookCoverRecognitionService: BookCoverRecognitionService = {
   isSupported,
   async recognizeCover(imageUri: string): Promise<CoverRecognitionResult> {
     const rawText = await extractTextFromImage(imageUri);
-    const { candidateTitles, candidateAuthors } = deriveCandidates(rawText);
-    const searchQueries = buildSearchQueries(candidateTitles, candidateAuthors);
-    return { rawText, candidateTitles, candidateAuthors, searchQueries };
+    const { title, author, confidence } = deriveGuess(rawText);
+    // No usable guess is represented as an empty books array, not a
+    // BookGuess with a null title — title is required for any real guess.
+    const books: BookGuess[] = title ? [{ title, author, confidence }] : [];
+    return { books, rawText, source: 'ocr' };
   },
 };
