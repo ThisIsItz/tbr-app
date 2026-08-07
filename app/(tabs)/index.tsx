@@ -1,7 +1,7 @@
 import { router } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { ActivityIndicator, FlatList, Pressable, StyleSheet, TextInput, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { BookCard } from '@/components/book-card';
 import { FilterSheet } from '@/components/filter-sheet';
@@ -14,7 +14,7 @@ import { useTranslation } from '@/hooks/use-translation';
 import { normalizeGenres } from '@/lib/genres';
 import { type Book } from '@/types/book';
 
-type SortBy = 'title' | 'author';
+type SortBy = 'title-asc' | 'title-desc' | 'author-asc' | 'author-desc';
 
 export default function MyTbrScreen() {
   const { t } = useTranslation();
@@ -24,16 +24,19 @@ export default function MyTbrScreen() {
   const accentColor = useThemeColor({}, 'accent');
   const surfaceMutedColor = useThemeColor({}, 'surfaceMuted');
 
+  const insets = useSafeAreaInsets();
   const { data: books, isLoading } = useBooks();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [genreFilter, setGenreFilter] = useState<string | null>(null);
   const [authorFilter, setAuthorFilter] = useState<string | null>(null);
-  const [sortBy, setSortBy] = useState<SortBy>('title');
+  const [sortBy, setSortBy] = useState<SortBy>('title-asc');
 
   const sortOptions = [
-    { value: 'title', label: t('library.sortTitle') },
-    { value: 'author', label: t('library.sortAuthor') },
+    { value: 'title-asc', label: t('library.sortTitleAsc') },
+    { value: 'title-desc', label: t('library.sortTitleDesc') },
+    { value: 'author-asc', label: t('library.sortAuthorAsc') },
+    { value: 'author-desc', label: t('library.sortAuthorDesc') },
   ];
 
   const genresByBookId = useMemo(() => {
@@ -73,10 +76,13 @@ export default function MyTbrScreen() {
     }
     if (authorFilter) list = list.filter((book) => book.authors.includes(authorFilter));
 
-    return [...list].sort((a, b) => {
-      if (sortBy === 'title') return a.title.localeCompare(b.title);
-      return (a.authors[0] ?? '').localeCompare(b.authors[0] ?? '');
+    const [field, direction] = sortBy.split('-') as ['title' | 'author', 'asc' | 'desc'];
+    const sorted = [...list].sort((a, b) => {
+      const aValue = field === 'title' ? a.title : (a.authors[0] ?? '');
+      const bValue = field === 'title' ? b.title : (b.authors[0] ?? '');
+      return aValue.localeCompare(bValue);
     });
+    return direction === 'desc' ? sorted.reverse() : sorted;
   }, [books, searchQuery, genreFilter, authorFilter, sortBy, genresByBookId]);
 
   function clearFilters() {
@@ -108,16 +114,11 @@ export default function MyTbrScreen() {
             style={[styles.iconButton, { backgroundColor: surfaceMutedColor }]}>
             <IconSymbol name="gearshape.fill" size={20} color={textColor} />
           </Pressable>
-          <Pressable
-            onPress={() => router.push('/add-book')}
-            hitSlop={8}
-            style={[styles.addButton, { backgroundColor: accentColor }]}>
-            <IconSymbol name="plus.circle.fill" size={22} color="#fff" />
-          </Pressable>
         </View>
       </View>
 
       <View style={[styles.searchBox, { backgroundColor: surfaceMutedColor }]}>
+        <IconSymbol name="magnifyingglass" size={18} color={textMutedColor} />
         <TextInput
           value={searchQuery}
           onChangeText={setSearchQuery}
@@ -155,7 +156,7 @@ export default function MyTbrScreen() {
           label={t('library.sort')}
           staticLabel
           selected={sortBy}
-          onSelect={(value) => setSortBy((value as SortBy) ?? 'title')}
+          onSelect={(value) => setSortBy((value as SortBy) ?? 'title-asc')}
           options={sortOptions}
         />
       </View>
@@ -202,6 +203,15 @@ export default function MyTbrScreen() {
           )}
         />
       )}
+
+      <View style={[styles.floatingAddWrapper, { bottom: insets.bottom + 16 }]} pointerEvents="box-none">
+        <Pressable
+          onPress={() => router.push('/add-book')}
+          style={[styles.floatingAddButton, { backgroundColor: accentColor, shadowColor: textColor }]}>
+          <IconSymbol name="plus.circle.fill" size={20} color="#fff" />
+          <ThemedText style={[Typography.button, { color: '#fff' }]}>{t('library.addBook')}</ThemedText>
+        </Pressable>
+      </View>
     </SafeAreaView>
   );
 }
@@ -231,13 +241,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 8,
   },
-  addButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   iconButton: {
     width: 44,
     height: 44,
@@ -249,7 +252,9 @@ const styles = StyleSheet.create({
     marginTop: 14,
     borderRadius: 12,
     minHeight: 44,
-    justifyContent: 'center',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
     paddingHorizontal: 14,
   },
   searchInput: {
@@ -271,6 +276,24 @@ const styles = StyleSheet.create({
   },
   listContent: {
     gap: 10,
-    paddingBottom: 24,
+    paddingBottom: 88,
+  },
+  floatingAddWrapper: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    alignItems: 'center',
+  },
+  floatingAddButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    minHeight: 48,
+    borderRadius: 24,
+    paddingHorizontal: 24,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.25,
+    shadowRadius: 8,
+    elevation: 4,
   },
 });

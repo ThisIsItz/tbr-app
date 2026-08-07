@@ -129,6 +129,9 @@ export default function AddManuallyScreen() {
       if (coverChanged && initialCoverUri) {
         deleteLocalImage(initialCoverUri);
       }
+      // Editing returns to wherever the user came from (the book detail
+      // screen) — a normal back-navigation, not a full-stack collapse.
+      router.back();
     } else {
       await addBook.mutateAsync({
         googleBooksId: null,
@@ -140,9 +143,11 @@ export default function AddManuallyScreen() {
         publishedDate: publishedDate.trim() || null,
         pageCount,
       });
+      // Collapse back to the main TBR screen regardless of how deep this
+      // screen was reached (search, scan ISBN, or cover recognition),
+      // matching the same behavior as the Google Books add-confirm screen.
+      router.dismissTo('/');
     }
-
-    router.back();
   }
 
   if (isEditing && (isLoadingBook || !isPrefilled)) {
