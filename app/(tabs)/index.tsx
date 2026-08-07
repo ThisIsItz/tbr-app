@@ -106,9 +106,16 @@ export default function MyTbrScreen() {
   return (
     <SafeAreaView style={[styles.container, { backgroundColor }]} edges={['top']}>
       <View style={styles.header}>
-        <ThemedText style={[Typography.screenTitle, { color: textColor }]}>
-          {t('library.title')}
-        </ThemedText>
+        <View style={styles.titleColumn}>
+          <ThemedText style={[Typography.screenTitle, { color: textColor }]}>
+            {t('library.title')}
+          </ThemedText>
+          {filteredBooks.length > 1 && (
+            <ThemedText style={[Typography.metadata, { color: textMutedColor }]}>
+              {t('library.bookCount', { count: filteredBooks.length })}
+            </ThemedText>
+          )}
+        </View>
         <View style={styles.headerActions}>
           <Pressable
             onPress={() => router.push('/settings')}
@@ -234,6 +241,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+  },
+  titleColumn: {
+    gap: 2,
   },
   headerActions: {
     flexDirection: 'row',
