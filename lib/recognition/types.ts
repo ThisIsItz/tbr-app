@@ -27,6 +27,10 @@ export interface CoverRecognitionResult {
    *  "less reliable, on-device guess" notice when the vision API wasn't
    *  used (unreachable, unconfigured, or errored), never silently. */
   source: 'vision' | 'ocr';
+  /** TEMPORARY diagnostic field — why the vision path wasn't used, when
+   *  source === 'ocr'. Remove once the Play-build fallback issue is
+   *  root-caused; not meant to ship long-term. */
+  debugFallbackReason?: string;
 }
 
 export interface BookCoverRecognitionService {

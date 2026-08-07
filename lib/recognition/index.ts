@@ -19,9 +19,13 @@ export const bookCoverRecognitionService: BookCoverRecognitionService = {
       try {
         return await recognizeCoverWithVisionApi(imageUri);
       } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
         console.warn('[recognition] vision API failed, falling back to on-device OCR:', error);
+        const ocrResult = await ocrBookCoverRecognitionService.recognizeCover(imageUri);
+        return { ...ocrResult, debugFallbackReason: message };
       }
     }
-    return ocrBookCoverRecognitionService.recognizeCover(imageUri);
+    const ocrResult = await ocrBookCoverRecognitionService.recognizeCover(imageUri);
+    return { ...ocrResult, debugFallbackReason: 'EXPO_PUBLIC_RECOGNIZE_COVER_API_URL not set' };
   },
 };
