@@ -1,5 +1,5 @@
 import { router } from 'expo-router';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, FlatList, Pressable, StyleSheet, TextInput, View } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -93,6 +93,18 @@ export default function MyTbrScreen() {
     setAuthorFilter(null);
   }
 
+  // Once every book is removed, stale search/filter/sort state would just
+  // sit there hiding whatever gets added next — reset to defaults so
+  // there's a clean slate rather than a confusing empty state to debug.
+  const isLibraryEmpty = (books?.length ?? 0) === 0;
+  useEffect(() => {
+    if (!isLibraryEmpty) return;
+    setSearchQuery('');
+    setGenreFilters([]);
+    setAuthorFilter(null);
+    setSortBy('title-asc');
+  }, [isLibraryEmpty]);
+
   if (isLoading) {
     return (
       <SafeAreaView style={[styles.centered, { backgroundColor }]} edges={['top']}>
@@ -100,8 +112,6 @@ export default function MyTbrScreen() {
       </SafeAreaView>
     );
   }
-
-  const isLibraryEmpty = (books?.length ?? 0) === 0;
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor }]} edges={['top']}>
