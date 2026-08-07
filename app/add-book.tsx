@@ -59,9 +59,16 @@ export default function AddBookScreen() {
         </Pressable>
         <Pressable
           style={[styles.quickAction, { backgroundColor: surfaceMutedColor }]}
-          onPress={() => router.push('/recognize-cover')}>
+          onPress={() => router.push({ pathname: '/recognize-cover', params: { pickSource: 'camera' } })}>
           <ThemedText style={[Typography.button, { color: textColor }]}>
             {t('search.scanCover')}
+          </ThemedText>
+        </Pressable>
+        <Pressable
+          style={[styles.quickAction, { backgroundColor: surfaceMutedColor }]}
+          onPress={() => router.push({ pathname: '/recognize-cover', params: { pickSource: 'gallery' } })}>
+          <ThemedText style={[Typography.button, { color: textColor }]}>
+            {t('search.uploadPhoto')}
           </ThemedText>
         </Pressable>
         <Pressable
@@ -148,11 +155,13 @@ const styles = StyleSheet.create({
   },
   quickActionsRow: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     gap: 8,
     marginTop: 10,
   },
   quickAction: {
-    flex: 1,
+    flexBasis: '48%',
+    flexGrow: 1,
     minHeight: 44,
     alignItems: 'center',
     justifyContent: 'center',

@@ -31,6 +31,7 @@
     "placeholder": "Search by title, author, or ISBN",
     "scanIsbn": "Scan ISBN",
     "scanCover": "Scan Cover",
+    "uploadPhoto": "Upload Photo",
     "addManually": "Add Manually",
     "emptyTitle": "Find a book",
     "emptyText": "Search by title, author, or ISBN to add it to your TBR.",

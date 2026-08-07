@@ -31,6 +31,7 @@
     "placeholder": "Busca por título, autor o ISBN",
     "scanIsbn": "Escanear ISBN",
     "scanCover": "Escanear portada",
+    "uploadPhoto": "Subir foto",
     "addManually": "Añadir manualmente",
     "emptyTitle": "Busca un libro",
     "emptyText": "Busca por título, autor o ISBN para añadirlo a tu TBR.",

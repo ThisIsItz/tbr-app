@@ -1,6 +1,6 @@
 import * as ImagePicker from 'expo-image-picker';
-import { router, Stack } from 'expo-router';
-import { useState } from 'react';
+import { router, Stack, useLocalSearchParams } from 'expo-router';
+import { useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -31,6 +31,7 @@ type SearchStatus = 'idle' | 'loading' | 'done';
 const MIN_RELIABLE_SCORE = 30;
 
 export default function RecognizeCoverScreen() {
+  const { pickSource } = useLocalSearchParams<{ pickSource?: 'camera' | 'gallery' }>();
   const { t } = useTranslation();
   const backgroundColor = useThemeColor({}, 'background');
   const surfaceMutedColor = useThemeColor({}, 'surfaceMuted');
@@ -75,6 +76,14 @@ export default function RecognizeCoverScreen() {
       Alert.alert(t('common.genericError'));
     }
   }
+
+  const hasAutoTriggered = useRef(false);
+  useEffect(() => {
+    if (hasAutoTriggered.current || !pickSource) return;
+    hasAutoTriggered.current = true;
+    handlePick(pickSource);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pickSource]);
 
   async function ensureCameraPermission(): Promise<boolean> {
     const current = await ImagePicker.getCameraPermissionsAsync();
