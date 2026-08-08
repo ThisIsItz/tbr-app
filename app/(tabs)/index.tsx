@@ -217,12 +217,14 @@ export default function MyTbrScreen() {
         />
       )}
 
-      <View style={[styles.floatingAddWrapper, { bottom: insets.bottom + 16 }]} pointerEvents="box-none">
+      <View style={[styles.floatingAddWrapper, { bottom: insets.bottom + 28 }]} pointerEvents="box-none">
         <Pressable
           onPress={() => router.push('/add-book')}
           style={[styles.floatingAddButton, { backgroundColor: accentColor, shadowColor: textColor }]}>
-          <IconSymbol name="plus.circle.fill" size={20} color="#fff" />
-          <ThemedText style={[Typography.button, { color: '#fff' }]}>{t('library.addBook')}</ThemedText>
+          <IconSymbol name="plus.circle.fill" size={24} color="#fff" />
+          <ThemedText style={[Typography.button, styles.floatingAddButtonText, { color: '#fff' }]}>
+            {t('library.addBook')}
+          </ThemedText>
         </Pressable>
       </View>
     </SafeAreaView>
@@ -303,13 +305,17 @@ const styles = StyleSheet.create({
   floatingAddButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
-    minHeight: 48,
-    borderRadius: 24,
-    paddingHorizontal: 24,
+    gap: 10,
+    minHeight: 56,
+    borderRadius: 28,
+    paddingHorizontal: 28,
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.25,
     shadowRadius: 8,
     elevation: 4,
+  },
+  floatingAddButtonText: {
+    fontSize: 17,
+    lineHeight: 22,
   },
 });
