@@ -1,6 +1,6 @@
 import { type SQLiteDatabase } from 'expo-sqlite';
 
-const SCHEMA_VERSION = 2;
+const SCHEMA_VERSION = 3;
 
 const MIGRATIONS: Record<number, string> = {
   1: `
@@ -30,6 +30,10 @@ const MIGRATIONS: Record<number, string> = {
       key TEXT PRIMARY KEY,
       value TEXT NOT NULL
     );
+  `,
+  3: `
+    ALTER TABLE books ADD COLUMN publisher TEXT;
+    ALTER TABLE books ADD COLUMN language TEXT;
   `,
 };
 

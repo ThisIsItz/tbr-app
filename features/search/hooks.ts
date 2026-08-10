@@ -32,7 +32,7 @@ export function useQuickAddBook() {
   const addBook = useAddBook();
 
   function quickAdd(volume: GoogleBooksVolume) {
-    const { title, authors, description, publishedDate, pageCount, imageLinks, categories } =
+    const { title, authors, description, publishedDate, pageCount, publisher, language, imageLinks, categories } =
       volume.volumeInfo;
     return addBook.mutateAsync({
       googleBooksId: volume.id,
@@ -43,6 +43,8 @@ export function useQuickAddBook() {
       description: description ? sanitizeDescription(description) : null,
       publishedDate: publishedDate ?? null,
       pageCount: pageCount ?? null,
+      publisher: publisher ?? null,
+      language: language ?? null,
     });
   }
 

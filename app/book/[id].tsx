@@ -4,15 +4,36 @@ import { Alert, Image, Modal, Pressable, ScrollView, StyleSheet, View } from 're
 
 import { GenreEditor } from '@/components/genre-editor';
 import { ThemedText } from '@/components/themed-text';
+import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Typography } from '@/constants/theme';
 import { useBook, useDeleteBook, useUpdateBookGenres } from '@/features/library/hooks';
 import { useThemeColor } from '@/hooks/use-theme-color';
 import { useTranslation } from '@/hooks/use-translation';
 import { normalizeGenres } from '@/lib/genres';
 import { toHttpsUrl } from '@/lib/google-books';
+import { getLanguageName } from '@/lib/language-names';
 import { sanitizeDescription } from '@/lib/sanitize-html';
 
 const MAX_VISIBLE_GENRES = 3;
+const DESCRIPTION_COLLAPSED_LINES = 6;
+const FADE_BARS = 6;
+
+function DetailRow({ label, value, isFirst }: { label: string; value: string; isFirst: boolean }) {
+  const textColor = useThemeColor({}, 'text');
+  const textMutedColor = useThemeColor({}, 'textMuted');
+  const borderColor = useThemeColor({}, 'border');
+
+  return (
+    <View
+      style={[
+        styles.detailRow,
+        !isFirst && { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: borderColor },
+      ]}>
+      <ThemedText style={[Typography.metadata, { color: textMutedColor }]}>{label}</ThemedText>
+      <ThemedText style={[Typography.body, { color: textColor }]}>{value}</ThemedText>
+    </View>
+  );
+}
 
 export default function BookDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -30,6 +51,8 @@ export default function BookDetailScreen() {
   const updateGenres = useUpdateBookGenres();
   const deleteBook = useDeleteBook();
   const [isGenreModalVisible, setGenreModalVisible] = useState(false);
+  const [isDescriptionExpanded, setDescriptionExpanded] = useState(false);
+  const [hasMoreDescription, setHasMoreDescription] = useState(false);
 
   if (isLoading || !book) {
     return <View style={[styles.centered, { backgroundColor }]} />;
@@ -57,6 +80,19 @@ export default function BookDetailScreen() {
   const genres = normalizeGenres(book.genres);
   const visibleGenres = genres.slice(0, MAX_VISIBLE_GENRES);
   const extraGenreCount = genres.length - visibleGenres.length;
+  const description = book.description ? sanitizeDescription(book.description) : null;
+
+  const detailRows = [
+    book.pageCount != null && {
+      label: t('bookDetail.pages'),
+      value: t(book.pageCount === 1 ? 'bookDetail.onePage' : 'bookDetail.pagesCount', {
+        count: book.pageCount,
+      }),
+    },
+    book.language && { label: t('bookDetail.language'), value: getLanguageName(book.language) },
+    book.publisher && { label: t('bookDetail.publisher'), value: book.publisher },
+    book.publishedDate && { label: t('bookDetail.published'), value: book.publishedDate },
+  ].filter((row): row is { label: string; value: string } => !!row);
 
   return (
     <ScrollView style={{ backgroundColor }} contentContainerStyle={styles.container}>
@@ -77,48 +113,83 @@ export default function BookDetailScreen() {
             </ThemedText>
           </View>
         )}
-        <View style={styles.headerText}>
-          <ThemedText style={[Typography.bookTitle, { color: textColor }]}>{book.title}</ThemedText>
-          {book.authors.length > 0 && (
-            <ThemedText style={[Typography.metadata, { color: textMutedColor }]}>
-              {book.authors.join(', ')}
+        <ThemedText style={[Typography.screenTitle, styles.centeredText, { color: textColor }]}>
+          {book.title}
+        </ThemedText>
+        {book.authors.length > 0 && (
+          <ThemedText style={[styles.author, styles.centeredText, { color: textMutedColor }]}>
+            {book.authors.join(', ')}
+          </ThemedText>
+        )}
+        {book.googleBooksId === null && (
+          <Pressable
+            onPress={() => router.push({ pathname: '/add-manually', params: { id: book.id } })}
+            hitSlop={8}>
+            <ThemedText style={[Typography.button, { color: accentColor }]}>
+              {t('bookDetail.editBook')}
             </ThemedText>
-          )}
-          {(book.publishedDate || book.pageCount != null) && (
-            <ThemedText style={[Typography.metadata, { color: textMutedColor }]}>
-              {[
-                book.publishedDate,
-                book.pageCount != null
-                  ? t(book.pageCount === 1 ? 'bookDetail.onePage' : 'bookDetail.pagesCount', {
-                      count: book.pageCount,
-                    })
-                  : null,
-              ]
-                .filter(Boolean)
-                .join(' · ')}
-            </ThemedText>
-          )}
-          {book.googleBooksId === null && (
-            <Pressable
-              onPress={() => router.push({ pathname: '/add-manually', params: { id: book.id } })}
-              hitSlop={8}
-              style={styles.editBookLink}>
-              <ThemedText style={[Typography.button, { color: accentColor }]}>
-                {t('bookDetail.editBook')}
-              </ThemedText>
-            </Pressable>
-          )}
-        </View>
+          </Pressable>
+        )}
       </View>
 
-      {book.description && (
+      {description && (
         <View style={styles.section}>
           <ThemedText style={[Typography.sectionTitle, { color: textColor }]}>
             {t('bookDetail.description')}
           </ThemedText>
-          <ThemedText style={[Typography.body, { color: textMutedColor }]}>
-            {sanitizeDescription(book.description)}
+          <View>
+            <ThemedText
+              style={[Typography.body, { color: textMutedColor }]}
+              numberOfLines={isDescriptionExpanded ? undefined : DESCRIPTION_COLLAPSED_LINES}
+              onTextLayout={(e) => {
+                if (!isDescriptionExpanded) {
+                  setHasMoreDescription(e.nativeEvent.lines.length >= DESCRIPTION_COLLAPSED_LINES);
+                }
+              }}>
+              {description}
+            </ThemedText>
+            {!isDescriptionExpanded && hasMoreDescription && (
+              <View style={styles.descriptionFade} pointerEvents="none">
+                {Array.from({ length: FADE_BARS }).map((_, i) => (
+                  <View
+                    key={i}
+                    style={[
+                      styles.descriptionFadeBar,
+                      { backgroundColor, opacity: (i + 1) / FADE_BARS },
+                    ]}
+                  />
+                ))}
+              </View>
+            )}
+          </View>
+          {hasMoreDescription && (
+            <Pressable
+              onPress={() => setDescriptionExpanded((v) => !v)}
+              hitSlop={8}
+              style={styles.expandButton}>
+              <ThemedText style={[Typography.button, { color: accentColor }]}>
+                {isDescriptionExpanded ? t('bookDetail.showLess') : t('bookDetail.showMore')}
+              </ThemedText>
+              <IconSymbol
+                name={isDescriptionExpanded ? 'chevron.down' : 'chevron.right'}
+                size={16}
+                color={accentColor}
+              />
+            </Pressable>
+          )}
+        </View>
+      )}
+
+      {detailRows.length > 0 && (
+        <View style={styles.section}>
+          <ThemedText style={[Typography.sectionTitle, { color: textColor }]}>
+            {t('bookDetail.details')}
           </ThemedText>
+          <View style={[styles.detailsCard, { backgroundColor: surfaceColor }]}>
+            {detailRows.map((row, index) => (
+              <DetailRow key={row.label} label={row.label} value={row.value} isFirst={index === 0} />
+            ))}
+          </View>
         </View>
       )}
 
@@ -202,27 +273,27 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
-    flexDirection: 'row',
-    gap: 16,
+    alignItems: 'center',
+    gap: 6,
+  },
+  centeredText: {
+    textAlign: 'center',
   },
   thumbnail: {
-    width: 80,
-    height: 120,
-    borderRadius: 8,
+    width: 180,
+    height: 270,
+    borderRadius: 14,
+    marginBottom: 8,
   },
   thumbnailPlaceholder: {
     alignItems: 'center',
     justifyContent: 'center',
     padding: 4,
   },
-  headerText: {
-    flex: 1,
-    justifyContent: 'center',
-    gap: 4,
-  },
-  editBookLink: {
-    marginTop: 4,
-    alignSelf: 'flex-start',
+  author: {
+    fontSize: 18,
+    lineHeight: 24,
+    fontWeight: '500',
   },
   section: {
     gap: 8,
@@ -231,6 +302,34 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+  },
+  descriptionFade: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    height: 60,
+    flexDirection: 'column',
+  },
+  descriptionFadeBar: {
+    flex: 1,
+  },
+  expandButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 2,
+    alignSelf: 'flex-start',
+  },
+  detailsCard: {
+    borderRadius: 14,
+    overflow: 'hidden',
+  },
+  detailRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    minHeight: 44,
+    paddingHorizontal: 16,
   },
   genreChipRow: {
     flexDirection: 'row',

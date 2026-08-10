@@ -52,7 +52,8 @@ export default function AddBookScreen() {
     );
   }
 
-  const { title, authors, description, publishedDate, pageCount, imageLinks } = volume.volumeInfo;
+  const { title, authors, description, publishedDate, pageCount, publisher, language, imageLinks } =
+    volume.volumeInfo;
   const coverUrl = toHttpsUrl(imageLinks?.thumbnail);
 
   async function handleSave() {
@@ -65,6 +66,8 @@ export default function AddBookScreen() {
       description: description ? sanitizeDescription(description) : null,
       publishedDate: publishedDate ?? null,
       pageCount: pageCount ?? null,
+      publisher: publisher ?? null,
+      language: language ?? null,
     });
     // Collapse back to the main TBR screen regardless of how deep this
     // screen was reached (search, scan, or cover recognition), rather than

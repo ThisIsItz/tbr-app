@@ -12,6 +12,8 @@ export interface Book {
   description: string | null;
   publishedDate: string | null;
   pageCount: number | null;
+  publisher: string | null;
+  language: string | null;
   status: ReadingStatus;
   createdAt: string;
   updatedAt: string;
@@ -26,4 +28,6 @@ export interface NewBookInput {
   description: string | null;
   publishedDate: string | null;
   pageCount: number | null;
+  publisher: string | null;
+  language: string | null;
 }

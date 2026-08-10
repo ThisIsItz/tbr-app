@@ -79,7 +79,14 @@
     "removeTitle": "Remove book?",
     "removeBody": "\"{{title}}\" will be removed from your TBR.",
     "onePage": "1 page",
-    "pagesCount": "{{count}} pages"
+    "pagesCount": "{{count}} pages",
+    "details": "Details",
+    "pages": "Pages",
+    "language": "Language",
+    "publisher": "Publisher",
+    "published": "Published",
+    "showMore": "Show more",
+    "showLess": "Show less"
   },
   "bookCard": {
     "noCover": "No cover",

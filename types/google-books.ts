@@ -13,6 +13,8 @@ export interface GoogleBooksVolume {
     description?: string;
     publishedDate?: string;
     pageCount?: number;
+    publisher?: string;
+    language?: string;
     industryIdentifiers?: GoogleBooksIndustryIdentifier[];
     averageRating?: number;
     ratingsCount?: number;

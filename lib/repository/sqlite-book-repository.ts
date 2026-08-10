@@ -15,6 +15,8 @@ interface BookRow {
   description: string | null;
   published_date: string | null;
   page_count: number | null;
+  publisher: string | null;
+  language: string | null;
   status: ReadingStatus;
   created_at: string;
   updated_at: string;
@@ -31,6 +33,8 @@ function rowToBook(row: BookRow): Book {
     description: row.description,
     publishedDate: row.published_date,
     pageCount: row.page_count,
+    publisher: row.publisher,
+    language: row.language,
     status: row.status,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
@@ -69,8 +73,9 @@ export const sqliteBookRepository: BookRepository = {
     await db.runAsync(
       `INSERT INTO books (
         id, google_books_id, title, authors, genres, thumbnail_url,
-        description, published_date, page_count, status, created_at, updated_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'to_read', ?, ?)`,
+        description, published_date, page_count, publisher, language,
+        status, created_at, updated_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'to_read', ?, ?)`,
       [
         id,
         input.googleBooksId,
@@ -81,6 +86,8 @@ export const sqliteBookRepository: BookRepository = {
         input.description,
         input.publishedDate,
         input.pageCount,
+        input.publisher,
+        input.language,
         now,
         now,
       ],
@@ -121,7 +128,7 @@ export const sqliteBookRepository: BookRepository = {
     await db.runAsync(
       `UPDATE books SET
         title = ?, authors = ?, description = ?, thumbnail_url = ?,
-        published_date = ?, page_count = ?, updated_at = ?
+        published_date = ?, page_count = ?, publisher = ?, language = ?, updated_at = ?
       WHERE id = ?`,
       [
         updates.title,
@@ -130,6 +137,8 @@ export const sqliteBookRepository: BookRepository = {
         updates.thumbnailUrl,
         updates.publishedDate,
         updates.pageCount,
+        updates.publisher,
+        updates.language,
         now,
         id,
       ],
@@ -158,8 +167,9 @@ export const sqliteBookRepository: BookRepository = {
         const result = await db.runAsync(
           `INSERT OR IGNORE INTO books (
             id, google_books_id, title, authors, genres, thumbnail_url,
-            description, published_date, page_count, status, created_at, updated_at
-          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            description, published_date, page_count, publisher, language,
+            status, created_at, updated_at
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
           [
             book.id,
             book.googleBooksId,
@@ -170,6 +180,10 @@ export const sqliteBookRepository: BookRepository = {
             book.description,
             book.publishedDate,
             book.pageCount,
+            // Older backups predate these fields — default to null rather
+            // than passing undefined to the SQLite bind params.
+            book.publisher ?? null,
+            book.language ?? null,
             book.status,
             book.createdAt,
             book.updatedAt,

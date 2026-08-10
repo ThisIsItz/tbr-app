@@ -79,7 +79,14 @@
     "removeTitle": "¿Eliminar libro?",
     "removeBody": "«{{title}}» se eliminará de tu TBR.",
     "onePage": "1 página",
-    "pagesCount": "{{count}} páginas"
+    "pagesCount": "{{count}} páginas",
+    "details": "Detalles",
+    "pages": "Páginas",
+    "language": "Idioma",
+    "publisher": "Editorial",
+    "published": "Publicación",
+    "showMore": "Ver más",
+    "showLess": "Ver menos"
   },
   "bookCard": {
     "noCover": "Sin portada",

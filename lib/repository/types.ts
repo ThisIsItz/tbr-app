@@ -12,6 +12,8 @@ export interface BookDetailsUpdate {
   thumbnailUrl: string | null;
   publishedDate: string | null;
   pageCount: number | null;
+  publisher: string | null;
+  language: string | null;
 }
 
 export interface BookRepository {

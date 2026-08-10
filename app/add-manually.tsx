@@ -118,6 +118,8 @@ export default function AddManuallyScreen() {
           thumbnailUrl,
           publishedDate: publishedDate.trim() || null,
           pageCount,
+          publisher: existingBook?.publisher ?? null,
+          language: existingBook?.language ?? null,
         },
       });
       if (coverChanged && initialCoverUri) {
@@ -134,6 +136,8 @@ export default function AddManuallyScreen() {
         description: description.trim() || null,
         publishedDate: publishedDate.trim() || null,
         pageCount,
+        publisher: null,
+        language: null,
       });
       router.dismissTo('/');
     }
