@@ -82,7 +82,11 @@ export function MultiFilterSheet({ label, options, selected, onChange, disabled 
                       ]}>
                       {item}
                     </ThemedText>
-                    {isSelected && <IconSymbol name="checkmark" size={18} color={accentColor} />}
+                    <IconSymbol
+                      name={isSelected ? 'checkmark.circle.fill' : 'circle'}
+                      size={20}
+                      color={isSelected ? accentColor : textMutedColor}
+                    />
                   </Pressable>
                 );
               }}
