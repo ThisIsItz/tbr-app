@@ -113,23 +113,24 @@ export default function BookDetailScreen() {
             </ThemedText>
           </View>
         )}
-        <ThemedText style={[Typography.screenTitle, styles.centeredText, { color: textColor }]}>
-          {book.title}
-        </ThemedText>
-        {book.authors.length > 0 && (
-          <ThemedText style={[styles.author, styles.centeredText, { color: textMutedColor }]}>
-            {book.authors.join(', ')}
-          </ThemedText>
-        )}
-        {book.googleBooksId === null && (
-          <Pressable
-            onPress={() => router.push({ pathname: '/add-manually', params: { id: book.id } })}
-            hitSlop={8}>
-            <ThemedText style={[Typography.button, { color: accentColor }]}>
-              {t('bookDetail.editBook')}
+        <View style={styles.headerText}>
+          <ThemedText style={[Typography.screenTitle, { color: textColor }]}>{book.title}</ThemedText>
+          {book.authors.length > 0 && (
+            <ThemedText style={[styles.author, { color: textMutedColor }]}>
+              {book.authors.join(', ')}
             </ThemedText>
-          </Pressable>
-        )}
+          )}
+          {book.googleBooksId === null && (
+            <Pressable
+              onPress={() => router.push({ pathname: '/add-manually', params: { id: book.id } })}
+              hitSlop={8}
+              style={styles.editBookLink}>
+              <ThemedText style={[Typography.button, { color: accentColor }]}>
+                {t('bookDetail.editBook')}
+              </ThemedText>
+            </Pressable>
+          )}
+        </View>
       </View>
 
       {description && (
@@ -273,27 +274,32 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
-    alignItems: 'center',
-    gap: 6,
-  },
-  centeredText: {
-    textAlign: 'center',
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 16,
   },
   thumbnail: {
-    width: 180,
-    height: 270,
+    width: 130,
+    height: 195,
     borderRadius: 14,
-    marginBottom: 8,
   },
   thumbnailPlaceholder: {
     alignItems: 'center',
     justifyContent: 'center',
     padding: 4,
   },
+  headerText: {
+    flex: 1,
+    gap: 6,
+  },
   author: {
     fontSize: 18,
     lineHeight: 24,
     fontWeight: '500',
+  },
+  editBookLink: {
+    marginTop: 2,
+    alignSelf: 'flex-start',
   },
   section: {
     gap: 8,
