@@ -37,7 +37,8 @@
     "emptyText": "Search by title, author, or ISBN to add it to your TBR.",
     "noResultsFor": "No results for \"{{query}}\".",
     "add": "+ Add",
-    "added": "Added"
+    "added": "Added",
+    "adding": "Adding…"
   },
   "addConfirm": {
     "loadError": "Couldn't load this book. Try again.",

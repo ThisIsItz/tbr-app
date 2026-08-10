@@ -1,18 +1,19 @@
 import { router } from 'expo-router';
 import { useMemo, useState } from 'react';
-import { ActivityIndicator, FlatList, Pressable, StyleSheet, TextInput, View } from 'react-native';
+import { ActivityIndicator, Alert, FlatList, Pressable, StyleSheet, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { BookCard } from '@/components/book-card';
 import { ThemedText } from '@/components/themed-text';
 import { Typography } from '@/constants/theme';
 import { useBooks } from '@/features/library/hooks';
-import { useSearchBooks } from '@/features/search/hooks';
+import { useQuickAddBook, useSearchBooks } from '@/features/search/hooks';
 import { useDebouncedValue } from '@/hooks/use-debounced-value';
 import { useThemeColor } from '@/hooks/use-theme-color';
 import { useTranslation } from '@/hooks/use-translation';
 import { normalizeGenres } from '@/lib/genres';
 import { getErrorTranslationKey } from '@/lib/google-books';
+import type { GoogleBooksVolume } from '@/types/google-books';
 
 export default function AddBookScreen() {
   const { t } = useTranslation();
@@ -26,6 +27,7 @@ export default function AddBookScreen() {
 
   const { data: results, isLoading, isError, error } = useSearchBooks(debouncedQuery);
   const { data: libraryBooks } = useBooks();
+  const { quickAdd, isAdding } = useQuickAddBook();
 
   const savedGoogleIds = useMemo(
     () => new Set(libraryBooks?.map((book) => book.googleBooksId).filter(Boolean)),
@@ -33,6 +35,14 @@ export default function AddBookScreen() {
   );
 
   const hasSearched = debouncedQuery.trim().length > 0;
+
+  async function handleQuickAdd(item: GoogleBooksVolume) {
+    try {
+      await quickAdd(item);
+    } catch {
+      Alert.alert(t('common.genericError'));
+    }
+  }
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor }]} edges={['bottom']}>
@@ -115,8 +125,8 @@ export default function AddBookScreen() {
         contentContainerStyle={styles.listContent}
         renderItem={({ item }) => {
           const alreadySaved = savedGoogleIds.has(item.id);
+          const adding = isAdding(item.id);
           const { title, authors, categories, imageLinks } = item.volumeInfo;
-          const goToDetails = () => router.push(`/add/${item.id}`);
           return (
             <BookCard
               variant="result"
@@ -124,11 +134,11 @@ export default function AddBookScreen() {
               author={authors?.join(', ') ?? null}
               genre={normalizeGenres(categories ?? [])[0] ?? null}
               thumbnailUrl={imageLinks?.thumbnail ?? null}
-              onPress={goToDetails}
+              onPress={() => router.push(`/add/${item.id}`)}
               action={{
-                label: alreadySaved ? t('search.added') : t('search.add'),
-                disabled: alreadySaved,
-                onPress: goToDetails,
+                label: alreadySaved ? t('search.added') : adding ? t('search.adding') : t('search.add'),
+                disabled: alreadySaved || adding,
+                onPress: () => handleQuickAdd(item),
               }}
             />
           );

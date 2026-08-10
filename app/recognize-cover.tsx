@@ -17,6 +17,7 @@ import { BookCard } from '@/components/book-card';
 import { ThemedText } from '@/components/themed-text';
 import { Typography } from '@/constants/theme';
 import { useBooks } from '@/features/library/hooks';
+import { useQuickAddBook } from '@/features/search/hooks';
 import { useThemeColor } from '@/hooks/use-theme-color';
 import { useTranslation } from '@/hooks/use-translation';
 import { scoreVolume } from '@/lib/book-relevance';
@@ -52,6 +53,15 @@ export default function RecognizeCoverScreen() {
 
   const { data: libraryBooks } = useBooks();
   const savedGoogleIds = new Set(libraryBooks?.map((book) => book.googleBooksId).filter(Boolean));
+  const { quickAdd, isAdding } = useQuickAddBook();
+
+  async function handleQuickAdd(item: GoogleBooksVolume) {
+    try {
+      await quickAdd(item);
+    } catch {
+      Alert.alert(t('common.genericError'));
+    }
+  }
 
   async function handlePick(source: 'camera' | 'gallery') {
     try {
@@ -362,8 +372,8 @@ export default function RecognizeCoverScreen() {
               <View style={styles.resultsList}>
                 {matches.map((item) => {
                   const alreadySaved = savedGoogleIds.has(item.id);
+                  const adding = isAdding(item.id);
                   const { title: matchTitle, authors, categories, imageLinks } = item.volumeInfo;
-                  const goToDetails = () => router.push(`/add/${item.id}`);
                   return (
                     <BookCard
                       key={item.id}
@@ -372,11 +382,11 @@ export default function RecognizeCoverScreen() {
                       author={authors?.join(', ') ?? null}
                       genre={categories?.[0] ?? null}
                       thumbnailUrl={imageLinks?.thumbnail ?? null}
-                      onPress={goToDetails}
+                      onPress={() => router.push(`/add/${item.id}`)}
                       action={{
-                        label: alreadySaved ? t('search.added') : t('search.add'),
-                        disabled: alreadySaved,
-                        onPress: goToDetails,
+                        label: alreadySaved ? t('search.added') : adding ? t('search.adding') : t('search.add'),
+                        disabled: alreadySaved || adding,
+                        onPress: () => handleQuickAdd(item),
                       }}
                     />
                   );
