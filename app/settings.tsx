@@ -2,7 +2,7 @@ import * as DocumentPicker from 'expo-document-picker';
 import { ActivityIndicator, Alert, Pressable, StyleSheet, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
-import { IconSymbol } from '@/components/ui/icon-symbol';
+import { IconSymbol, type IconSymbolName } from '@/components/ui/icon-symbol';
 import { Typography } from '@/constants/theme';
 import { useExportBackup, useImportBackup } from '@/features/library/hooks';
 import { useAppColorScheme } from '@/hooks/use-app-color-scheme';
@@ -20,10 +20,11 @@ const LANGUAGE_OPTIONS: { value: Locale; labelKey: 'settings.english' | 'setting
 const APPEARANCE_OPTIONS: {
   value: ThemePreference;
   labelKey: 'settings.appearanceSystem' | 'settings.appearanceLight' | 'settings.appearanceDark';
+  icon: IconSymbolName;
 }[] = [
-  { value: 'system', labelKey: 'settings.appearanceSystem' },
-  { value: 'light', labelKey: 'settings.appearanceLight' },
-  { value: 'dark', labelKey: 'settings.appearanceDark' },
+  { value: 'system', labelKey: 'settings.appearanceSystem', icon: 'circle.lefthalf.filled' },
+  { value: 'light', labelKey: 'settings.appearanceLight', icon: 'sun.max.fill' },
+  { value: 'dark', labelKey: 'settings.appearanceDark', icon: 'moon.fill' },
 ];
 
 interface OptionsCardProps<T extends string> {
@@ -39,6 +40,7 @@ function OptionsCard<T extends string>({ options, selected, onSelect, t }: Optio
   const textColor = useThemeColor({}, 'text');
   const borderColor = useThemeColor({}, 'border');
   const accentColor = useThemeColor({}, 'accent');
+  const accentSoftColor = useThemeColor({}, 'accentSoft');
 
   return (
     <View style={[styles.optionsCard, { backgroundColor: surfaceColor, shadowColor }]}>
@@ -50,13 +52,63 @@ function OptionsCard<T extends string>({ options, selected, onSelect, t }: Optio
             onPress={() => onSelect(option.value)}
             style={[
               styles.optionRow,
+              isActive && { backgroundColor: accentSoftColor },
               index > 0 && { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: borderColor },
             ]}>
             <ThemedText
-              style={[Typography.body, { color: textColor, fontWeight: isActive ? '700' : '400' }]}>
+              style={[
+                Typography.body,
+                { color: isActive ? accentColor : textColor, fontWeight: isActive ? '700' : '400' },
+              ]}>
               {t(option.labelKey)}
             </ThemedText>
-            {isActive && <IconSymbol name="checkmark" size={18} color={accentColor} />}
+          </Pressable>
+        );
+      })}
+    </View>
+  );
+}
+
+function AppearanceCards({
+  selected,
+  onSelect,
+  t,
+}: {
+  selected: ThemePreference;
+  onSelect: (value: ThemePreference) => void;
+  t: (key: string) => string;
+}) {
+  const surfaceColor = useThemeColor({}, 'surface');
+  const shadowColor = useThemeColor({}, 'shadow');
+  const textColor = useThemeColor({}, 'text');
+  const textMutedColor = useThemeColor({}, 'textMuted');
+  const accentColor = useThemeColor({}, 'accent');
+  const accentSoftColor = useThemeColor({}, 'accentSoft');
+
+  return (
+    <View style={styles.appearanceRow}>
+      {APPEARANCE_OPTIONS.map((option) => {
+        const isActive = option.value === selected;
+        return (
+          <Pressable
+            key={option.value}
+            onPress={() => onSelect(option.value)}
+            style={[
+              styles.appearanceCard,
+              {
+                backgroundColor: isActive ? accentSoftColor : surfaceColor,
+                borderColor: isActive ? accentColor : 'transparent',
+                shadowColor,
+              },
+            ]}>
+            <IconSymbol name={option.icon} size={22} color={isActive ? accentColor : textMutedColor} />
+            <ThemedText
+              style={[
+                Typography.metadata,
+                { color: isActive ? accentColor : textColor, fontWeight: isActive ? '700' : '500' },
+              ]}>
+              {t(option.labelKey)}
+            </ThemedText>
           </Pressable>
         );
       })}
@@ -118,12 +170,7 @@ export default function SettingsScreen() {
       <ThemedText style={[Typography.sectionTitle, styles.sectionLabel, { color: textColor }]}>
         {t('settings.appearance')}
       </ThemedText>
-      <OptionsCard
-        options={APPEARANCE_OPTIONS}
-        selected={themePreference}
-        onSelect={setThemePreference}
-        t={t}
-      />
+      <AppearanceCards selected={themePreference} onSelect={setThemePreference} t={t} />
 
       <ThemedText style={[Typography.sectionTitle, styles.sectionLabel, { color: textColor }]}>
         {t('settings.data')}
@@ -171,5 +218,22 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     minHeight: 44,
     paddingHorizontal: 16,
+  },
+  appearanceRow: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  appearanceCard: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    paddingVertical: 14,
+    borderRadius: 14,
+    borderWidth: 1.5,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 1,
+    shadowRadius: 6,
+    elevation: 2,
   },
 });
