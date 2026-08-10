@@ -5,6 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { BookCard } from '@/components/book-card';
 import { ThemedText } from '@/components/themed-text';
+import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Typography } from '@/constants/theme';
 import { useBooks } from '@/features/library/hooks';
 import { useQuickAddBook, useSearchBooks } from '@/features/search/hooks';
@@ -47,6 +48,7 @@ export default function AddBookScreen() {
   return (
     <SafeAreaView style={[styles.container, { backgroundColor }]} edges={['bottom']}>
       <View style={[styles.searchBox, { backgroundColor: surfaceMutedColor }]}>
+        <IconSymbol name="magnifyingglass" size={18} color={textMutedColor} />
         <TextInput
           value={query}
           onChangeText={setQuery}
@@ -157,7 +159,9 @@ const styles = StyleSheet.create({
     marginTop: 12,
     borderRadius: 12,
     minHeight: 44,
-    justifyContent: 'center',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
     paddingHorizontal: 14,
   },
   searchInput: {
