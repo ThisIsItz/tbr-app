@@ -74,7 +74,7 @@ export function BookCard({
       )}
 
       <View style={[styles.body, !isResult && styles.bodyLibrary]}>
-        <ThemedText numberOfLines={2} style={[Typography.bookTitle, { color: textColor }]}>
+        <ThemedText numberOfLines={isResult ? 2 : 3} style={[Typography.bookTitle, { color: textColor }]}>
           {title}
         </ThemedText>
 
