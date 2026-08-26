@@ -1,8 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { exportAndShareBackup, importBackupFromUri } from '@/lib/backup';
-import { bookRepository } from '@/data/repository';
-import type { BookDetailsUpdate } from '@/data/repository/types';
+import { bookRepository } from '@/api/repository';
+import type { BookDetailsUpdate } from '@/api/repository/types';
 import type { NewBookInput } from '@/types/book';
 
 export const booksQueryKey = ['books'] as const;

@@ -1,4 +1,4 @@
-import { getDb } from '@/data/db/client';
+import { getDb } from '@/api/db/client';
 
 export async function getSetting(key: string): Promise<string | null> {
   const db = await getDb();

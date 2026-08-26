@@ -1,6 +1,6 @@
 import { randomUUID } from 'expo-crypto';
 
-import { getDb } from '@/data/db/client';
+import { getDb } from '@/api/db/client';
 import type { Book, NewBookInput, ReadingStatus } from '@/types/book';
 
 import type { BookDetailsUpdate, BookRepository, ImportBooksResult } from './types';

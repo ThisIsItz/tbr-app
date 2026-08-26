@@ -1,8 +1,8 @@
 import { File, Paths } from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
 
-import { bookRepository } from '@/data/repository';
-import type { ImportBooksResult } from '@/data/repository/types';
+import { bookRepository } from '@/api/repository';
+import type { ImportBooksResult } from '@/api/repository/types';
 import type { Book, ReadingStatus } from '@/types/book';
 
 const BACKUP_VERSION = 1;
