@@ -1,11 +1,12 @@
 import { router } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, FlatList, Pressable, StyleSheet, TextInput, View } from 'react-native';
+import { ActivityIndicator, FlatList, Pressable, StyleSheet, View } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { BookCard } from '@/components/book-card';
 import { FilterSheet } from '@/components/filter-sheet';
 import { MultiFilterSheet } from '@/components/multi-filter-sheet';
+import { SearchInput } from '@/components/search-input';
 import { ThemedText } from '@/components/themed-text';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Typography } from '@/constants/theme';
@@ -162,26 +163,12 @@ export default function MyTbrScreen() {
 
       {!isLibraryEmpty && (
         <>
-          <View style={[styles.searchBox, { backgroundColor: surfaceMutedColor }]}>
-            <IconSymbol name="magnifyingglass" size={18} color={textMutedColor} />
-            <TextInput
-              value={searchQuery}
-              onChangeText={setSearchQuery}
-              placeholder={t('library.searchPlaceholder')}
-              placeholderTextColor={textMutedColor}
-              style={[Typography.body, styles.searchInput, { color: textColor }]}
-              autoCorrect={false}
-            />
-            {searchQuery.length > 0 && (
-              <Pressable
-                onPress={() => setSearchQuery('')}
-                hitSlop={8}
-                accessibilityRole="button"
-                accessibilityLabel={t('common.clear')}>
-                <IconSymbol name="xmark.circle.fill" size={18} color={textMutedColor} />
-              </Pressable>
-            )}
-          </View>
+          <SearchInput
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            placeholder={t('library.searchPlaceholder')}
+            style={styles.searchBox}
+          />
 
           <View style={styles.filterRow}>
             <MultiFilterSheet
@@ -323,16 +310,6 @@ const styles = StyleSheet.create({
   },
   searchBox: {
     marginTop: 14,
-    borderRadius: 12,
-    minHeight: 44,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    paddingHorizontal: 14,
-  },
-  searchInput: {
-    flex: 1,
-    paddingVertical: 8,
   },
   filterRow: {
     flexDirection: 'row',

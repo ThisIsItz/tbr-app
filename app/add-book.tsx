@@ -1,11 +1,11 @@
 import { router } from 'expo-router';
 import { useMemo, useState } from 'react';
-import { ActivityIndicator, Alert, FlatList, Pressable, StyleSheet, TextInput, View } from 'react-native';
+import { ActivityIndicator, Alert, FlatList, Pressable, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { BookCard } from '@/components/book-card';
+import { SearchInput } from '@/components/search-input';
 import { ThemedText } from '@/components/themed-text';
-import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Typography } from '@/constants/theme';
 import { useBooks } from '@/features/library/hooks';
 import { useQuickAddBook, useSearchBooks } from '@/features/search/hooks';
@@ -47,28 +47,14 @@ export default function AddBookScreen() {
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor }]} edges={['bottom']}>
-      <View style={[styles.searchBox, { backgroundColor: surfaceMutedColor }]}>
-        <IconSymbol name="magnifyingglass" size={18} color={textMutedColor} />
-        <TextInput
-          value={query}
-          onChangeText={setQuery}
-          placeholder={t('search.placeholder')}
-          placeholderTextColor={textMutedColor}
-          style={[Typography.body, styles.searchInput, { color: textColor }]}
-          autoCorrect={false}
-          returnKeyType="search"
-          autoFocus
-        />
-        {query.length > 0 && (
-          <Pressable
-            onPress={() => setQuery('')}
-            hitSlop={8}
-            accessibilityRole="button"
-            accessibilityLabel={t('common.clear')}>
-            <IconSymbol name="xmark.circle.fill" size={18} color={textMutedColor} />
-          </Pressable>
-        )}
-      </View>
+      <SearchInput
+        value={query}
+        onChangeText={setQuery}
+        placeholder={t('search.placeholder')}
+        returnKeyType="search"
+        autoFocus
+        style={styles.searchBox}
+      />
 
       <FlatList
         data={results ?? []}
@@ -174,16 +160,6 @@ const styles = StyleSheet.create({
   },
   searchBox: {
     marginTop: 12,
-    borderRadius: 12,
-    minHeight: 44,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    paddingHorizontal: 14,
-  },
-  searchInput: {
-    flex: 1,
-    paddingVertical: 8,
   },
   listHeader: {
     gap: 12,
