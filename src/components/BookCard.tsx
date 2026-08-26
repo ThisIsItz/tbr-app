@@ -132,14 +132,11 @@ export function BookCard({
         )}
       </View>
 
-      <View
-        style={[
-          styles.chevronCircle,
-          isResult ? styles.chevronCircleResult : styles.chevronCircleLibrary,
-          { backgroundColor: surfaceMutedColor },
-        ]}>
-        <IconSymbol name="chevron.right" size={isResult ? 16 : 22} color={textMutedColor} />
-      </View>
+      {!isResult && (
+        <View style={[styles.chevronCircle, { backgroundColor: surfaceMutedColor }]}>
+          <IconSymbol name="chevron.right" size={22} color={textMutedColor} />
+        </View>
+      )}
     </Pressable>
   );
 }
@@ -216,17 +213,10 @@ const styles = StyleSheet.create({
   },
   chevronCircle: {
     alignSelf: 'center',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  chevronCircleLibrary: {
     width: 32,
     height: 32,
     borderRadius: 16,
-  },
-  chevronCircleResult: {
-    width: 26,
-    height: 26,
-    borderRadius: 13,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
