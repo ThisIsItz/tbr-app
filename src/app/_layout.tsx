@@ -107,7 +107,7 @@ function RootLayoutNav() {
             options={{ title: t('screenTitles.scanIsbn'), ...screenHeaderOptions }}
           />
           <Stack.Screen
-            name="settings"
+            name="settings/index"
             options={{ title: t('screenTitles.settings'), ...screenHeaderOptions }}
           />
         </Stack>
