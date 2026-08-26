@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { ActivityIndicator, Alert, Image, Modal, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 
 import { GenreEditor } from '@/components/genre-editor';
+import { HeaderTextAction } from '@/components/header-text-action';
 import { ThemedText } from '@/components/themed-text';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Typography } from '@/constants/theme';
@@ -128,13 +129,10 @@ export default function BookDetailScreen() {
       <Stack.Screen
         options={{
           headerRight: () => (
-            <Pressable
+            <HeaderTextAction
+              label={t('common.edit')}
               onPress={() => router.push({ pathname: '/add-manually', params: { id: book.id } })}
-              hitSlop={8}>
-              <ThemedText style={[Typography.button, { color: accentColor }]}>
-                {t('common.edit')}
-              </ThemedText>
-            </Pressable>
+            />
           ),
         }}
       />
