@@ -1,7 +1,9 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, Alert, Image, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Alert, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 
+import { BookDetailsSection } from '@/components/BookDetailsSection';
+import { BookHeader } from '@/components/BookHeader';
 import { ExpandableDescription } from '@/components/ExpandableDescription';
 import { GenreEditor } from '@/components/GenreEditor';
 import { ThemedText } from '@/components/ThemedText';
@@ -18,9 +20,7 @@ export default function AddBookScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { t } = useTranslation();
   const backgroundColor = useThemeColor({}, 'background');
-  const surfaceMutedColor = useThemeColor({}, 'surfaceMuted');
   const textColor = useThemeColor({}, 'text');
-  const textMutedColor = useThemeColor({}, 'textMuted');
   const accentColor = useThemeColor({}, 'accent');
 
   const { data: volume, isLoading, isError, error, refetch } = useGoogleBookDetails(id);
@@ -88,34 +88,16 @@ export default function AddBookScreen() {
 
   return (
     <ScrollView style={{ backgroundColor }} contentContainerStyle={styles.container}>
-      <View style={styles.header}>
-        {coverUrl ? (
-          <Image
-            source={{ uri: coverUrl }}
-            style={styles.thumbnail}
-            resizeMode="cover"
-            onError={(e) =>
-              console.warn('[AddBook] cover failed to load:', coverUrl, e.nativeEvent.error)
-            }
-          />
-        ) : (
-          <View style={[styles.thumbnail, styles.thumbnailPlaceholder, { backgroundColor: surfaceMutedColor }]}>
-            <ThemedText style={[Typography.caption, { color: textMutedColor }]}>
-              {t('bookCard.noCover')}
-            </ThemedText>
-          </View>
-        )}
-        <View style={styles.headerText}>
-          <ThemedText style={[Typography.bookTitle, { color: textColor }]}>{title}</ThemedText>
-          {authors && authors.length > 0 && (
-            <ThemedText style={[Typography.metadata, { color: textMutedColor }]}>
-              {authors.join(', ')}
-            </ThemedText>
-          )}
-        </View>
-      </View>
+      <BookHeader title={title} authors={authors ?? []} coverUrl={coverUrl} />
 
       {sanitizedDescription && <ExpandableDescription description={sanitizedDescription} />}
+
+      <BookDetailsSection
+        pageCount={pageCount ?? null}
+        language={language ?? null}
+        publisher={publisher ?? null}
+        publishedDate={publishedDate ?? null}
+      />
 
       <View style={styles.section}>
         <ThemedText style={[Typography.sectionTitle, { color: textColor }]}>
@@ -157,25 +139,6 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     minHeight: 44,
     justifyContent: 'center',
-  },
-  header: {
-    flexDirection: 'row',
-    gap: 16,
-  },
-  thumbnail: {
-    width: 80,
-    height: 120,
-    borderRadius: 8,
-  },
-  thumbnailPlaceholder: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 4,
-  },
-  headerText: {
-    flex: 1,
-    justifyContent: 'center',
-    gap: 4,
   },
   section: {
     gap: 4,

@@ -1,7 +1,9 @@
 import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
-import { ActivityIndicator, Alert, Image, Modal, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Alert, Modal, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 
+import { BookDetailsSection } from '@/components/BookDetailsSection';
+import { BookHeader } from '@/components/BookHeader';
 import { ExpandableDescription } from '@/components/ExpandableDescription';
 import { GenreEditor } from '@/components/GenreEditor';
 import { HeaderTextAction } from '@/components/HeaderTextAction';
@@ -13,34 +15,9 @@ import { useThemeColor } from '@/hooks/useThemeColor';
 import { useTranslation } from '@/hooks/useTranslation';
 import { normalizeGenres } from '@/lib/genres';
 import { toHttpsUrl } from '@/api/googleBooks';
-import { getLanguageName } from '@/lib/languageNames';
 import { sanitizeDescription } from '@/lib/sanitizeHtml';
 
 const MAX_VISIBLE_GENRES = 3;
-
-function formatPublishedDate(raw: string): string {
-  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(raw);
-  if (!match) return raw;
-  const [, year, month, day] = match;
-  return `${day}/${month}/${year}`;
-}
-
-function DetailRow({ label, value, isFirst }: { label: string; value: string; isFirst: boolean }) {
-  const textColor = useThemeColor({}, 'text');
-  const textMutedColor = useThemeColor({}, 'textMuted');
-  const borderColor = useThemeColor({}, 'border');
-
-  return (
-    <View
-      style={[
-        styles.detailRow,
-        !isFirst && { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: borderColor },
-      ]}>
-      <ThemedText style={[Typography.metadata, { color: textMutedColor }]}>{label}</ThemedText>
-      <ThemedText style={[Typography.body, { color: textColor }]}>{value}</ThemedText>
-    </View>
-  );
-}
 
 export default function BookDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -106,21 +83,6 @@ export default function BookDetailScreen() {
   const extraGenreCount = genres.length - visibleGenres.length;
   const description = book.description ? sanitizeDescription(book.description) : null;
 
-  const detailRows = [
-    book.pageCount != null && {
-      label: t('bookDetail.pages'),
-      value: t(book.pageCount === 1 ? 'bookDetail.onePage' : 'bookDetail.pagesCount', {
-        count: book.pageCount,
-      }),
-    },
-    book.language && { label: t('bookDetail.language'), value: getLanguageName(book.language) },
-    book.publisher && { label: t('bookDetail.publisher'), value: book.publisher },
-    book.publishedDate && {
-      label: t('bookDetail.published'),
-      value: formatPublishedDate(book.publishedDate),
-    },
-  ].filter((row): row is { label: string; value: string } => !!row);
-
   return (
     <ScrollView style={[styles.scrollView, { backgroundColor }]} contentContainerStyle={styles.container}>
       <Stack.Screen
@@ -134,47 +96,16 @@ export default function BookDetailScreen() {
         }}
       />
       <View style={styles.content}>
-      <View style={styles.header}>
-        {coverUrl ? (
-          <Image
-            source={{ uri: coverUrl }}
-            style={styles.thumbnail}
-            resizeMode="cover"
-            onError={(e) =>
-              console.warn('[BookDetail] cover failed to load:', coverUrl, e.nativeEvent.error)
-            }
-          />
-        ) : (
-          <View style={[styles.thumbnail, styles.thumbnailPlaceholder, { backgroundColor: surfaceMutedColor }]}>
-            <ThemedText style={[Typography.caption, { color: textMutedColor }]}>
-              {t('bookCard.noCover')}
-            </ThemedText>
-          </View>
-        )}
-        <View style={styles.headerText}>
-          <ThemedText style={[Typography.screenTitle, { color: textColor }]}>{book.title}</ThemedText>
-          {book.authors.length > 0 && (
-            <ThemedText style={[styles.author, { color: textMutedColor }]}>
-              {book.authors.join(', ')}
-            </ThemedText>
-          )}
-        </View>
-      </View>
+      <BookHeader title={book.title} authors={book.authors} coverUrl={coverUrl} />
 
       {description && <ExpandableDescription description={description} />}
 
-      {detailRows.length > 0 && (
-        <View style={styles.section}>
-          <ThemedText style={[Typography.sectionTitle, { color: textColor }]}>
-            {t('bookDetail.details')}
-          </ThemedText>
-          <View style={[styles.detailsCard, { backgroundColor: surfaceColor }]}>
-            {detailRows.map((row, index) => (
-              <DetailRow key={row.label} label={row.label} value={row.value} isFirst={index === 0} />
-            ))}
-          </View>
-        </View>
-      )}
+      <BookDetailsSection
+        pageCount={book.pageCount}
+        language={book.language}
+        publisher={book.publisher}
+        publishedDate={book.publishedDate}
+      />
 
       <View style={styles.section}>
         <View style={styles.sectionHeaderRow}>
@@ -278,30 +209,6 @@ const styles = StyleSheet.create({
   centeredText: {
     textAlign: 'center',
   },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: 16,
-  },
-  thumbnail: {
-    width: 130,
-    height: 195,
-    borderRadius: 14,
-  },
-  thumbnailPlaceholder: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 4,
-  },
-  headerText: {
-    flex: 1,
-    gap: 6,
-  },
-  author: {
-    fontSize: 18,
-    lineHeight: 24,
-    fontWeight: '500',
-  },
   section: {
     gap: 8,
   },
@@ -309,17 +216,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-  },
-  detailsCard: {
-    borderRadius: 14,
-    overflow: 'hidden',
-  },
-  detailRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    minHeight: 44,
-    paddingHorizontal: 16,
   },
   genreChipRow: {
     flexDirection: 'row',
