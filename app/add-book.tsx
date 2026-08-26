@@ -26,7 +26,7 @@ export default function AddBookScreen() {
   const [query, setQuery] = useState('');
   const debouncedQuery = useDebouncedValue(query, 400);
 
-  const { data: results, isLoading, isError, error } = useSearchBooks(debouncedQuery);
+  const { data: results, isLoading, isError, error, refetch } = useSearchBooks(debouncedQuery);
   const { data: libraryBooks } = useBooks();
   const { quickAdd, isAdding } = useQuickAddBook();
 
@@ -59,6 +59,15 @@ export default function AddBookScreen() {
           returnKeyType="search"
           autoFocus
         />
+        {query.length > 0 && (
+          <Pressable
+            onPress={() => setQuery('')}
+            hitSlop={8}
+            accessibilityRole="button"
+            accessibilityLabel={t('common.clear')}>
+            <IconSymbol name="xmark.circle.fill" size={18} color={textMutedColor} />
+          </Pressable>
+        )}
       </View>
 
       <View style={styles.quickActionsRow}>
@@ -110,6 +119,9 @@ export default function AddBookScreen() {
           <ThemedText style={[Typography.body, styles.centeredText, { color: textColor }]}>
             {t(getErrorTranslationKey(error))}
           </ThemedText>
+          <Pressable onPress={() => refetch()} style={[styles.retryButton, { backgroundColor: accentColor }]}>
+            <ThemedText style={[Typography.button, { color: '#fff' }]}>{t('common.retry')}</ThemedText>
+          </Pressable>
         </View>
       )}
 
@@ -190,6 +202,14 @@ const styles = StyleSheet.create({
   },
   centeredText: {
     textAlign: 'center',
+  },
+  retryButton: {
+    marginTop: 8,
+    borderRadius: 10,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    minHeight: 44,
+    justifyContent: 'center',
   },
   listContent: {
     gap: 10,

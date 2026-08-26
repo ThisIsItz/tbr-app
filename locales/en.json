@@ -2,6 +2,7 @@
   "common": {
     "cancel": "Cancel",
     "clear": "Clear",
+    "retry": "Try again",
     "remove": "Remove",
     "done": "Done",
     "genericError": "Something went wrong. Try again.",
