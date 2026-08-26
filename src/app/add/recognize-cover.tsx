@@ -21,8 +21,8 @@ import { useBooks } from '@/hooks/useLibrary';
 import { useQuickAddBook } from '@/hooks/useSearch';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { useTranslation } from '@/hooks/useTranslation';
-import { scoreVolume } from '@/api/book-relevance';
-import { searchGoogleBooks } from '@/api/google-books';
+import { scoreVolume } from '@/api/bookRelevance';
+import { searchGoogleBooks } from '@/api/googleBooks';
 import { bookCoverRecognitionService, type RecognitionConfidence } from '@/api/recognition';
 import type { GoogleBooksVolume } from '@/types/google-books';
 

@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 
 import { useAddBook } from '@/hooks/useLibrary';
 import { normalizeGenres } from '@/lib/genres';
-import { getGoogleBookById, searchGoogleBooks, toHttpsUrl } from '@/api/google-books';
+import { getGoogleBookById, searchGoogleBooks, toHttpsUrl } from '@/api/googleBooks';
 import { sanitizeDescription } from '@/lib/sanitizeHtml';
 import type { GoogleBooksVolume } from '@/types/google-books';
 

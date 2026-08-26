@@ -7,7 +7,7 @@ import { ThemedText } from '@/components/ThemedText';
 import { Typography } from '@/lib/theme/theme';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { useTranslation } from '@/hooks/useTranslation';
-import { searchGoogleBooksByIsbn } from '@/api/google-books';
+import { searchGoogleBooksByIsbn } from '@/api/googleBooks';
 
 const FRAME_WIDTH = 260;
 const FRAME_HEIGHT = 160;

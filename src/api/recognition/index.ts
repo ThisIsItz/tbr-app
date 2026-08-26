@@ -1,6 +1,6 @@
-import { ocrBookCoverRecognitionService } from './ocr-recognition-service';
+import { ocrBookCoverRecognitionService } from './ocrRecognitionService';
 import type { BookCoverRecognitionService, CoverRecognitionResult } from './types';
-import { recognizeCoverWithVisionApi } from './vision-recognition-service';
+import { recognizeCoverWithVisionApi } from './visionRecognitionService';
 
 export type { BookCoverRecognitionService, BookGuess, CoverRecognitionResult, RecognitionConfidence } from './types';
 

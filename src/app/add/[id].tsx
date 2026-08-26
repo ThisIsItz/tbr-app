@@ -10,7 +10,7 @@ import { useGoogleBookDetails } from '@/hooks/useSearch';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { useTranslation } from '@/hooks/useTranslation';
 import { normalizeGenres } from '@/lib/genres';
-import { GoogleBooksApiError, toHttpsUrl } from '@/api/google-books';
+import { GoogleBooksApiError, toHttpsUrl } from '@/api/googleBooks';
 import { sanitizeDescription } from '@/lib/sanitizeHtml';
 
 export default function AddBookScreen() {

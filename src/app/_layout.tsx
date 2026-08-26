@@ -11,10 +11,10 @@ import { useScreenHeaderOptions } from '@/hooks/useScreenHeaderOptions';
 import { useAppColorScheme } from '@/hooks/useAppColorScheme';
 import { useTranslation } from '@/hooks/useTranslation';
 import { getDb } from '@/api/db/client';
-import { GoogleBooksApiError } from '@/api/google-books';
+import { GoogleBooksApiError } from '@/api/googleBooks';
 import { LanguageProvider } from '@/i18n/LanguageProvider';
 import { DEFAULT_LOCALE, detectLocaleFromLanguageCode, type Locale } from '@/i18n/translations';
-import { getSetting } from '@/api/repository/settings-repository';
+import { getSetting } from '@/api/repository/settingsRepository';
 import { AppThemeProvider, type ThemePreference } from '@/lib/theme/AppThemeProvider';
 
 export const unstable_settings = {

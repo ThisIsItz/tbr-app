@@ -1,6 +1,6 @@
 import { randomUUID } from 'expo-crypto';
 
-import { getSetting, setSetting } from '@/api/repository/settings-repository';
+import { getSetting, setSetting } from '@/api/repository/settingsRepository';
 
 const DEVICE_TOKEN_SETTING_KEY = 'deviceToken';
 

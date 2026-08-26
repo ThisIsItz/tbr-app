@@ -1,6 +1,6 @@
 import { createContext, useMemo, useState, type ReactNode } from 'react';
 
-import { setSetting } from '@/api/repository/settings-repository';
+import { setSetting } from '@/api/repository/settingsRepository';
 
 import { translate, type Locale } from './translations';
 

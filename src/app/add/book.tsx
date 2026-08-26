@@ -13,7 +13,7 @@ import { useDebouncedValue } from '@/hooks/useDebouncedValue';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { useTranslation } from '@/hooks/useTranslation';
 import { normalizeGenres } from '@/lib/genres';
-import { getErrorTranslationKey } from '@/api/google-books';
+import { getErrorTranslationKey } from '@/api/googleBooks';
 import type { GoogleBooksVolume } from '@/types/google-books';
 
 export default function AddBookScreen() {

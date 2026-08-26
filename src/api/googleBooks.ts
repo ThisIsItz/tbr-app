@@ -1,4 +1,4 @@
-import { rankSearchResults } from '@/api/book-relevance'
+import { rankSearchResults } from '@/api/bookRelevance'
 import type {
   GoogleBooksSearchResponse,
   GoogleBooksVolume
