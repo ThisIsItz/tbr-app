@@ -96,6 +96,12 @@ export default function MyTbrScreen() {
     return direction === 'desc' ? sorted.reverse() : sorted;
   }, [books, debouncedSearchQuery, genreFilters, authorFilter, sortBy, genresByBookId]);
 
+  const activeFilterLabels = [
+    ...genreFilters,
+    ...(authorFilter ? [authorFilter] : []),
+    ...(debouncedSearchQuery.trim() ? [`"${debouncedSearchQuery.trim()}"`] : []),
+  ];
+
   const bookCountLabel = hasActiveFilters
     ? t(totalBookCount === 1 ? 'library.bookCountFilteredOne' : 'library.bookCountFilteredOther', {
         count: filteredBooks.length,
@@ -195,6 +201,23 @@ export default function MyTbrScreen() {
               options={sortOptions}
             />
           </View>
+
+          {hasActiveFilters && (
+            <View style={styles.activeFiltersRow}>
+              <ThemedText
+                numberOfLines={1}
+                style={[Typography.caption, styles.activeFiltersText, { color: textMutedColor }]}>
+                {t('library.filteringBy', { filters: activeFilterLabels.join(', ') })}
+              </ThemedText>
+              <Pressable
+                onPress={clearFilters}
+                hitSlop={8}
+                accessibilityRole="button"
+                accessibilityLabel={t('library.clearFilters')}>
+                <IconSymbol name="xmark.circle.fill" size={18} color={textMutedColor} />
+              </Pressable>
+            </View>
+          )}
         </>
       )}
 
@@ -305,7 +328,18 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 8,
     marginTop: 12,
-    paddingBottom: 14,
+    marginBottom: 14,
+  },
+  activeFiltersRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 8,
+    marginTop: -6,
+    marginBottom: 14,
+  },
+  activeFiltersText: {
+    flex: 1,
   },
   clearButton: {
     marginTop: 8,

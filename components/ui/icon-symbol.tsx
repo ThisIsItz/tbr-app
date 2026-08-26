@@ -30,6 +30,9 @@ const MAPPING = {
   'moon.fill': 'dark-mode',
   'trash.fill': 'delete',
   'gearshape.fill': 'settings',
+  'xmark.circle.fill': 'cancel',
+  'square.and.arrow.up': 'file-upload',
+  'tray.and.arrow.down': 'file-download',
 } as IconMapping;
 
 /**
