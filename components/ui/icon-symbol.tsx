@@ -19,6 +19,7 @@ const MAPPING = {
   'chevron.left.forwardslash.chevron.right': 'code',
   'chevron.right': 'chevron-right',
   'chevron.down': 'expand-more',
+  'chevron.up': 'expand-less',
   'books.vertical.fill': 'library-books',
   'magnifyingglass': 'search',
   'plus.circle.fill': 'add-circle',

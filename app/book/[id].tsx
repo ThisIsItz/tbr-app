@@ -192,7 +192,7 @@ export default function BookDetailScreen() {
                 {isDescriptionExpanded ? t('bookDetail.showLess') : t('bookDetail.showMore')}
               </ThemedText>
               <IconSymbol
-                name={isDescriptionExpanded ? 'chevron.down' : 'chevron.right'}
+                name={isDescriptionExpanded ? 'chevron.up' : 'chevron.down'}
                 size={16}
                 color={accentColor}
               />
