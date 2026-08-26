@@ -9,15 +9,15 @@ export const Colors = {
     text: '#241C17',
     textMuted: '#74685E',
 
-    accent: '#B85635',
+    accent: '#9C492D',
     accentSoft: '#F4DED2',
-    tint: '#B85635',
+    tint: '#9C492D',
 
     border: '#E3D8CC',
     icon: '#74685E',
 
     tabIconDefault: '#8B8178',
-    tabIconSelected: '#B85635',
+    tabIconSelected: '#9C492D',
 
     shadow: 'rgba(36, 28, 23, 0.10)',
     danger: '#B83A32'
