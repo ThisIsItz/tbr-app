@@ -55,19 +55,25 @@ export function BookCard({
       {coverUrl ? (
         <Image
           source={{ uri: coverUrl }}
-          style={styles.cover}
+          style={[styles.cover, isResult ? styles.coverResult : styles.coverLibrary]}
           resizeMode="cover"
           onError={(e) => console.warn('[BookCard] cover failed to load:', coverUrl, e.nativeEvent.error)}
         />
       ) : (
-        <View style={[styles.cover, styles.coverPlaceholder, { backgroundColor: surfaceMutedColor }]}>
+        <View
+          style={[
+            styles.cover,
+            isResult ? styles.coverResult : styles.coverLibrary,
+            styles.coverPlaceholder,
+            { backgroundColor: surfaceMutedColor },
+          ]}>
           <ThemedText style={[Typography.caption, { color: textMutedColor }]}>
             {t('bookCard.noCover')}
           </ThemedText>
         </View>
       )}
 
-      <View style={styles.body}>
+      <View style={[styles.body, !isResult && styles.bodyLibrary]}>
         <ThemedText numberOfLines={2} style={[Typography.bookTitle, { color: textColor }]}>
           {title}
         </ThemedText>
@@ -107,7 +113,7 @@ export function BookCard({
             </View>
           </>
         ) : (
-          <>
+          <View style={styles.libraryFooter}>
             {!!author && (
               <ThemedText numberOfLines={1} style={[Typography.metadata, { color: textMutedColor }]}>
                 {author}
@@ -122,7 +128,7 @@ export function BookCard({
                 </View>
               )}
             </View>
-          </>
+          </View>
         )}
       </View>
 
@@ -134,7 +140,6 @@ export function BookCard({
 const styles = StyleSheet.create({
   card: {
     flexDirection: 'row',
-    alignItems: 'center',
     borderRadius: 14,
     padding: 10,
     gap: 12,
@@ -145,9 +150,15 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   cover: {
+    borderRadius: 8,
+  },
+  coverResult: {
     width: 60,
     height: 90,
-    borderRadius: 8,
+  },
+  coverLibrary: {
+    width: 90,
+    height: 135,
   },
   coverPlaceholder: {
     alignItems: 'center',
@@ -159,6 +170,12 @@ const styles = StyleSheet.create({
     minWidth: 0,
     gap: 4,
     justifyContent: 'center',
+  },
+  bodyLibrary: {
+    justifyContent: 'space-between',
+  },
+  libraryFooter: {
+    gap: 4,
   },
   tagRow: {
     flexDirection: 'row',

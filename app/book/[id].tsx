@@ -153,7 +153,7 @@ export default function BookDetailScreen() {
           <Pressable
             onPress={() => router.push({ pathname: '/add-manually', params: { id: book.id } })}
             hitSlop={8}
-            style={styles.editBookLink}>
+            style={[styles.editChip, styles.editBookChip, { backgroundColor: surfaceMutedColor }]}>
             <ThemedText style={[Typography.button, { color: accentColor }]}>
               {t('bookDetail.editBook')}
             </ThemedText>
@@ -227,7 +227,10 @@ export default function BookDetailScreen() {
           <ThemedText style={[Typography.sectionTitle, { color: textColor }]}>
             {t('bookDetail.genres')}
           </ThemedText>
-          <Pressable onPress={() => setGenreModalVisible(true)} hitSlop={8}>
+          <Pressable
+            onPress={() => setGenreModalVisible(true)}
+            hitSlop={8}
+            style={[styles.editChip, { backgroundColor: surfaceMutedColor }]}>
             <ThemedText style={[Typography.button, { color: accentColor }]}>
               {t('bookDetail.editGenres')}
             </ThemedText>
@@ -259,7 +262,10 @@ export default function BookDetailScreen() {
       </View>
 
       <Pressable
-        style={[styles.deleteButton, { backgroundColor: surfaceMutedColor }]}
+        style={[
+          styles.deleteButton,
+          { backgroundColor: surfaceMutedColor, borderWidth: 1.5, borderColor: dangerColor },
+        ]}
         onPress={handleDelete}>
         <ThemedText style={[Typography.button, { color: dangerColor }]}>
           {t('bookDetail.remove')}
@@ -343,7 +349,12 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     fontWeight: '500',
   },
-  editBookLink: {
+  editChip: {
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+  },
+  editBookChip: {
     marginTop: 2,
     alignSelf: 'flex-start',
   },
