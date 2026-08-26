@@ -29,7 +29,8 @@
     "emptyText": "Tap + to add a book you want to read.",
     "noMatchTitle": "No books match",
     "noMatchText": "Try adjusting your search or filters.",
-    "clearFilters": "Clear filters"
+    "clearFilters": "Clear filters",
+    "filteringBy": "Filtering by {{filters}}"
   },
   "search": {
     "placeholder": "Search by title, author, or ISBN",
@@ -150,7 +151,9 @@
     "appearanceDark": "Dark",
     "data": "Data",
     "exportBackup": "Export Backup",
+    "exportBackupDescription": "Save your library to a file you can keep or share.",
     "importBackup": "Import Backup",
+    "importBackupDescription": "Restore books from a previously exported file.",
     "exportError": "Couldn't export your backup. Try again.",
     "importSuccessTitle": "Import complete",
     "importSuccessBody": "Imported: {{imported}}. Already in your library: {{skipped}}.",

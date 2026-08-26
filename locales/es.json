@@ -29,7 +29,8 @@
     "emptyText": "Toca + para añadir un libro que quieras leer.",
     "noMatchTitle": "Ningún libro coincide",
     "noMatchText": "Intenta ajustar tu búsqueda o filtros.",
-    "clearFilters": "Borrar filtros"
+    "clearFilters": "Borrar filtros",
+    "filteringBy": "Filtrando por {{filters}}"
   },
   "search": {
     "placeholder": "Busca por título, autor o ISBN",
@@ -150,7 +151,9 @@
     "appearanceDark": "Oscuro",
     "data": "Datos",
     "exportBackup": "Exportar copia de seguridad",
+    "exportBackupDescription": "Guarda tu biblioteca en un archivo que puedes conservar o compartir.",
     "importBackup": "Importar copia de seguridad",
+    "importBackupDescription": "Restaura libros desde un archivo exportado previamente.",
     "exportError": "No se pudo exportar tu copia de seguridad. Inténtalo de nuevo.",
     "importSuccessTitle": "Importación completa",
     "importSuccessBody": "Importados: {{imported}}. Ya en tu biblioteca: {{skipped}}.",

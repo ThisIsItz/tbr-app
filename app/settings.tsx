@@ -1,5 +1,6 @@
 import * as DocumentPicker from 'expo-document-picker';
-import { ActivityIndicator, Alert, Pressable, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Alert, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedText } from '@/components/themed-text';
 import { IconSymbol, type IconSymbolName } from '@/components/ui/icon-symbol';
@@ -43,28 +44,30 @@ function OptionsCard<T extends string>({ options, selected, onSelect, t }: Optio
   const accentSoftColor = useThemeColor({}, 'accentSoft');
 
   return (
-    <View style={[styles.optionsCard, { backgroundColor: surfaceColor, shadowColor }]}>
-      {options.map((option, index) => {
-        const isActive = option.value === selected;
-        return (
-          <Pressable
-            key={option.value}
-            onPress={() => onSelect(option.value)}
-            style={[
-              styles.optionRow,
-              isActive && { backgroundColor: accentSoftColor },
-              index > 0 && { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: borderColor },
-            ]}>
-            <ThemedText
+    <View style={[styles.optionsCard, { shadowColor }]}>
+      <View style={[styles.optionsCardInner, { backgroundColor: surfaceColor }]}>
+        {options.map((option, index) => {
+          const isActive = option.value === selected;
+          return (
+            <Pressable
+              key={option.value}
+              onPress={() => onSelect(option.value)}
               style={[
-                Typography.body,
-                { color: isActive ? accentColor : textColor, fontWeight: isActive ? '700' : '400' },
+                styles.optionRow,
+                isActive && { backgroundColor: accentSoftColor },
+                index > 0 && { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: borderColor },
               ]}>
-              {t(option.labelKey)}
-            </ThemedText>
-          </Pressable>
-        );
-      })}
+              <ThemedText
+                style={[
+                  Typography.body,
+                  { color: isActive ? accentColor : textColor, fontWeight: isActive ? '700' : '400' },
+                ]}>
+                {t(option.labelKey)}
+              </ThemedText>
+            </Pressable>
+          );
+        })}
+      </View>
     </View>
   );
 }
@@ -123,6 +126,7 @@ export default function SettingsScreen() {
   const surfaceColor = useThemeColor({}, 'surface');
   const shadowColor = useThemeColor({}, 'shadow');
   const textColor = useThemeColor({}, 'text');
+  const textMutedColor = useThemeColor({}, 'textMuted');
   const borderColor = useThemeColor({}, 'border');
   const accentColor = useThemeColor({}, 'accent');
 
@@ -161,44 +165,62 @@ export default function SettingsScreen() {
   const isBusy = exportBackup.isPending || importBackup.isPending;
 
   return (
-    <View style={[styles.container, { backgroundColor }]}>
-      <ThemedText style={[Typography.sectionTitle, styles.sectionLabel, { color: textColor }]}>
-        {t('settings.language')}
-      </ThemedText>
-      <OptionsCard options={LANGUAGE_OPTIONS} selected={locale} onSelect={setLocale} t={t} />
+    <SafeAreaView style={[styles.container, { backgroundColor }]} edges={['bottom']}>
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        <ThemedText style={[Typography.sectionTitle, styles.sectionLabel, { color: textColor }]}>
+          {t('settings.language')}
+        </ThemedText>
+        <OptionsCard options={LANGUAGE_OPTIONS} selected={locale} onSelect={setLocale} t={t} />
 
-      <ThemedText style={[Typography.sectionTitle, styles.sectionLabel, { color: textColor }]}>
-        {t('settings.appearance')}
-      </ThemedText>
-      <AppearanceCards selected={themePreference} onSelect={setThemePreference} t={t} />
+        <ThemedText style={[Typography.sectionTitle, styles.sectionLabel, { color: textColor }]}>
+          {t('settings.appearance')}
+        </ThemedText>
+        <AppearanceCards selected={themePreference} onSelect={setThemePreference} t={t} />
 
-      <ThemedText style={[Typography.sectionTitle, styles.sectionLabel, { color: textColor }]}>
-        {t('settings.data')}
-      </ThemedText>
-      <View style={[styles.optionsCard, { backgroundColor: surfaceColor, shadowColor }]}>
-        <Pressable onPress={handleExport} disabled={isBusy} style={styles.optionRow}>
-          <ThemedText style={[Typography.body, { color: textColor }]}>
-            {t('settings.exportBackup')}
-          </ThemedText>
-          {exportBackup.isPending && <ActivityIndicator size="small" color={accentColor} />}
-        </Pressable>
-        <Pressable
-          onPress={handleImport}
-          disabled={isBusy}
-          style={[styles.optionRow, { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: borderColor }]}>
-          <ThemedText style={[Typography.body, { color: textColor }]}>
-            {t('settings.importBackup')}
-          </ThemedText>
-          {importBackup.isPending && <ActivityIndicator size="small" color={accentColor} />}
-        </Pressable>
-      </View>
-    </View>
+        <ThemedText style={[Typography.sectionTitle, styles.sectionLabel, { color: textColor }]}>
+          {t('settings.data')}
+        </ThemedText>
+        <View style={[styles.optionsCard, { shadowColor }]}>
+          <View style={[styles.optionsCardInner, { backgroundColor: surfaceColor }]}>
+            <Pressable onPress={handleExport} disabled={isBusy} style={styles.dataRow}>
+              <IconSymbol name="square.and.arrow.up" size={20} color={textColor} />
+              <View style={styles.dataRowText}>
+                <ThemedText style={[Typography.body, { color: textColor }]}>
+                  {t('settings.exportBackup')}
+                </ThemedText>
+                <ThemedText style={[Typography.caption, { color: textMutedColor }]}>
+                  {t('settings.exportBackupDescription')}
+                </ThemedText>
+              </View>
+              {exportBackup.isPending && <ActivityIndicator size="small" color={accentColor} />}
+            </Pressable>
+            <Pressable
+              onPress={handleImport}
+              disabled={isBusy}
+              style={[styles.dataRow, { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: borderColor }]}>
+              <IconSymbol name="tray.and.arrow.down" size={20} color={textColor} />
+              <View style={styles.dataRowText}>
+                <ThemedText style={[Typography.body, { color: textColor }]}>
+                  {t('settings.importBackup')}
+                </ThemedText>
+                <ThemedText style={[Typography.caption, { color: textMutedColor }]}>
+                  {t('settings.importBackupDescription')}
+                </ThemedText>
+              </View>
+              {importBackup.isPending && <ActivityIndicator size="small" color={accentColor} />}
+            </Pressable>
+          </View>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  scrollContent: {
     padding: 16,
     gap: 8,
   },
@@ -212,12 +234,28 @@ const styles = StyleSheet.create({
     shadowRadius: 6,
     elevation: 2,
   },
+  optionsCardInner: {
+    borderRadius: 14,
+    overflow: 'hidden',
+  },
   optionRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     minHeight: 44,
     paddingHorizontal: 16,
+  },
+  dataRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    minHeight: 56,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+  },
+  dataRowText: {
+    flex: 1,
+    gap: 2,
   },
   appearanceRow: {
     flexDirection: 'row',
