@@ -65,28 +65,28 @@ export default function AddBookScreen() {
             <View style={styles.quickActionsRow}>
               <Pressable
                 style={[styles.quickAction, { backgroundColor: surfaceMutedColor }]}
-                onPress={() => router.push('/scan-isbn')}>
+                onPress={() => router.push('/add/scan-isbn')}>
                 <ThemedText style={[Typography.button, { color: textColor }]}>
                   {t('search.scanIsbn')}
                 </ThemedText>
               </Pressable>
               <Pressable
                 style={[styles.quickAction, { backgroundColor: surfaceMutedColor }]}
-                onPress={() => router.push({ pathname: '/recognize-cover', params: { pickSource: 'camera' } })}>
+                onPress={() => router.push({ pathname: '/add/recognize-cover', params: { pickSource: 'camera' } })}>
                 <ThemedText style={[Typography.button, { color: textColor }]}>
                   {t('search.scanCover')}
                 </ThemedText>
               </Pressable>
               <Pressable
                 style={[styles.quickAction, { backgroundColor: surfaceMutedColor }]}
-                onPress={() => router.push({ pathname: '/recognize-cover', params: { pickSource: 'gallery' } })}>
+                onPress={() => router.push({ pathname: '/add/recognize-cover', params: { pickSource: 'gallery' } })}>
                 <ThemedText style={[Typography.button, { color: textColor }]}>
                   {t('search.uploadPhoto')}
                 </ThemedText>
               </Pressable>
               <Pressable
                 style={[styles.quickAction, { backgroundColor: surfaceMutedColor }]}
-                onPress={() => router.push('/add-manually')}>
+                onPress={() => router.push('/add/manually')}>
                 <ThemedText style={[Typography.button, { color: textColor }]}>
                   {t('search.addManually')}
                 </ThemedText>

@@ -261,7 +261,7 @@ export default function MyTbrScreen() {
 
       <View style={[styles.floatingAddWrapper, { bottom: insets.bottom + 28 }]} pointerEvents="box-none">
         <Pressable
-          onPress={() => router.push('/add-book')}
+          onPress={() => router.push('/add/book')}
           style={[styles.floatingAddButton, { backgroundColor: accentColor, shadowColor: textColor }]}>
           <IconSymbol name="plus.circle.fill" size={28} color="#fff" />
           <ThemedText style={[Typography.button, styles.floatingAddButtonText, { color: '#fff' }]}>

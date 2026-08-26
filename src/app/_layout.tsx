@@ -91,7 +91,7 @@ function RootLayoutNav() {
             options={{ title: t('screenTitles.bookDetails'), ...screenHeaderOptions }}
           />
           <Stack.Screen
-            name="add-book"
+            name="add/book"
             options={{ title: t('screenTitles.addBook'), ...screenHeaderOptions }}
           />
           <Stack.Screen
@@ -99,11 +99,11 @@ function RootLayoutNav() {
             options={{ title: t('screenTitles.addToTbr'), ...screenHeaderOptions }}
           />
           <Stack.Screen
-            name="add-manually"
+            name="add/manually"
             options={{ title: t('screenTitles.addManually'), ...screenHeaderOptions }}
           />
           <Stack.Screen
-            name="scan-isbn"
+            name="add/scan-isbn"
             options={{ title: t('screenTitles.scanIsbn'), ...screenHeaderOptions }}
           />
           <Stack.Screen

@@ -131,7 +131,7 @@ export default function BookDetailScreen() {
           headerRight: () => (
             <HeaderTextAction
               label={t('common.edit')}
-              onPress={() => router.push({ pathname: '/add-manually', params: { id: book.id } })}
+              onPress={() => router.push({ pathname: '/add/manually', params: { id: book.id } })}
             />
           ),
         }}

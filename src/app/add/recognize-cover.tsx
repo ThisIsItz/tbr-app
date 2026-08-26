@@ -179,7 +179,7 @@ export default function RecognizeCoverScreen() {
 
   function goToAddManually() {
     router.push({
-      pathname: '/add-manually',
+      pathname: '/add/manually',
       params: {
         prefillTitle: title || undefined,
         prefillAuthor: author || undefined,
@@ -189,7 +189,7 @@ export default function RecognizeCoverScreen() {
   }
 
   function goToSearchManually() {
-    router.push('/add-book');
+    router.push('/add/book');
   }
 
   return (
