@@ -199,7 +199,7 @@ export default function MyTbrScreen() {
           </View>
 
           {hasActiveFilters && (
-            <View style={styles.activeFiltersRow}>
+            <View style={[styles.activeFiltersRow, { backgroundColor: surfaceMutedColor }]}>
               <ThemedText
                 numberOfLines={1}
                 style={[Typography.caption, styles.activeFiltersText, { color: textMutedColor }]}>
@@ -322,8 +322,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     gap: 8,
-    marginTop: -6,
     marginBottom: 14,
+    borderRadius: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
   },
   activeFiltersText: {
     flex: 1,
