@@ -4,9 +4,9 @@ import { ActivityIndicator, Alert, Image, Pressable, ScrollView, StyleSheet, Vie
 
 import { GenreEditor } from '@/components/GenreEditor';
 import { ThemedText } from '@/components/ThemedText';
-import { Typography } from '@/constants/theme';
-import { useAddBook } from '@/features/library/hooks';
-import { useGoogleBookDetails } from '@/features/search/hooks';
+import { Typography } from '@/lib/theme/theme';
+import { useAddBook } from '@/hooks/useLibrary';
+import { useGoogleBookDetails } from '@/hooks/useSearch';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { useTranslation } from '@/hooks/useTranslation';
 import { normalizeGenres } from '@/lib/genres';

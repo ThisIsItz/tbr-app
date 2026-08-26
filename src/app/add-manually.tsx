@@ -19,8 +19,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { GenreEditor } from '@/components/GenreEditor';
 import { ThemedText } from '@/components/ThemedText';
-import { Typography } from '@/constants/theme';
-import { useAddBook, useBook, useUpdateBookDetails } from '@/features/library/hooks';
+import { Typography } from '@/lib/theme/theme';
+import { useAddBook, useBook, useUpdateBookDetails } from '@/hooks/useLibrary';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { useTranslation } from '@/hooks/useTranslation';
 import { deleteLocalImage, persistLocalImage } from '@/lib/local-image';

@@ -1,4 +1,4 @@
-import { Colors } from '@/constants/theme'
+import { Colors } from '@/lib/theme/theme'
 import { useAppColorScheme } from '@/hooks/useAppColorScheme'
 
 export function useThemeColor(

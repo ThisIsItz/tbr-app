@@ -4,8 +4,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedText } from '@/components/ThemedText';
 import { IconSymbol, type IconSymbolName } from '@/components/IconSymbol';
-import { Typography } from '@/constants/theme';
-import { useExportBackup, useImportBackup } from '@/features/library/hooks';
+import { Typography } from '@/lib/theme/theme';
+import { useExportBackup, useImportBackup } from '@/hooks/useLibrary';
 import { useAppColorScheme } from '@/hooks/useAppColorScheme';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { useTranslation } from '@/hooks/useTranslation';

@@ -1,7 +1,7 @@
 import { Pressable, StyleSheet } from 'react-native';
 
 import { ThemedText } from '@/components/ThemedText';
-import { Typography } from '@/constants/theme';
+import { Typography } from '@/lib/theme/theme';
 import { useThemeColor } from '@/hooks/useThemeColor';
 
 interface HeaderTextActionProps {

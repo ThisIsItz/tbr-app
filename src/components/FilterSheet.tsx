@@ -3,7 +3,7 @@ import { FlatList, Modal, Pressable, StyleSheet } from 'react-native';
 
 import { ThemedText } from '@/components/ThemedText';
 import { IconSymbol } from '@/components/IconSymbol';
-import { Typography } from '@/constants/theme';
+import { Typography } from '@/lib/theme/theme';
 import { useThemeColor } from '@/hooks/useThemeColor';
 
 export interface FilterOption {

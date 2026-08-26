@@ -1,7 +1,7 @@
 import { Pressable, StyleSheet, TextInput, View, type StyleProp, type ViewStyle } from 'react-native';
 
 import { IconSymbol } from '@/components/IconSymbol';
-import { Typography } from '@/constants/theme';
+import { Typography } from '@/lib/theme/theme';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { useTranslation } from '@/hooks/useTranslation';
 

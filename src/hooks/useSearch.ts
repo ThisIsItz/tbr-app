@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 
-import { useAddBook } from '@/features/library/hooks';
+import { useAddBook } from '@/hooks/useLibrary';
 import { normalizeGenres } from '@/lib/genres';
 import { getGoogleBookById, searchGoogleBooks, toHttpsUrl } from '@/api/google-books';
 import { sanitizeDescription } from '@/lib/sanitize-html';
