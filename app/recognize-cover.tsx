@@ -197,7 +197,12 @@ export default function RecognizeCoverScreen() {
       style={{ backgroundColor }}
       contentContainerStyle={styles.container}
       keyboardShouldPersistTaps="handled">
-      <Stack.Screen options={{ title: t('screenTitles.recognizeCover'), ...screenHeaderOptions }} />
+      <Stack.Screen
+        options={{
+          title: pickSource === 'gallery' ? t('search.uploadPhoto') : t('screenTitles.recognizeCover'),
+          ...screenHeaderOptions,
+        }}
+      />
 
       {imageUri && (
         <Image
