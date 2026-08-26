@@ -1,6 +1,6 @@
 import { ImageManipulator, SaveFormat } from 'expo-image-manipulator';
 
-import { getOrCreateDeviceToken } from '@/lib/device-token';
+import { getOrCreateDeviceToken } from '@/lib/deviceToken';
 
 import type { BookGuess, CoverRecognitionResult } from './types';
 

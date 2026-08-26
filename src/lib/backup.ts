@@ -38,8 +38,6 @@ function isValidBook(value: unknown): value is Book {
   );
 }
 
-/** Writes all saved books to a timestamped JSON file in the cache directory
- * and opens the native share sheet so it can be moved off-device. */
 export async function exportAndShareBackup(): Promise<void> {
   const books = await bookRepository.getAll();
   const payload: BackupPayload = {
@@ -76,8 +74,6 @@ function parseBackup(jsonText: string): { books: Book[]; invalidCount: number } 
   return { books, invalidCount: rawBooks.length - books.length };
 }
 
-/** Reads a picked file, validates it looks like a TBR backup, and imports
- * whatever books aren't already in the local library. */
 export async function importBackupFromUri(
   fileUri: string,
 ): Promise<ImportBooksResult & { invalid: number }> {

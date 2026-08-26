@@ -12,8 +12,8 @@ import { useThemeColor } from '@/hooks/useThemeColor';
 import { useTranslation } from '@/hooks/useTranslation';
 import { normalizeGenres } from '@/lib/genres';
 import { toHttpsUrl } from '@/api/google-books';
-import { getLanguageName } from '@/lib/language-names';
-import { sanitizeDescription } from '@/lib/sanitize-html';
+import { getLanguageName } from '@/lib/languageNames';
+import { sanitizeDescription } from '@/lib/sanitizeHtml';
 
 const MAX_VISIBLE_GENRES = 3;
 const DESCRIPTION_COLLAPSED_LINES = 6;

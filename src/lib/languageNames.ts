@@ -1,5 +1,4 @@
-// Common ISO 639-1 codes as returned by Google Books' volumeInfo.language.
-// Falls back to the raw code for anything not listed.
+// ISO 639-1 codes as returned by Google Books' volumeInfo.language.
 const LANGUAGE_NAMES: Record<string, string> = {
   en: 'English',
   es: 'Spanish',

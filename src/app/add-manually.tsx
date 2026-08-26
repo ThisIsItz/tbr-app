@@ -23,7 +23,7 @@ import { Typography } from '@/lib/theme/theme';
 import { useAddBook, useBook, useUpdateBookDetails } from '@/hooks/useLibrary';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { useTranslation } from '@/hooks/useTranslation';
-import { deleteLocalImage, persistLocalImage } from '@/lib/local-image';
+import { deleteLocalImage, persistLocalImage } from '@/lib/localImage';
 
 const NARROW_SCREEN_WIDTH = 360;
 

@@ -11,7 +11,7 @@ import { useThemeColor } from '@/hooks/useThemeColor';
 import { useTranslation } from '@/hooks/useTranslation';
 import { normalizeGenres } from '@/lib/genres';
 import { GoogleBooksApiError, toHttpsUrl } from '@/api/google-books';
-import { sanitizeDescription } from '@/lib/sanitize-html';
+import { sanitizeDescription } from '@/lib/sanitizeHtml';
 
 export default function AddBookScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
