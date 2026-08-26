@@ -1,6 +1,7 @@
 {
   "common": {
     "cancel": "Cancelar",
+    "back": "Atrás",
     "clear": "Borrar",
     "retry": "Reintentar",
     "remove": "Eliminar",
@@ -80,6 +81,7 @@
     "editGenres": "Editar géneros",
     "editBook": "Editar detalles",
     "noGenres": "Aún no hay géneros.",
+    "notFound": "No se pudo encontrar este libro.",
     "moreGenres": "+{{count}} más",
     "remove": "Eliminar de mi TBR",
     "removeTitle": "¿Eliminar libro?",

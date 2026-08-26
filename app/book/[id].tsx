@@ -1,6 +1,6 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
-import { Alert, Image, Modal, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Alert, Image, Modal, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 
 import { GenreEditor } from '@/components/genre-editor';
 import { ThemedText } from '@/components/themed-text';
@@ -54,8 +54,27 @@ export default function BookDetailScreen() {
   const [isDescriptionExpanded, setDescriptionExpanded] = useState(false);
   const [hasMoreDescription, setHasMoreDescription] = useState(false);
 
-  if (isLoading || !book) {
-    return <View style={[styles.centered, { backgroundColor }]} />;
+  if (isLoading) {
+    return (
+      <View style={[styles.centered, { backgroundColor }]}>
+        <ActivityIndicator color={accentColor} />
+      </View>
+    );
+  }
+
+  if (!book) {
+    return (
+      <View style={[styles.centered, styles.notFoundContainer, { backgroundColor }]}>
+        <ThemedText style={[Typography.body, styles.centeredText, { color: textColor }]}>
+          {t('bookDetail.notFound')}
+        </ThemedText>
+        <Pressable
+          onPress={() => router.back()}
+          style={[styles.deleteButton, { backgroundColor: surfaceMutedColor }]}>
+          <ThemedText style={[Typography.button, { color: accentColor }]}>{t('common.back')}</ThemedText>
+        </Pressable>
+      </View>
+    );
   }
 
   function handleDelete() {
@@ -272,6 +291,15 @@ const styles = StyleSheet.create({
   },
   centered: {
     flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  notFoundContainer: {
+    gap: 16,
+    paddingHorizontal: 24,
+  },
+  centeredText: {
+    textAlign: 'center',
   },
   header: {
     flexDirection: 'row',
