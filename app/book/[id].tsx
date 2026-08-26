@@ -150,16 +150,14 @@ export default function BookDetailScreen() {
               {book.authors.join(', ')}
             </ThemedText>
           )}
-          {book.googleBooksId === null && (
-            <Pressable
-              onPress={() => router.push({ pathname: '/add-manually', params: { id: book.id } })}
-              hitSlop={8}
-              style={styles.editBookLink}>
-              <ThemedText style={[Typography.button, { color: accentColor }]}>
-                {t('bookDetail.editBook')}
-              </ThemedText>
-            </Pressable>
-          )}
+          <Pressable
+            onPress={() => router.push({ pathname: '/add-manually', params: { id: book.id } })}
+            hitSlop={8}
+            style={styles.editBookLink}>
+            <ThemedText style={[Typography.button, { color: accentColor }]}>
+              {t('bookDetail.editBook')}
+            </ThemedText>
+          </Pressable>
         </View>
       </View>
 
