@@ -70,73 +70,78 @@ export default function AddBookScreen() {
         )}
       </View>
 
-      <View style={styles.quickActionsRow}>
-        <Pressable
-          style={[styles.quickAction, { backgroundColor: surfaceMutedColor }]}
-          onPress={() => router.push('/scan-isbn')}>
-          <ThemedText style={[Typography.button, { color: textColor }]}>
-            {t('search.scanIsbn')}
-          </ThemedText>
-        </Pressable>
-        <Pressable
-          style={[styles.quickAction, { backgroundColor: surfaceMutedColor }]}
-          onPress={() => router.push({ pathname: '/recognize-cover', params: { pickSource: 'camera' } })}>
-          <ThemedText style={[Typography.button, { color: textColor }]}>
-            {t('search.scanCover')}
-          </ThemedText>
-        </Pressable>
-        <Pressable
-          style={[styles.quickAction, { backgroundColor: surfaceMutedColor }]}
-          onPress={() => router.push({ pathname: '/recognize-cover', params: { pickSource: 'gallery' } })}>
-          <ThemedText style={[Typography.button, { color: textColor }]}>
-            {t('search.uploadPhoto')}
-          </ThemedText>
-        </Pressable>
-        <Pressable
-          style={[styles.quickAction, { backgroundColor: surfaceMutedColor }]}
-          onPress={() => router.push('/add-manually')}>
-          <ThemedText style={[Typography.button, { color: textColor }]}>
-            {t('search.addManually')}
-          </ThemedText>
-        </Pressable>
-      </View>
-
-      {!hasSearched && (
-        <View style={styles.centered}>
-          <ThemedText style={[Typography.bookTitle, { color: textColor }]}>
-            {t('search.emptyTitle')}
-          </ThemedText>
-          <ThemedText style={[Typography.metadata, styles.centeredText, { color: textMutedColor }]}>
-            {t('search.emptyText')}
-          </ThemedText>
-        </View>
-      )}
-
-      {isLoading && <ActivityIndicator style={{ marginTop: 24 }} color={accentColor} />}
-
-      {isError && (
-        <View style={styles.centered}>
-          <ThemedText style={[Typography.body, styles.centeredText, { color: textColor }]}>
-            {t(getErrorTranslationKey(error))}
-          </ThemedText>
-          <Pressable onPress={() => refetch()} style={[styles.retryButton, { backgroundColor: accentColor }]}>
-            <ThemedText style={[Typography.button, { color: '#fff' }]}>{t('common.retry')}</ThemedText>
-          </Pressable>
-        </View>
-      )}
-
-      {hasSearched && !isLoading && !isError && (results?.length ?? 0) === 0 && (
-        <View style={styles.centered}>
-          <ThemedText style={[Typography.body, styles.centeredText, { color: textColor }]}>
-            {t('search.noResultsFor', { query: debouncedQuery })}
-          </ThemedText>
-        </View>
-      )}
-
       <FlatList
         data={results ?? []}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.listContent}
+        ListHeaderComponent={
+          <View style={styles.listHeader}>
+            <View style={styles.quickActionsRow}>
+              <Pressable
+                style={[styles.quickAction, { backgroundColor: surfaceMutedColor }]}
+                onPress={() => router.push('/scan-isbn')}>
+                <ThemedText style={[Typography.button, { color: textColor }]}>
+                  {t('search.scanIsbn')}
+                </ThemedText>
+              </Pressable>
+              <Pressable
+                style={[styles.quickAction, { backgroundColor: surfaceMutedColor }]}
+                onPress={() => router.push({ pathname: '/recognize-cover', params: { pickSource: 'camera' } })}>
+                <ThemedText style={[Typography.button, { color: textColor }]}>
+                  {t('search.scanCover')}
+                </ThemedText>
+              </Pressable>
+              <Pressable
+                style={[styles.quickAction, { backgroundColor: surfaceMutedColor }]}
+                onPress={() => router.push({ pathname: '/recognize-cover', params: { pickSource: 'gallery' } })}>
+                <ThemedText style={[Typography.button, { color: textColor }]}>
+                  {t('search.uploadPhoto')}
+                </ThemedText>
+              </Pressable>
+              <Pressable
+                style={[styles.quickAction, { backgroundColor: surfaceMutedColor }]}
+                onPress={() => router.push('/add-manually')}>
+                <ThemedText style={[Typography.button, { color: textColor }]}>
+                  {t('search.addManually')}
+                </ThemedText>
+              </Pressable>
+            </View>
+
+            {!hasSearched && (
+              <View style={styles.centered}>
+                <ThemedText style={[Typography.bookTitle, { color: textColor }]}>
+                  {t('search.emptyTitle')}
+                </ThemedText>
+                <ThemedText style={[Typography.metadata, styles.centeredText, { color: textMutedColor }]}>
+                  {t('search.emptyText')}
+                </ThemedText>
+              </View>
+            )}
+
+            {isLoading && <ActivityIndicator style={{ marginTop: 24 }} color={accentColor} />}
+
+            {isError && (
+              <View style={styles.centered}>
+                <ThemedText style={[Typography.body, styles.centeredText, { color: textColor }]}>
+                  {t(getErrorTranslationKey(error))}
+                </ThemedText>
+                <Pressable
+                  onPress={() => refetch()}
+                  style={[styles.retryButton, { backgroundColor: accentColor }]}>
+                  <ThemedText style={[Typography.button, { color: '#fff' }]}>{t('common.retry')}</ThemedText>
+                </Pressable>
+              </View>
+            )}
+
+            {hasSearched && !isLoading && !isError && (results?.length ?? 0) === 0 && (
+              <View style={styles.centered}>
+                <ThemedText style={[Typography.body, styles.centeredText, { color: textColor }]}>
+                  {t('search.noResultsFor', { query: debouncedQuery })}
+                </ThemedText>
+              </View>
+            )}
+          </View>
+        }
         renderItem={({ item }) => {
           const alreadySaved = savedGoogleIds.has(item.id);
           const adding = isAdding(item.id);
@@ -179,11 +184,13 @@ const styles = StyleSheet.create({
   searchInput: {
     paddingVertical: 8,
   },
+  listHeader: {
+    gap: 12,
+  },
   quickActionsRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 8,
-    marginTop: 10,
   },
   quickAction: {
     flexBasis: '48%',
