@@ -46,7 +46,7 @@ export function MultiFilterSheet({ label, options, selected, onChange, disabled 
         ]}>
         <ThemedText
           numberOfLines={1}
-          style={[Typography.button, { color: isActive ? accentColor : textColor }]}>
+          style={[Typography.button, styles.triggerText, { color: isActive ? accentColor : textColor }]}>
           {triggerLabel}
         </ThemedText>
         <IconSymbol name="chevron.down" size={16} color={isActive ? accentColor : textMutedColor} />
@@ -113,6 +113,9 @@ const styles = StyleSheet.create({
     minHeight: 44,
     borderRadius: 10,
     paddingHorizontal: 10,
+  },
+  triggerText: {
+    flexShrink: 1,
   },
   backdrop: {
     flex: 1,

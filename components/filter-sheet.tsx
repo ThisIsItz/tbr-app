@@ -57,7 +57,7 @@ export function FilterSheet({
         ]}>
         <ThemedText
           numberOfLines={1}
-          style={[Typography.button, { color: isActive ? accentColor : textColor }]}>
+          style={[Typography.button, styles.triggerText, { color: isActive ? accentColor : textColor }]}>
           {isActive ? (selectedLabel ?? label) : label}
         </ThemedText>
         <IconSymbol name="chevron.down" size={16} color={isActive ? accentColor : textMutedColor} />
@@ -116,6 +116,9 @@ const styles = StyleSheet.create({
     minHeight: 44,
     borderRadius: 10,
     paddingHorizontal: 10,
+  },
+  triggerText: {
+    flexShrink: 1,
   },
   backdrop: {
     flex: 1,
