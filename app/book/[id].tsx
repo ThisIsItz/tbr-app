@@ -114,7 +114,8 @@ export default function BookDetailScreen() {
   ].filter((row): row is { label: string; value: string } => !!row);
 
   return (
-    <ScrollView style={{ backgroundColor }} contentContainerStyle={styles.container}>
+    <ScrollView style={[styles.scrollView, { backgroundColor }]} contentContainerStyle={styles.container}>
+      <View style={styles.content}>
       <View style={styles.header}>
         {coverUrl ? (
           <Image
@@ -247,6 +248,7 @@ export default function BookDetailScreen() {
           )}
         </View>
       </View>
+      </View>
 
       <Pressable
         style={[styles.deleteButton, { backgroundColor: surfaceMutedColor }]}
@@ -285,8 +287,16 @@ export default function BookDetailScreen() {
 }
 
 const styles = StyleSheet.create({
+  scrollView: {
+    flex: 1,
+  },
   container: {
+    flexGrow: 1,
     padding: 16,
+    justifyContent: 'space-between',
+    gap: 24,
+  },
+  content: {
     gap: 24,
   },
   centered: {
