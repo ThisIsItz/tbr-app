@@ -47,6 +47,7 @@ export default function AddManuallyScreen() {
   const accentColor = useThemeColor({}, 'accent');
   const accentSoftColor = useThemeColor({}, 'accentSoft');
   const shadowColor = useThemeColor({}, 'shadow');
+  const dangerColor = useThemeColor({}, 'danger');
 
   const { data: existingBook, isLoading: isLoadingBook } = useBook(id);
   const addBook = useAddBook();
@@ -213,6 +214,7 @@ export default function AddManuallyScreen() {
               <View style={styles.field}>
                 <ThemedText style={[Typography.metadata, styles.labelPrimary, { color: textColor }]}>
                   {t('addManually.titleLabel')}
+                  <ThemedText style={[Typography.metadata, { color: dangerColor }]}> *</ThemedText>
                 </ThemedText>
                 <TextInput
                   value={title}

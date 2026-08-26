@@ -41,6 +41,7 @@ export default function RecognizeCoverScreen() {
   const textColor = useThemeColor({}, 'text');
   const textMutedColor = useThemeColor({}, 'textMuted');
   const accentColor = useThemeColor({}, 'accent');
+  const shadowColor = useThemeColor({}, 'shadow');
 
   const [stage, setStage] = useState<Stage>(
     bookCoverRecognitionService.isSupported ? 'idle' : 'unsupported',
@@ -222,7 +223,7 @@ export default function RecognizeCoverScreen() {
           </ThemedText>
           <View style={styles.actionsRow}>
             <Pressable
-              style={[styles.primaryButton, { backgroundColor: surfaceMutedColor }]}
+              style={[styles.secondaryButtonRow, { backgroundColor: surfaceMutedColor }]}
               onPress={goToSearchManually}
               accessibilityRole="button"
               accessibilityLabel={t('recognizeCover.searchManually')}>
@@ -231,7 +232,7 @@ export default function RecognizeCoverScreen() {
               </ThemedText>
             </Pressable>
             <Pressable
-              style={[styles.primaryButton, { backgroundColor: accentColor }]}
+              style={[styles.primaryButton, { backgroundColor: accentColor, shadowColor }]}
               onPress={goToAddManually}
               accessibilityRole="button"
               accessibilityLabel={t('search.addManually')}>
@@ -262,7 +263,7 @@ export default function RecognizeCoverScreen() {
           </ThemedText>
           <View style={styles.actionsRow}>
             <Pressable
-              style={[styles.primaryButton, { backgroundColor: surfaceMutedColor }]}
+              style={[styles.secondaryButtonRow, { backgroundColor: surfaceMutedColor }]}
               onPress={handleReset}
               accessibilityRole="button"
               accessibilityLabel={t('recognizeCover.tryAnotherPhoto')}>
@@ -271,7 +272,7 @@ export default function RecognizeCoverScreen() {
               </ThemedText>
             </Pressable>
             <Pressable
-              style={[styles.primaryButton, { backgroundColor: surfaceMutedColor }]}
+              style={[styles.secondaryButtonRow, { backgroundColor: surfaceMutedColor }]}
               onPress={goToSearchManually}
               accessibilityRole="button"
               accessibilityLabel={t('recognizeCover.searchManually')}>
@@ -280,7 +281,7 @@ export default function RecognizeCoverScreen() {
               </ThemedText>
             </Pressable>
             <Pressable
-              style={[styles.primaryButton, { backgroundColor: accentColor }]}
+              style={[styles.primaryButton, { backgroundColor: accentColor, shadowColor }]}
               onPress={goToAddManually}
               accessibilityRole="button"
               accessibilityLabel={t('search.addManually')}>
@@ -345,7 +346,7 @@ export default function RecognizeCoverScreen() {
             <Pressable
               style={[
                 styles.primaryButton,
-                { backgroundColor: !title.trim() ? surfaceMutedColor : accentColor },
+                { backgroundColor: !title.trim() ? surfaceMutedColor : accentColor, shadowColor },
               ]}
               onPress={handleSearch}
               disabled={searchStatus === 'loading' || !title.trim()}
@@ -416,7 +417,7 @@ export default function RecognizeCoverScreen() {
                 {t('recognizeCover.noMatchesBody')}
               </ThemedText>
               <Pressable
-                style={[styles.primaryButton, { backgroundColor: accentColor }]}
+                style={[styles.primaryButton, { backgroundColor: accentColor, shadowColor }]}
                 onPress={goToAddManually}
                 accessibilityRole="button"
                 accessibilityLabel={t('search.addManually')}>
@@ -477,7 +478,8 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 1,
     shadowRadius: 6,
@@ -488,7 +490,17 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+  },
+  secondaryButtonRow: {
+    flex: 1,
+    minHeight: 44,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 14,
   },
   centered: {
     alignItems: 'center',
