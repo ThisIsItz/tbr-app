@@ -15,6 +15,7 @@ import {
 
 import { BookCard } from '@/components/book-card';
 import { ThemedText } from '@/components/themed-text';
+import { useScreenHeaderOptions } from '@/components/use-screen-header-options';
 import { Typography } from '@/constants/theme';
 import { useBooks } from '@/features/library/hooks';
 import { useQuickAddBook } from '@/features/search/hooks';
@@ -34,6 +35,7 @@ const MIN_RELIABLE_SCORE = 30;
 export default function RecognizeCoverScreen() {
   const { pickSource } = useLocalSearchParams<{ pickSource?: 'camera' | 'gallery' }>();
   const { t } = useTranslation();
+  const screenHeaderOptions = useScreenHeaderOptions();
   const backgroundColor = useThemeColor({}, 'background');
   const surfaceMutedColor = useThemeColor({}, 'surfaceMuted');
   const textColor = useThemeColor({}, 'text');
@@ -195,7 +197,7 @@ export default function RecognizeCoverScreen() {
       style={{ backgroundColor }}
       contentContainerStyle={styles.container}
       keyboardShouldPersistTaps="handled">
-      <Stack.Screen options={{ title: t('screenTitles.recognizeCover') }} />
+      <Stack.Screen options={{ title: t('screenTitles.recognizeCover'), ...screenHeaderOptions }} />
 
       {imageUri && (
         <Image

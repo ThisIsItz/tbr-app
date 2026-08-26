@@ -1,16 +1,15 @@
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import * as Localization from 'expo-localization';
-import { router, Stack } from 'expo-router';
+import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
-import { Pressable } from 'react-native';
 import 'react-native-reanimated';
 
-import { IconSymbol } from '@/components/ui/icon-symbol';
+import { HeaderBackButton } from '@/components/header-back-button';
+import { useScreenHeaderOptions } from '@/components/use-screen-header-options';
 import { useAppColorScheme } from '@/hooks/use-app-color-scheme';
-import { useThemeColor } from '@/hooks/use-theme-color';
 import { useTranslation } from '@/hooks/use-translation';
 import { getDb } from '@/lib/db/client';
 import { GoogleBooksApiError } from '@/lib/google-books';
@@ -81,27 +80,11 @@ export default function RootLayout() {
 function RootLayoutNav() {
   const { colorScheme } = useAppColorScheme();
   const { t } = useTranslation();
-  const backgroundColor = useThemeColor({}, 'background');
-  const accentColor = useThemeColor({}, 'accent');
-  const textColor = useThemeColor({}, 'text');
-  const warmHeaderOptions = {
-    headerStyle: { backgroundColor },
-    headerTintColor: accentColor,
-    headerTitleStyle: { color: textColor },
-    headerShadowVisible: false,
-  };
+  const screenHeaderOptions = useScreenHeaderOptions();
   const modalHeaderOptions = {
-    ...warmHeaderOptions,
+    ...screenHeaderOptions,
     presentation: 'modal' as const,
-    headerLeft: () => (
-      <Pressable
-        onPress={() => router.back()}
-        hitSlop={8}
-        accessibilityRole="button"
-        accessibilityLabel={t('common.cancel')}>
-        <IconSymbol name="xmark" size={22} color={accentColor} />
-      </Pressable>
-    ),
+    headerLeft: () => <HeaderBackButton />,
   };
 
   return (
@@ -111,7 +94,7 @@ function RootLayoutNav() {
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen
             name="book/[id]"
-            options={{ title: t('screenTitles.bookDetails'), ...warmHeaderOptions }}
+            options={{ title: t('screenTitles.bookDetails'), ...screenHeaderOptions }}
           />
           <Stack.Screen
             name="add-book"
@@ -131,7 +114,7 @@ function RootLayoutNav() {
           />
           <Stack.Screen
             name="settings"
-            options={{ title: t('screenTitles.settings'), ...warmHeaderOptions }}
+            options={{ title: t('screenTitles.settings'), ...screenHeaderOptions }}
           />
         </Stack>
         <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
