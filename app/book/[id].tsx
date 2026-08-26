@@ -18,8 +18,6 @@ const MAX_VISIBLE_GENRES = 3;
 const DESCRIPTION_COLLAPSED_LINES = 6;
 const FADE_BARS = 6;
 
-// Google Books gives dates as YYYY-MM-DD (sometimes just YYYY-MM or YYYY) —
-// only reformat full dates, leave partial ones as-is.
 function formatPublishedDate(raw: string): string {
   const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(raw);
   if (!match) return raw;
