@@ -1,12 +1,14 @@
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import * as Localization from 'expo-localization';
-import { Stack } from 'expo-router';
+import { router, Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
+import { Pressable } from 'react-native';
 import 'react-native-reanimated';
 
+import { IconSymbol } from '@/components/ui/icon-symbol';
 import { useAppColorScheme } from '@/hooks/use-app-color-scheme';
 import { useThemeColor } from '@/hooks/use-theme-color';
 import { useTranslation } from '@/hooks/use-translation';
@@ -88,6 +90,19 @@ function RootLayoutNav() {
     headerTitleStyle: { color: textColor },
     headerShadowVisible: false,
   };
+  const modalHeaderOptions = {
+    ...warmHeaderOptions,
+    presentation: 'modal' as const,
+    headerLeft: () => (
+      <Pressable
+        onPress={() => router.back()}
+        hitSlop={8}
+        accessibilityRole="button"
+        accessibilityLabel={t('common.cancel')}>
+        <IconSymbol name="xmark" size={22} color={accentColor} />
+      </Pressable>
+    ),
+  };
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -100,19 +115,19 @@ function RootLayoutNav() {
           />
           <Stack.Screen
             name="add-book"
-            options={{ title: t('screenTitles.addBook'), presentation: 'modal', ...warmHeaderOptions }}
+            options={{ title: t('screenTitles.addBook'), ...modalHeaderOptions }}
           />
           <Stack.Screen
             name="add/[id]"
-            options={{ title: t('screenTitles.addToTbr'), presentation: 'modal', ...warmHeaderOptions }}
+            options={{ title: t('screenTitles.addToTbr'), ...modalHeaderOptions }}
           />
           <Stack.Screen
             name="add-manually"
-            options={{ title: t('screenTitles.addManually'), presentation: 'modal', ...warmHeaderOptions }}
+            options={{ title: t('screenTitles.addManually'), ...modalHeaderOptions }}
           />
           <Stack.Screen
             name="scan-isbn"
-            options={{ title: t('screenTitles.scanIsbn'), presentation: 'modal', ...warmHeaderOptions }}
+            options={{ title: t('screenTitles.scanIsbn'), ...modalHeaderOptions }}
           />
           <Stack.Screen
             name="settings"
