@@ -2,6 +2,7 @@
   "common": {
     "cancel": "Cancel",
     "back": "Back",
+    "edit": "Edit",
     "clear": "Clear",
     "retry": "Try again",
     "remove": "Remove",
@@ -79,7 +80,6 @@
     "description": "Description",
     "genres": "Genres",
     "editGenres": "Edit genres",
-    "editBook": "Edit Details",
     "noGenres": "No genres yet.",
     "notFound": "This book couldn't be found.",
     "moreGenres": "+{{count}} more",

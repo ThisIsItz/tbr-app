@@ -1,4 +1,4 @@
-import { router, useLocalSearchParams } from 'expo-router';
+import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { ActivityIndicator, Alert, Image, Modal, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 
@@ -125,6 +125,19 @@ export default function BookDetailScreen() {
 
   return (
     <ScrollView style={[styles.scrollView, { backgroundColor }]} contentContainerStyle={styles.container}>
+      <Stack.Screen
+        options={{
+          headerRight: () => (
+            <Pressable
+              onPress={() => router.push({ pathname: '/add-manually', params: { id: book.id } })}
+              hitSlop={8}>
+              <ThemedText style={[Typography.button, { color: accentColor }]}>
+                {t('common.edit')}
+              </ThemedText>
+            </Pressable>
+          ),
+        }}
+      />
       <View style={styles.content}>
       <View style={styles.header}>
         {coverUrl ? (
@@ -150,14 +163,6 @@ export default function BookDetailScreen() {
               {book.authors.join(', ')}
             </ThemedText>
           )}
-          <Pressable
-            onPress={() => router.push({ pathname: '/add-manually', params: { id: book.id } })}
-            hitSlop={8}
-            style={[styles.editChip, styles.editBookChip, { backgroundColor: surfaceMutedColor }]}>
-            <ThemedText style={[Typography.caption, { color: accentColor }]}>
-              {t('bookDetail.editBook')}
-            </ThemedText>
-          </Pressable>
         </View>
       </View>
 
@@ -230,10 +235,9 @@ export default function BookDetailScreen() {
           <Pressable
             onPress={() => setGenreModalVisible(true)}
             hitSlop={8}
-            style={[styles.editChip, { backgroundColor: surfaceMutedColor }]}>
-            <ThemedText style={[Typography.caption, { color: accentColor }]}>
-              {t('bookDetail.editGenres')}
-            </ThemedText>
+            accessibilityRole="button"
+            accessibilityLabel={t('bookDetail.editGenres')}>
+            <IconSymbol name="pencil" size={18} color={accentColor} />
           </Pressable>
         </View>
 
@@ -348,15 +352,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     lineHeight: 24,
     fontWeight: '500',
-  },
-  editChip: {
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-  },
-  editBookChip: {
-    marginTop: 2,
-    alignSelf: 'flex-start',
   },
   section: {
     gap: 8,

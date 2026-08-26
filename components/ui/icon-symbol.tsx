@@ -33,6 +33,7 @@ const MAPPING = {
   'gearshape.fill': 'settings',
   'xmark.circle.fill': 'cancel',
   'xmark': 'close',
+  'pencil': 'edit',
   'square.and.arrow.up': 'file-upload',
   'tray.and.arrow.down': 'file-download',
 } as IconMapping;

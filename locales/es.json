@@ -2,6 +2,7 @@
   "common": {
     "cancel": "Cancelar",
     "back": "Atrás",
+    "edit": "Editar",
     "clear": "Borrar",
     "retry": "Reintentar",
     "remove": "Eliminar",
@@ -79,7 +80,6 @@
     "description": "Descripción",
     "genres": "Géneros",
     "editGenres": "Editar géneros",
-    "editBook": "Editar detalles",
     "noGenres": "Aún no hay géneros.",
     "notFound": "No se pudo encontrar este libro.",
     "moreGenres": "+{{count}} más",
