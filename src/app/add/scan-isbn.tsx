@@ -65,7 +65,9 @@ export default function ScanIsbnScreen() {
         </ThemedText>
         <Pressable
           style={[styles.primaryButton, { backgroundColor: accentColor }]}
-          onPress={() => (permission.canAskAgain ? requestPermission() : Linking.openSettings())}>
+          onPress={() => (permission.canAskAgain ? requestPermission() : Linking.openSettings())}
+          accessibilityRole="button"
+          accessibilityLabel={permission.canAskAgain ? t('scanIsbn.grantPermission') : t('scanIsbn.openSettings')}>
           <ThemedText style={[Typography.button, { color: '#fff' }]}>
             {permission.canAskAgain ? t('scanIsbn.grantPermission') : t('scanIsbn.openSettings')}
           </ThemedText>
@@ -116,7 +118,9 @@ export default function ScanIsbnScreen() {
               </ThemedText>
               <Pressable
                 style={[styles.primaryButton, { backgroundColor: accentColor }]}
-                onPress={handleScanAgain}>
+                onPress={handleScanAgain}
+                accessibilityRole="button"
+                accessibilityLabel={t('scanIsbn.scanAgain')}>
                 <ThemedText style={[Typography.button, { color: '#fff' }]}>
                   {t('scanIsbn.scanAgain')}
                 </ThemedText>

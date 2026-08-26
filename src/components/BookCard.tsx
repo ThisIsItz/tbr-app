@@ -51,6 +51,8 @@ export function BookCard({
   return (
     <Pressable
       onPress={onPress}
+      accessibilityRole="button"
+      accessibilityLabel={author ? `${title}, ${author}` : title}
       style={[styles.card, { backgroundColor: surfaceColor, shadowColor }]}>
       {coverUrl ? (
         <Image
@@ -123,6 +125,8 @@ export function BookCard({
               onPress={action.onPress}
               disabled={action.disabled}
               hitSlop={10}
+              accessibilityRole="button"
+              accessibilityLabel={action.label}
               style={[
                 styles.compactActionButton,
                 { backgroundColor: action.disabled ? surfaceMutedColor : accentColor },

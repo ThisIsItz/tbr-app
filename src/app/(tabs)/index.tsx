@@ -237,6 +237,8 @@ export default function MyTbrScreen() {
           {hasActiveFilters && (
             <Pressable
               onPress={clearFilters}
+              accessibilityRole="button"
+              accessibilityLabel={t('library.clearFilters')}
               style={[styles.clearButton, { backgroundColor: surfaceMutedColor }]}>
               <ThemedText style={[Typography.button, { color: accentColor }]}>
                 {t('library.clearFilters')}
@@ -264,6 +266,8 @@ export default function MyTbrScreen() {
       <View style={[styles.floatingAddWrapper, { bottom: insets.bottom + 28 }]} pointerEvents="box-none">
         <Pressable
           onPress={() => router.push('/add/book')}
+          accessibilityRole="button"
+          accessibilityLabel={t('library.addBook')}
           style={[styles.floatingAddButton, { backgroundColor: accentColor, shadowColor: textColor }]}>
           <IconSymbol name="plus.circle.fill" size={28} color="#fff" />
           <ThemedText style={[Typography.button, styles.floatingAddButtonText, { color: '#fff' }]}>

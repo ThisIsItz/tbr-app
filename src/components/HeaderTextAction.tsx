@@ -13,7 +13,12 @@ export function HeaderTextAction({ label, onPress }: HeaderTextActionProps) {
   const accentColor = useThemeColor({}, 'accent');
 
   return (
-    <Pressable onPress={onPress} hitSlop={8} style={styles.action}>
+    <Pressable
+      onPress={onPress}
+      hitSlop={8}
+      accessibilityRole="button"
+      accessibilityLabel={label}
+      style={styles.action}>
       <ThemedText style={[Typography.button, { color: accentColor }]}>{label}</ThemedText>
     </Pressable>
   );

@@ -43,7 +43,11 @@ export function GenreEditor({ genres, onChange }: GenreEditorProps) {
         {genres.map((genre) => (
           <View key={genre} style={[styles.chip, { backgroundColor: accentSoftColor }]}>
             <ThemedText style={[Typography.caption, { color: accentColor }]}>{genre}</ThemedText>
-            <Pressable onPress={() => handleRemove(genre)} hitSlop={8}>
+            <Pressable
+              onPress={() => handleRemove(genre)}
+              hitSlop={8}
+              accessibilityRole="button"
+              accessibilityLabel={`${t('common.remove')} ${genre}`}>
               <ThemedText style={[Typography.button, styles.chipRemove, { color: accentColor }]}>
                 ×
               </ThemedText>
@@ -65,7 +69,11 @@ export function GenreEditor({ genres, onChange }: GenreEditorProps) {
           onSubmitEditing={handleAdd}
           returnKeyType="done"
         />
-        <Pressable onPress={handleAdd} style={[styles.addButton, { backgroundColor: accentColor }]}>
+        <Pressable
+          onPress={handleAdd}
+          accessibilityRole="button"
+          accessibilityLabel={t('genreEditor.add')}
+          style={[styles.addButton, { backgroundColor: accentColor }]}>
           <ThemedText style={[Typography.button, styles.addButtonText]}>
             {t('genreEditor.add')}
           </ThemedText>

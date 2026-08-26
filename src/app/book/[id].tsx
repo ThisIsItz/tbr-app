@@ -74,6 +74,8 @@ export default function BookDetailScreen() {
         </ThemedText>
         <Pressable
           onPress={() => router.back()}
+          accessibilityRole="button"
+          accessibilityLabel={t('common.back')}
           style={[styles.deleteButton, { backgroundColor: surfaceMutedColor }]}>
           <ThemedText style={[Typography.button, { color: accentColor }]}>{t('common.back')}</ThemedText>
         </Pressable>
@@ -157,6 +159,8 @@ export default function BookDetailScreen() {
           {extraGenreCount > 0 && (
             <Pressable
               onPress={() => setGenreModalVisible(true)}
+              accessibilityRole="button"
+              accessibilityLabel={t('bookDetail.moreGenres', { count: extraGenreCount })}
               style={[styles.genreChip, { backgroundColor: surfaceMutedColor }]}>
               <ThemedText style={[Typography.caption, { color: textMutedColor }]}>
                 {t('bookDetail.moreGenres', { count: extraGenreCount })}
@@ -192,7 +196,9 @@ export default function BookDetailScreen() {
           styles.deleteButton,
           { backgroundColor: surfaceMutedColor, borderWidth: 1.5, borderColor: dangerColor },
         ]}
-        onPress={handleDelete}>
+        onPress={handleDelete}
+        accessibilityRole="button"
+        accessibilityLabel={t('bookDetail.remove')}>
         <ThemedText style={[Typography.button, { color: dangerColor }]}>
           {t('bookDetail.remove')}
         </ThemedText>
@@ -203,7 +209,11 @@ export default function BookDetailScreen() {
         transparent
         animationType="fade"
         onRequestClose={() => setGenreModalVisible(false)}>
-        <Pressable style={styles.backdrop} onPress={() => setGenreModalVisible(false)}>
+        <Pressable
+          style={styles.backdrop}
+          onPress={() => setGenreModalVisible(false)}
+          accessibilityRole="button"
+          accessibilityLabel={t('common.done')}>
           <Pressable
             style={[styles.sheet, { backgroundColor: surfaceColor }]}
             onPress={(e) => e.stopPropagation()}>
@@ -216,6 +226,8 @@ export default function BookDetailScreen() {
             />
             <Pressable
               onPress={() => setGenreModalVisible(false)}
+              accessibilityRole="button"
+              accessibilityLabel={t('common.done')}
               style={[styles.doneButton, { backgroundColor: accentColor }]}>
               <ThemedText style={[Typography.button, { color: '#fff' }]}>{t('common.done')}</ThemedText>
             </Pressable>

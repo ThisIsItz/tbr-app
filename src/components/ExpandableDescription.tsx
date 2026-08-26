@@ -51,7 +51,12 @@ export function ExpandableDescription({ description }: ExpandableDescriptionProp
         )}
       </View>
       {hasMore && (
-        <Pressable onPress={() => setExpanded((v) => !v)} hitSlop={8} style={styles.expandButton}>
+        <Pressable
+          onPress={() => setExpanded((v) => !v)}
+          hitSlop={8}
+          accessibilityRole="button"
+          accessibilityLabel={isExpanded ? t('bookDetail.showLess') : t('bookDetail.showMore')}
+          style={styles.expandButton}>
           <ThemedText style={[Typography.button, { color: accentColor }]}>
             {isExpanded ? t('bookDetail.showLess') : t('bookDetail.showMore')}
           </ThemedText>

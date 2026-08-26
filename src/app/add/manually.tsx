@@ -180,7 +180,10 @@ export default function AddManuallyScreen() {
 
           <View style={styles.headerRow}>
             <View style={styles.coverColumn}>
-              <Pressable onPress={handlePickCover}>
+              <Pressable
+                onPress={handlePickCover}
+                accessibilityRole="button"
+                accessibilityLabel={t('addManually.addCoverHint')}>
                 {coverUri ? (
                   <Image source={{ uri: coverUri }} style={styles.cover} resizeMode="cover" />
                 ) : (
@@ -194,7 +197,11 @@ export default function AddManuallyScreen() {
                 )}
               </Pressable>
               {coverUri && (
-                <Pressable onPress={() => setCoverUri(null)} hitSlop={8}>
+                <Pressable
+                  onPress={() => setCoverUri(null)}
+                  hitSlop={8}
+                  accessibilityRole="button"
+                  accessibilityLabel={t('addManually.removeCover')}>
                   <ThemedText style={[Typography.caption, styles.centeredText, { color: accentColor }]}>
                     {t('addManually.removeCover')}
                   </ThemedText>
@@ -301,7 +308,11 @@ export default function AddManuallyScreen() {
               <ThemedText style={[Typography.metadata, styles.labelSecondary, { color: textMutedColor }]}>
                 {t('addManually.genres')}
               </ThemedText>
-              <Pressable style={styles.genresRow} onPress={() => setGenreModalVisible(true)}>
+              <Pressable
+                style={styles.genresRow}
+                onPress={() => setGenreModalVisible(true)}
+                accessibilityRole="button"
+                accessibilityLabel={genres.length > 0 ? t('bookDetail.editGenres') : t('addManually.addGenres')}>
                 {genres.map((genre) => (
                   <View key={genre} style={[styles.genreChip, { backgroundColor: accentSoftColor }]}>
                     <ThemedText style={[Typography.caption, { color: accentColor }]}>{genre}</ThemedText>
@@ -339,7 +350,9 @@ export default function AddManuallyScreen() {
           <Pressable
             style={[styles.saveButton, { backgroundColor: accentColor }]}
             onPress={handleSave}
-            disabled={isSaving}>
+            disabled={isSaving}
+            accessibilityRole="button"
+            accessibilityLabel={t(isEditing ? 'addManually.saveChanges' : 'addManually.save')}>
             <ThemedText style={[Typography.button, styles.saveButtonText]}>
               {isSaving
                 ? t(isEditing ? 'addManually.savingChanges' : 'addManually.saving')
@@ -354,7 +367,11 @@ export default function AddManuallyScreen() {
         transparent
         animationType="fade"
         onRequestClose={() => setGenreModalVisible(false)}>
-        <Pressable style={styles.backdrop} onPress={() => setGenreModalVisible(false)}>
+        <Pressable
+          style={styles.backdrop}
+          onPress={() => setGenreModalVisible(false)}
+          accessibilityRole="button"
+          accessibilityLabel={t('common.done')}>
           <Pressable
             style={[styles.sheet, { backgroundColor: surfaceColor, shadowColor }]}
             onPress={(e) => e.stopPropagation()}>
@@ -364,6 +381,8 @@ export default function AddManuallyScreen() {
             <GenreEditor genres={genres} onChange={setGenres} />
             <Pressable
               onPress={() => setGenreModalVisible(false)}
+              accessibilityRole="button"
+              accessibilityLabel={t('common.done')}
               style={[styles.doneButton, { backgroundColor: accentColor }]}>
               <ThemedText style={[Typography.button, { color: '#fff' }]}>{t('common.done')}</ThemedText>
             </Pressable>

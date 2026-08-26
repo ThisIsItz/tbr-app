@@ -65,28 +65,36 @@ export default function AddBookScreen() {
             <View style={styles.quickActionsRow}>
               <Pressable
                 style={[styles.quickAction, { backgroundColor: surfaceMutedColor }]}
-                onPress={() => router.push('/add/scan-isbn')}>
+                onPress={() => router.push('/add/scan-isbn')}
+                accessibilityRole="button"
+                accessibilityLabel={t('search.scanIsbn')}>
                 <ThemedText style={[Typography.button, { color: textColor }]}>
                   {t('search.scanIsbn')}
                 </ThemedText>
               </Pressable>
               <Pressable
                 style={[styles.quickAction, { backgroundColor: surfaceMutedColor }]}
-                onPress={() => router.push({ pathname: '/add/recognize-cover', params: { pickSource: 'camera' } })}>
+                onPress={() => router.push({ pathname: '/add/recognize-cover', params: { pickSource: 'camera' } })}
+                accessibilityRole="button"
+                accessibilityLabel={t('search.scanCover')}>
                 <ThemedText style={[Typography.button, { color: textColor }]}>
                   {t('search.scanCover')}
                 </ThemedText>
               </Pressable>
               <Pressable
                 style={[styles.quickAction, { backgroundColor: surfaceMutedColor }]}
-                onPress={() => router.push({ pathname: '/add/recognize-cover', params: { pickSource: 'gallery' } })}>
+                onPress={() => router.push({ pathname: '/add/recognize-cover', params: { pickSource: 'gallery' } })}
+                accessibilityRole="button"
+                accessibilityLabel={t('search.uploadPhoto')}>
                 <ThemedText style={[Typography.button, { color: textColor }]}>
                   {t('search.uploadPhoto')}
                 </ThemedText>
               </Pressable>
               <Pressable
                 style={[styles.quickAction, { backgroundColor: surfaceMutedColor }]}
-                onPress={() => router.push('/add/manually')}>
+                onPress={() => router.push('/add/manually')}
+                accessibilityRole="button"
+                accessibilityLabel={t('search.addManually')}>
                 <ThemedText style={[Typography.button, { color: textColor }]}>
                   {t('search.addManually')}
                 </ThemedText>
@@ -113,6 +121,8 @@ export default function AddBookScreen() {
                 </ThemedText>
                 <Pressable
                   onPress={() => refetch()}
+                  accessibilityRole="button"
+                  accessibilityLabel={t('common.retry')}
                   style={[styles.retryButton, { backgroundColor: accentColor }]}>
                   <ThemedText style={[Typography.button, { color: '#fff' }]}>{t('common.retry')}</ThemedText>
                 </Pressable>

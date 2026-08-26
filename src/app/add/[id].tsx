@@ -51,7 +51,11 @@ export default function AddBookScreen() {
         <ThemedText style={[Typography.body, styles.centeredText, { color: textColor }]}>
           {message}
         </ThemedText>
-        <Pressable onPress={() => refetch()} style={[styles.retryButton, { backgroundColor: accentColor }]}>
+        <Pressable
+          onPress={() => refetch()}
+          accessibilityRole="button"
+          accessibilityLabel={t('common.retry')}
+          style={[styles.retryButton, { backgroundColor: accentColor }]}>
           <ThemedText style={[Typography.button, { color: '#fff' }]}>{t('common.retry')}</ThemedText>
         </Pressable>
       </View>
@@ -111,7 +115,9 @@ export default function AddBookScreen() {
       <Pressable
         style={[styles.saveButton, { backgroundColor: accentColor }]}
         onPress={handleSave}
-        disabled={addBook.isPending}>
+        disabled={addBook.isPending}
+        accessibilityRole="button"
+        accessibilityLabel={t('addConfirm.save')}>
         <ThemedText style={[Typography.button, styles.saveButtonText]}>
           {addBook.isPending ? t('addConfirm.saving') : t('addConfirm.save')}
         </ThemedText>

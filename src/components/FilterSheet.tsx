@@ -5,6 +5,7 @@ import { ThemedText } from '@/components/ThemedText';
 import { IconSymbol } from '@/components/IconSymbol';
 import { Typography } from '@/lib/theme/theme';
 import { useThemeColor } from '@/hooks/useThemeColor';
+import { useTranslation } from '@/hooks/useTranslation';
 
 export interface FilterOption {
   value: string | null;
@@ -33,6 +34,7 @@ export function FilterSheet({
   disabled,
   staticLabel,
 }: FilterSheetProps) {
+  const { t } = useTranslation();
   const [visible, setVisible] = useState(false);
   const isActive = !staticLabel && selected !== null && selected !== undefined;
 
@@ -48,6 +50,8 @@ export function FilterSheet({
       <Pressable
         disabled={disabled}
         onPress={() => setVisible(true)}
+        accessibilityRole="button"
+        accessibilityLabel={isActive ? (selectedLabel ?? label) : label}
         style={[
           styles.trigger,
           {
@@ -64,7 +68,11 @@ export function FilterSheet({
       </Pressable>
 
       <Modal visible={visible} transparent animationType="fade" onRequestClose={() => setVisible(false)}>
-        <Pressable style={styles.backdrop} onPress={() => setVisible(false)}>
+        <Pressable
+          style={styles.backdrop}
+          onPress={() => setVisible(false)}
+          accessibilityRole="button"
+          accessibilityLabel={t('common.done')}>
           <Pressable
             style={[styles.sheet, { backgroundColor: surfaceColor }]}
             onPress={(e) => e.stopPropagation()}>
@@ -83,6 +91,9 @@ export function FilterSheet({
                       onSelect(item.value);
                       setVisible(false);
                     }}
+                    accessibilityRole="radio"
+                    accessibilityLabel={item.label}
+                    accessibilityState={{ selected: isSelected }}
                     style={styles.optionRow}>
                     <ThemedText
                       style={[

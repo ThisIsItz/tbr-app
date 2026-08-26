@@ -223,14 +223,18 @@ export default function RecognizeCoverScreen() {
           <View style={styles.actionsRow}>
             <Pressable
               style={[styles.primaryButton, { backgroundColor: surfaceMutedColor }]}
-              onPress={goToSearchManually}>
+              onPress={goToSearchManually}
+              accessibilityRole="button"
+              accessibilityLabel={t('recognizeCover.searchManually')}>
               <ThemedText style={[Typography.button, { color: textColor }]}>
                 {t('recognizeCover.searchManually')}
               </ThemedText>
             </Pressable>
             <Pressable
               style={[styles.primaryButton, { backgroundColor: accentColor }]}
-              onPress={goToAddManually}>
+              onPress={goToAddManually}
+              accessibilityRole="button"
+              accessibilityLabel={t('search.addManually')}>
               <ThemedText style={[Typography.button, { color: '#fff' }]}>
                 {t('search.addManually')}
               </ThemedText>
@@ -259,21 +263,27 @@ export default function RecognizeCoverScreen() {
           <View style={styles.actionsRow}>
             <Pressable
               style={[styles.primaryButton, { backgroundColor: surfaceMutedColor }]}
-              onPress={handleReset}>
+              onPress={handleReset}
+              accessibilityRole="button"
+              accessibilityLabel={t('recognizeCover.tryAnotherPhoto')}>
               <ThemedText style={[Typography.button, { color: textColor }]}>
                 {t('recognizeCover.tryAnotherPhoto')}
               </ThemedText>
             </Pressable>
             <Pressable
               style={[styles.primaryButton, { backgroundColor: surfaceMutedColor }]}
-              onPress={goToSearchManually}>
+              onPress={goToSearchManually}
+              accessibilityRole="button"
+              accessibilityLabel={t('recognizeCover.searchManually')}>
               <ThemedText style={[Typography.button, { color: textColor }]}>
                 {t('recognizeCover.searchManually')}
               </ThemedText>
             </Pressable>
             <Pressable
               style={[styles.primaryButton, { backgroundColor: accentColor }]}
-              onPress={goToAddManually}>
+              onPress={goToAddManually}
+              accessibilityRole="button"
+              accessibilityLabel={t('search.addManually')}>
               <ThemedText style={[Typography.button, { color: '#fff' }]}>
                 {t('search.addManually')}
               </ThemedText>
@@ -338,7 +348,9 @@ export default function RecognizeCoverScreen() {
                 { backgroundColor: !title.trim() ? surfaceMutedColor : accentColor },
               ]}
               onPress={handleSearch}
-              disabled={searchStatus === 'loading' || !title.trim()}>
+              disabled={searchStatus === 'loading' || !title.trim()}
+              accessibilityRole="button"
+              accessibilityLabel={t('recognizeCover.searchAgain')}>
               <ThemedText
                 style={[Typography.button, { color: !title.trim() ? textMutedColor : '#fff' }]}>
                 {t('recognizeCover.searchAgain')}
@@ -385,7 +397,9 @@ export default function RecognizeCoverScreen() {
               </View>
               <Pressable
                 style={[styles.secondaryButton, { backgroundColor: surfaceMutedColor }]}
-                onPress={goToAddManually}>
+                onPress={goToAddManually}
+                accessibilityRole="button"
+                accessibilityLabel={t('recognizeCover.noneOfThese')}>
                 <ThemedText style={[Typography.button, { color: textColor }]}>
                   {t('recognizeCover.noneOfThese')}
                 </ThemedText>
@@ -403,7 +417,9 @@ export default function RecognizeCoverScreen() {
               </ThemedText>
               <Pressable
                 style={[styles.primaryButton, { backgroundColor: accentColor }]}
-                onPress={goToAddManually}>
+                onPress={goToAddManually}
+                accessibilityRole="button"
+                accessibilityLabel={t('search.addManually')}>
                 <ThemedText style={[Typography.button, { color: '#fff' }]}>
                   {t('search.addManually')}
                 </ThemedText>
@@ -414,7 +430,9 @@ export default function RecognizeCoverScreen() {
           <View style={styles.section}>
             <Pressable
               style={[styles.secondaryButton, { backgroundColor: surfaceMutedColor }]}
-              onPress={handleReset}>
+              onPress={handleReset}
+              accessibilityRole="button"
+              accessibilityLabel={t('recognizeCover.tryAnotherPhoto')}>
               <ThemedText style={[Typography.button, { color: textColor }]}>
                 {t('recognizeCover.tryAnotherPhoto')}
               </ThemedText>

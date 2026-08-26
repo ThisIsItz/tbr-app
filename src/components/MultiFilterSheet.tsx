@@ -40,6 +40,8 @@ export function MultiFilterSheet({ label, options, selected, onChange, disabled 
       <Pressable
         disabled={disabled}
         onPress={() => setVisible(true)}
+        accessibilityRole="button"
+        accessibilityLabel={triggerLabel}
         style={[
           styles.trigger,
           { backgroundColor: isActive ? accentSoftColor : surfaceMutedColor, opacity: disabled ? 0.5 : 1 },
@@ -53,14 +55,22 @@ export function MultiFilterSheet({ label, options, selected, onChange, disabled 
       </Pressable>
 
       <Modal visible={visible} transparent animationType="fade" onRequestClose={() => setVisible(false)}>
-        <Pressable style={styles.backdrop} onPress={() => setVisible(false)}>
+        <Pressable
+          style={styles.backdrop}
+          onPress={() => setVisible(false)}
+          accessibilityRole="button"
+          accessibilityLabel={t('common.done')}>
           <Pressable
             style={[styles.sheet, { backgroundColor: surfaceColor }]}
             onPress={(e) => e.stopPropagation()}>
             <View style={styles.sheetHeader}>
               <ThemedText style={[Typography.sectionTitle, { color: textColor }]}>{label}</ThemedText>
               {selected.length > 0 && (
-                <Pressable onPress={() => onChange([])} hitSlop={8}>
+                <Pressable
+                  onPress={() => onChange([])}
+                  hitSlop={8}
+                  accessibilityRole="button"
+                  accessibilityLabel={t('common.clear')}>
                   <ThemedText style={[Typography.button, { color: accentColor }]}>
                     {t('common.clear')}
                   </ThemedText>
@@ -74,7 +84,12 @@ export function MultiFilterSheet({ label, options, selected, onChange, disabled 
               renderItem={({ item }) => {
                 const isSelected = selected.includes(item);
                 return (
-                  <Pressable onPress={() => toggle(item)} style={styles.optionRow}>
+                  <Pressable
+                    onPress={() => toggle(item)}
+                    accessibilityRole="checkbox"
+                    accessibilityLabel={item}
+                    accessibilityState={{ checked: isSelected }}
+                    style={styles.optionRow}>
                     <ThemedText
                       style={[
                         Typography.body,
@@ -93,6 +108,8 @@ export function MultiFilterSheet({ label, options, selected, onChange, disabled 
             />
             <Pressable
               onPress={() => setVisible(false)}
+              accessibilityRole="button"
+              accessibilityLabel={t('common.done')}
               style={[styles.doneButton, { backgroundColor: accentColor }]}>
               <ThemedText style={[Typography.button, { color: '#fff' }]}>{t('common.done')}</ThemedText>
             </Pressable>

@@ -52,6 +52,9 @@ function OptionsCard<T extends string>({ options, selected, onSelect, t }: Optio
             <Pressable
               key={option.value}
               onPress={() => onSelect(option.value)}
+              accessibilityRole="radio"
+              accessibilityLabel={t(option.labelKey)}
+              accessibilityState={{ selected: isActive }}
               style={[
                 styles.optionRow,
                 isActive && { backgroundColor: accentSoftColor },
@@ -96,6 +99,9 @@ function AppearanceCards({
           <Pressable
             key={option.value}
             onPress={() => onSelect(option.value)}
+            accessibilityRole="radio"
+            accessibilityLabel={t(option.labelKey)}
+            accessibilityState={{ selected: isActive }}
             style={[
               styles.appearanceCard,
               {
@@ -182,7 +188,13 @@ export default function SettingsScreen() {
         </ThemedText>
         <View style={[styles.optionsCard, { shadowColor }]}>
           <View style={[styles.optionsCardInner, { backgroundColor: surfaceColor }]}>
-            <Pressable onPress={handleExport} disabled={isBusy} style={styles.dataRow}>
+            <Pressable
+              onPress={handleExport}
+              disabled={isBusy}
+              accessibilityRole="button"
+              accessibilityLabel={t('settings.exportBackup')}
+              accessibilityHint={t('settings.exportBackupDescription')}
+              style={styles.dataRow}>
               <IconSymbol name="square.and.arrow.up" size={20} color={textColor} />
               <View style={styles.dataRowText}>
                 <ThemedText style={[Typography.body, { color: textColor }]}>
@@ -197,6 +209,9 @@ export default function SettingsScreen() {
             <Pressable
               onPress={handleImport}
               disabled={isBusy}
+              accessibilityRole="button"
+              accessibilityLabel={t('settings.importBackup')}
+              accessibilityHint={t('settings.importBackupDescription')}
               style={[styles.dataRow, { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: borderColor }]}>
               <IconSymbol name="tray.and.arrow.down" size={20} color={textColor} />
               <View style={styles.dataRowText}>
