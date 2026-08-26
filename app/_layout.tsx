@@ -7,7 +7,6 @@ import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
 import 'react-native-reanimated';
 
-import { HeaderBackButton } from '@/components/header-back-button';
 import { useScreenHeaderOptions } from '@/components/use-screen-header-options';
 import { useAppColorScheme } from '@/hooks/use-app-color-scheme';
 import { useTranslation } from '@/hooks/use-translation';
@@ -81,11 +80,6 @@ function RootLayoutNav() {
   const { colorScheme } = useAppColorScheme();
   const { t } = useTranslation();
   const screenHeaderOptions = useScreenHeaderOptions();
-  const modalHeaderOptions = {
-    ...screenHeaderOptions,
-    presentation: 'modal' as const,
-    headerLeft: () => <HeaderBackButton />,
-  };
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -98,19 +92,19 @@ function RootLayoutNav() {
           />
           <Stack.Screen
             name="add-book"
-            options={{ title: t('screenTitles.addBook'), ...modalHeaderOptions }}
+            options={{ title: t('screenTitles.addBook'), ...screenHeaderOptions }}
           />
           <Stack.Screen
             name="add/[id]"
-            options={{ title: t('screenTitles.addToTbr'), ...modalHeaderOptions }}
+            options={{ title: t('screenTitles.addToTbr'), ...screenHeaderOptions }}
           />
           <Stack.Screen
             name="add-manually"
-            options={{ title: t('screenTitles.addManually'), ...modalHeaderOptions }}
+            options={{ title: t('screenTitles.addManually'), ...screenHeaderOptions }}
           />
           <Stack.Screen
             name="scan-isbn"
-            options={{ title: t('screenTitles.scanIsbn'), ...modalHeaderOptions }}
+            options={{ title: t('screenTitles.scanIsbn'), ...screenHeaderOptions }}
           />
           <Stack.Screen
             name="settings"
