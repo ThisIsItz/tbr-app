@@ -22,7 +22,7 @@ export default function AddBookScreen() {
   const textMutedColor = useThemeColor({}, 'textMuted');
   const accentColor = useThemeColor({}, 'accent');
 
-  const { data: volume, isLoading, isError, error } = useGoogleBookDetails(id);
+  const { data: volume, isLoading, isError, error, refetch } = useGoogleBookDetails(id);
   const addBook = useAddBook();
   const [genres, setGenres] = useState<string[]>([]);
 
@@ -47,7 +47,12 @@ export default function AddBookScreen() {
         : t('addConfirm.loadError');
     return (
       <View style={[styles.centered, { backgroundColor }]}>
-        <ThemedText style={[Typography.body, { color: textColor }]}>{message}</ThemedText>
+        <ThemedText style={[Typography.body, styles.centeredText, { color: textColor }]}>
+          {message}
+        </ThemedText>
+        <Pressable onPress={() => refetch()} style={[styles.retryButton, { backgroundColor: accentColor }]}>
+          <ThemedText style={[Typography.button, { color: '#fff' }]}>{t('common.retry')}</ThemedText>
+        </Pressable>
       </View>
     );
   }
@@ -135,6 +140,18 @@ const styles = StyleSheet.create({
   centered: {
     flex: 1,
     alignItems: 'center',
+    justifyContent: 'center',
+    gap: 12,
+    paddingHorizontal: 24,
+  },
+  centeredText: {
+    textAlign: 'center',
+  },
+  retryButton: {
+    borderRadius: 10,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    minHeight: 44,
     justifyContent: 'center',
   },
   header: {
