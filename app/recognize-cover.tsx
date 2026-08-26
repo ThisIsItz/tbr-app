@@ -205,7 +205,7 @@ export default function RecognizeCoverScreen() {
         />
       )}
 
-      {stage === 'unsupported' && (
+      {stage === 'unsupported' && !pickSource && (
         <View style={styles.section}>
           <ThemedText style={[Typography.sectionTitle, { color: textColor }]}>
             {t('recognizeCover.unsupportedTitle')}
