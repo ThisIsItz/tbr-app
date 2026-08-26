@@ -56,6 +56,7 @@ export function useQuickAddBook() {
       pageCount: pageCount ?? null,
       publisher: publisher ?? null,
       language: language ?? null,
+      notes: null,
     });
   }
 

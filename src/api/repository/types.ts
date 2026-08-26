@@ -14,6 +14,7 @@ export interface BookDetailsUpdate {
   pageCount: number | null;
   publisher: string | null;
   language: string | null;
+  notes: string | null;
 }
 
 export interface BookRepository {
@@ -26,6 +27,7 @@ export interface BookRepository {
    * manually-added books (googleBooksId === null); Google-sourced data
    * stays read-only aside from genres. */
   updateDetails(id: string, updates: BookDetailsUpdate): Promise<Book>;
+  updateNotes(id: string, notes: string | null): Promise<Book>;
   remove(id: string): Promise<void>;
   /** Bulk-inserts previously-exported books, preserving their original id/timestamps.
    * Any book whose id or googleBooksId already exists locally is left untouched. */

@@ -71,6 +71,8 @@
     "publishedDatePlaceholder": "e.g. 2020",
     "pageCountLabel": "Page count",
     "pageCountPlaceholder": "Optional",
+    "notesLabel": "Notes",
+    "notesPlaceholder": "Optional",
     "save": "Add to My TBR",
     "saving": "Adding…",
     "saveChanges": "Save Changes",
@@ -94,7 +96,9 @@
     "publisher": "Publisher",
     "published": "Published",
     "showMore": "Show more",
-    "showLess": "Show less"
+    "showLess": "Show less",
+    "notes": "Notes",
+    "notesPlaceholder": "Add your own notes about this book…"
   },
   "bookCard": {
     "noCover": "No cover",

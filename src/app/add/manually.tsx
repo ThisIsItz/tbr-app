@@ -62,6 +62,7 @@ export default function AddManuallyScreen() {
   const [description, setDescription] = useState('');
   const [publishedDate, setPublishedDate] = useState('');
   const [pageCountText, setPageCountText] = useState('');
+  const [notes, setNotes] = useState('');
   const [isGenreModalVisible, setGenreModalVisible] = useState(false);
 
   useEffect(() => {
@@ -74,6 +75,7 @@ export default function AddManuallyScreen() {
     setDescription(existingBook.description ?? '');
     setPublishedDate(existingBook.publishedDate ?? '');
     setPageCountText(existingBook.pageCount != null ? String(existingBook.pageCount) : '');
+    setNotes(existingBook.notes ?? '');
     setIsPrefilled(true);
   }, [isEditing, existingBook, isPrefilled]);
 
@@ -126,6 +128,7 @@ export default function AddManuallyScreen() {
             pageCount,
             publisher: existingBook?.publisher ?? null,
             language: existingBook?.language ?? null,
+            notes: notes.trim() || null,
           },
         });
         if (coverChanged && initialCoverUri) {
@@ -145,6 +148,7 @@ export default function AddManuallyScreen() {
           pageCount,
           publisher: null,
           language: null,
+          notes: notes.trim() || null,
         });
         router.dismissTo('/');
       }
@@ -311,6 +315,26 @@ export default function AddManuallyScreen() {
               </Pressable>
             </View>
           )}
+
+          <View style={styles.field}>
+            <ThemedText style={[Typography.metadata, styles.labelSecondary, { color: textMutedColor }]}>
+              {t('addManually.notesLabel')}
+            </ThemedText>
+            <TextInput
+              value={notes}
+              onChangeText={setNotes}
+              placeholder={t('addManually.notesPlaceholder')}
+              placeholderTextColor={textMutedColor}
+              style={[
+                Typography.body,
+                styles.input,
+                styles.multilineInput,
+                { color: textColor, backgroundColor: surfaceMutedColor },
+              ]}
+              multiline
+              textAlignVertical="top"
+            />
+          </View>
 
           <Pressable
             style={[styles.saveButton, { backgroundColor: accentColor }]}

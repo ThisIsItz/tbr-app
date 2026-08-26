@@ -18,6 +18,7 @@ interface BookRow {
   page_count: number | null;
   publisher: string | null;
   language: string | null;
+  notes: string | null;
   status: ReadingStatus;
   created_at: string;
   updated_at: string;
@@ -37,6 +38,7 @@ function rowToBook(row: BookRow): Book {
     pageCount: row.page_count,
     publisher: row.publisher,
     language: row.language,
+    notes: row.notes,
     status: row.status,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
@@ -75,9 +77,9 @@ export const sqliteBookRepository: BookRepository = {
     await db.runAsync(
       `INSERT INTO books (
         id, google_books_id, title, subtitle, authors, genres, thumbnail_url,
-        description, published_date, page_count, publisher, language,
+        description, published_date, page_count, publisher, language, notes,
         status, created_at, updated_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'to_read', ?, ?)`,
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'to_read', ?, ?)`,
       [
         id,
         input.googleBooksId,
@@ -91,6 +93,7 @@ export const sqliteBookRepository: BookRepository = {
         input.pageCount,
         input.publisher,
         input.language,
+        input.notes,
         now,
         now,
       ],
@@ -121,7 +124,7 @@ export const sqliteBookRepository: BookRepository = {
     await db.runAsync(
       `UPDATE books SET
         title = ?, authors = ?, description = ?, thumbnail_url = ?,
-        published_date = ?, page_count = ?, publisher = ?, language = ?, updated_at = ?
+        published_date = ?, page_count = ?, publisher = ?, language = ?, notes = ?, updated_at = ?
       WHERE id = ?`,
       [
         updates.title,
@@ -132,10 +135,21 @@ export const sqliteBookRepository: BookRepository = {
         updates.pageCount,
         updates.publisher,
         updates.language,
+        updates.notes,
         now,
         id,
       ],
     );
+
+    const updated = await getById(id);
+    if (!updated) throw new Error(`Book not found: ${id}`);
+    return updated;
+  },
+
+  async updateNotes(id: string, notes: string | null) {
+    const db = await getDb();
+    const now = new Date().toISOString();
+    await db.runAsync('UPDATE books SET notes = ?, updated_at = ? WHERE id = ?', [notes, now, id]);
 
     const updated = await getById(id);
     if (!updated) throw new Error(`Book not found: ${id}`);
@@ -160,9 +174,9 @@ export const sqliteBookRepository: BookRepository = {
         const result = await db.runAsync(
           `INSERT OR IGNORE INTO books (
             id, google_books_id, title, subtitle, authors, genres, thumbnail_url,
-            description, published_date, page_count, publisher, language,
+            description, published_date, page_count, publisher, language, notes,
             status, created_at, updated_at
-          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
           [
             book.id,
             book.googleBooksId,
@@ -178,6 +192,7 @@ export const sqliteBookRepository: BookRepository = {
             book.pageCount,
             book.publisher ?? null,
             book.language ?? null,
+            book.notes ?? null,
             book.status,
             book.createdAt,
             book.updatedAt,

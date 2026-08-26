@@ -71,6 +71,8 @@
     "publishedDatePlaceholder": "p. ej. 2020",
     "pageCountLabel": "Número de páginas",
     "pageCountPlaceholder": "Opcional",
+    "notesLabel": "Notas",
+    "notesPlaceholder": "Opcional",
     "save": "Añadir a mi TBR",
     "saving": "Añadiendo…",
     "saveChanges": "Guardar cambios",
@@ -94,7 +96,9 @@
     "publisher": "Editorial",
     "published": "Publicación",
     "showMore": "Ver más",
-    "showLess": "Ver menos"
+    "showLess": "Ver menos",
+    "notes": "Notas",
+    "notesPlaceholder": "Añade tus propias notas sobre este libro…"
   },
   "bookCard": {
     "noCover": "Sin portada",

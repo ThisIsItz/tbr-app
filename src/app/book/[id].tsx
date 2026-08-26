@@ -1,6 +1,15 @@
 import { router, Stack, useLocalSearchParams } from 'expo-router';
-import { useState } from 'react';
-import { ActivityIndicator, Alert, Modal, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { useEffect, useState } from 'react';
+import {
+  ActivityIndicator,
+  Alert,
+  Modal,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  TextInput,
+  View,
+} from 'react-native';
 
 import { BookDetailsSection } from '@/components/BookDetailsSection';
 import { BookHeader } from '@/components/BookHeader';
@@ -10,7 +19,7 @@ import { HeaderTextAction } from '@/components/HeaderTextAction';
 import { ThemedText } from '@/components/ThemedText';
 import { IconSymbol } from '@/components/IconSymbol';
 import { Typography } from '@/lib/theme/theme';
-import { useBook, useDeleteBook, useUpdateBookGenres } from '@/hooks/useLibrary';
+import { useBook, useDeleteBook, useUpdateBookGenres, useUpdateBookNotes } from '@/hooks/useLibrary';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { useTranslation } from '@/hooks/useTranslation';
 import { normalizeGenres } from '@/lib/genres';
@@ -33,8 +42,21 @@ export default function BookDetailScreen() {
 
   const { data: book, isLoading } = useBook(id);
   const updateGenres = useUpdateBookGenres();
+  const updateNotes = useUpdateBookNotes();
   const deleteBook = useDeleteBook();
   const [isGenreModalVisible, setGenreModalVisible] = useState(false);
+  const [notes, setNotes] = useState('');
+
+  useEffect(() => {
+    setNotes(book?.notes ?? '');
+  }, [book?.notes]);
+
+  function handleNotesBlur() {
+    if (!book) return;
+    const trimmed = notes.trim() || null;
+    if (trimmed === book.notes) return;
+    updateNotes.mutate({ id: book.id, notes: trimmed });
+  }
 
   if (isLoading) {
     return (
@@ -143,6 +165,26 @@ export default function BookDetailScreen() {
           )}
         </View>
       </View>
+
+      <View style={styles.section}>
+        <ThemedText style={[Typography.sectionTitle, { color: textColor }]}>
+          {t('bookDetail.notes')}
+        </ThemedText>
+        <TextInput
+          value={notes}
+          onChangeText={setNotes}
+          onBlur={handleNotesBlur}
+          placeholder={t('bookDetail.notesPlaceholder')}
+          placeholderTextColor={textMutedColor}
+          style={[
+            Typography.body,
+            styles.notesInput,
+            { color: textColor, backgroundColor: surfaceColor },
+          ]}
+          multiline
+          textAlignVertical="top"
+        />
+      </View>
       </View>
 
       <Pressable
@@ -225,6 +267,12 @@ const styles = StyleSheet.create({
   genreChip: {
     borderRadius: 16,
     paddingVertical: 6,
+    paddingHorizontal: 12,
+  },
+  notesInput: {
+    borderRadius: 10,
+    minHeight: 80,
+    paddingVertical: 10,
     paddingHorizontal: 12,
   },
   deleteButton: {

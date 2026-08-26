@@ -77,6 +77,7 @@ export default function AddBookScreen() {
         pageCount: pageCount ?? null,
         publisher: publisher ?? null,
         language: language ?? null,
+        notes: null,
       });
       // Collapse back to the main TBR screen regardless of how deep this
       // screen was reached (search, scan, or cover recognition), rather than

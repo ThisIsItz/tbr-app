@@ -62,6 +62,17 @@ export function useUpdateBookDetails() {
   });
 }
 
+export function useUpdateBookNotes() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, notes }: { id: string; notes: string | null }) =>
+      bookRepository.updateNotes(id, notes),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: booksQueryKey });
+    },
+  });
+}
+
 export function useDeleteBook() {
   const queryClient = useQueryClient();
   return useMutation({

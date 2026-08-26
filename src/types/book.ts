@@ -15,6 +15,7 @@ export interface Book {
   pageCount: number | null;
   publisher: string | null;
   language: string | null;
+  notes: string | null;
   status: ReadingStatus;
   createdAt: string;
   updatedAt: string;
@@ -32,4 +33,5 @@ export interface NewBookInput {
   pageCount: number | null;
   publisher: string | null;
   language: string | null;
+  notes: string | null;
 }
