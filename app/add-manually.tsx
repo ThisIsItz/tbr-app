@@ -78,16 +78,21 @@ export default function AddManuallyScreen() {
   }, [isEditing, existingBook, isPrefilled]);
 
   async function handlePickCover() {
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ['images'],
-      allowsEditing: true,
-      aspect: [2, 3],
-      quality: 0.7,
-    });
-    if (result.canceled) return;
+    try {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ['images'],
+        allowsEditing: true,
+        aspect: [2, 3],
+        quality: 0.7,
+      });
+      if (result.canceled) return;
 
-    const uri = result.assets[0]?.uri;
-    if (uri) setCoverUri(uri);
+      const uri = result.assets[0]?.uri;
+      if (uri) setCoverUri(uri);
+    } catch (error) {
+      console.warn('[AddManually] cover pick failed:', error);
+      Alert.alert(t('common.genericError'));
+    }
   }
 
   async function handleSave() {
