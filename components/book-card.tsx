@@ -179,13 +179,15 @@ const styles = StyleSheet.create({
   },
   compactActionButton: {
     marginLeft: 'auto',
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
+    borderRadius: 10,
+    minHeight: 34,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
     alignItems: 'center',
     justifyContent: 'center',
   },
   compactActionText: {
+    fontSize: 13,
     fontWeight: '700',
   },
   chevron: {
