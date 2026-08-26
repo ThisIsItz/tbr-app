@@ -236,26 +236,6 @@ export default function AddManuallyScreen() {
             </View>
           </View>
 
-          {!isEditing && (
-            <View style={styles.field}>
-              <ThemedText style={[Typography.metadata, styles.labelSecondary, { color: textMutedColor }]}>
-                {t('addManually.genres')}
-              </ThemedText>
-              <Pressable style={styles.genresRow} onPress={() => setGenreModalVisible(true)}>
-                {genres.map((genre) => (
-                  <View key={genre} style={[styles.genreChip, { backgroundColor: accentSoftColor }]}>
-                    <ThemedText style={[Typography.caption, { color: accentColor }]}>{genre}</ThemedText>
-                  </View>
-                ))}
-                <View style={[styles.genreChip, styles.addGenreChip, { borderColor: textMutedColor }]}>
-                  <ThemedText style={[Typography.caption, { color: textMutedColor }]}>
-                    {genres.length > 0 ? t('bookDetail.editGenres') : t('addManually.addGenres')}
-                  </ThemedText>
-                </View>
-              </Pressable>
-            </View>
-          )}
-
           <View style={styles.field}>
             <ThemedText style={[Typography.metadata, styles.labelSecondary, { color: textMutedColor }]}>
               {t('addManually.descriptionLabel')}
@@ -279,22 +259,6 @@ export default function AddManuallyScreen() {
           <View style={[styles.row, isNarrowScreen && styles.rowStacked]}>
             <View style={[styles.field, styles.flexField]}>
               <ThemedText style={[Typography.metadata, styles.labelSecondary, { color: textMutedColor }]}>
-                {t('addManually.publishedDateLabel')}
-              </ThemedText>
-              <TextInput
-                value={publishedDate}
-                onChangeText={setPublishedDate}
-                placeholder={t('addManually.publishedDatePlaceholder')}
-                placeholderTextColor={textMutedColor}
-                style={[
-                  Typography.body,
-                  styles.input,
-                  { color: textColor, backgroundColor: surfaceMutedColor },
-                ]}
-              />
-            </View>
-            <View style={[styles.field, styles.flexField]}>
-              <ThemedText style={[Typography.metadata, styles.labelSecondary, { color: textMutedColor }]}>
                 {t('addManually.pageCountLabel')}
               </ThemedText>
               <TextInput
@@ -310,7 +274,43 @@ export default function AddManuallyScreen() {
                 ]}
               />
             </View>
+            <View style={[styles.field, styles.flexField]}>
+              <ThemedText style={[Typography.metadata, styles.labelSecondary, { color: textMutedColor }]}>
+                {t('addManually.publishedDateLabel')}
+              </ThemedText>
+              <TextInput
+                value={publishedDate}
+                onChangeText={setPublishedDate}
+                placeholder={t('addManually.publishedDatePlaceholder')}
+                placeholderTextColor={textMutedColor}
+                style={[
+                  Typography.body,
+                  styles.input,
+                  { color: textColor, backgroundColor: surfaceMutedColor },
+                ]}
+              />
+            </View>
           </View>
+
+          {!isEditing && (
+            <View style={styles.field}>
+              <ThemedText style={[Typography.metadata, styles.labelSecondary, { color: textMutedColor }]}>
+                {t('addManually.genres')}
+              </ThemedText>
+              <Pressable style={styles.genresRow} onPress={() => setGenreModalVisible(true)}>
+                {genres.map((genre) => (
+                  <View key={genre} style={[styles.genreChip, { backgroundColor: accentSoftColor }]}>
+                    <ThemedText style={[Typography.caption, { color: accentColor }]}>{genre}</ThemedText>
+                  </View>
+                ))}
+                <View style={[styles.genreChip, styles.addGenreChip, { borderColor: textMutedColor }]}>
+                  <ThemedText style={[Typography.caption, { color: textMutedColor }]}>
+                    {genres.length > 0 ? t('bookDetail.editGenres') : t('addManually.addGenres')}
+                  </ThemedText>
+                </View>
+              </Pressable>
+            </View>
+          )}
 
           <Pressable
             style={[styles.saveButton, { backgroundColor: accentColor }]}
