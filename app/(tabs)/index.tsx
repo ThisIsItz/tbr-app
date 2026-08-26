@@ -16,7 +16,7 @@ import { useTranslation } from '@/hooks/use-translation';
 import { normalizeGenres } from '@/lib/genres';
 import { type Book } from '@/types/book';
 
-type SortBy = 'title-asc' | 'title-desc' | 'author-asc' | 'author-desc';
+type SortBy = 'title-asc' | 'title-desc' | 'author-asc' | 'author-desc' | 'recent';
 
 export default function MyTbrScreen() {
   const { t } = useTranslation();
@@ -36,6 +36,7 @@ export default function MyTbrScreen() {
   const [sortBy, setSortBy] = useState<SortBy>('title-asc');
 
   const sortOptions = [
+    { value: 'recent', label: t('library.sortRecent') },
     { value: 'title-asc', label: t('library.sortTitleAsc') },
     { value: 'title-desc', label: t('library.sortTitleDesc') },
     { value: 'author-asc', label: t('library.sortAuthorAsc') },
@@ -72,7 +73,8 @@ export default function MyTbrScreen() {
       list = list.filter(
         (book) =>
           book.title.toLowerCase().includes(query) ||
-          book.authors.some((author) => author.toLowerCase().includes(query)),
+          book.authors.some((author) => author.toLowerCase().includes(query)) ||
+          genresByBookId.get(book.id)?.some((genre) => genre.toLowerCase().includes(query)),
       );
     }
     if (genreFilters.length > 0) {
@@ -80,6 +82,10 @@ export default function MyTbrScreen() {
       list = list.filter((book) => genresByBookId.get(book.id)?.some((g) => genreFilters.includes(g)));
     }
     if (authorFilter) list = list.filter((book) => book.authors.includes(authorFilter));
+
+    if (sortBy === 'recent') {
+      return [...list].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+    }
 
     const [field, direction] = sortBy.split('-') as ['title' | 'author', 'asc' | 'desc'];
     const sorted = [...list].sort((a, b) => {
@@ -140,6 +146,8 @@ export default function MyTbrScreen() {
           <Pressable
             onPress={() => router.push('/settings')}
             hitSlop={8}
+            accessibilityRole="button"
+            accessibilityLabel={t('settings.title')}
             style={[styles.iconButton, { backgroundColor: surfaceMutedColor }]}>
             <IconSymbol name="gearshape.fill" size={20} color={textColor} />
           </Pressable>
