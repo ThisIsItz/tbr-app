@@ -18,6 +18,15 @@ const MAX_VISIBLE_GENRES = 3;
 const DESCRIPTION_COLLAPSED_LINES = 6;
 const FADE_BARS = 6;
 
+// Google Books gives dates as YYYY-MM-DD (sometimes just YYYY-MM or YYYY) —
+// only reformat full dates, leave partial ones as-is.
+function formatPublishedDate(raw: string): string {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(raw);
+  if (!match) return raw;
+  const [, year, month, day] = match;
+  return `${day}/${month}/${year}`;
+}
+
 function DetailRow({ label, value, isFirst }: { label: string; value: string; isFirst: boolean }) {
   const textColor = useThemeColor({}, 'text');
   const textMutedColor = useThemeColor({}, 'textMuted');
@@ -110,7 +119,10 @@ export default function BookDetailScreen() {
     },
     book.language && { label: t('bookDetail.language'), value: getLanguageName(book.language) },
     book.publisher && { label: t('bookDetail.publisher'), value: book.publisher },
-    book.publishedDate && { label: t('bookDetail.published'), value: book.publishedDate },
+    book.publishedDate && {
+      label: t('bookDetail.published'),
+      value: formatPublishedDate(book.publishedDate),
+    },
   ].filter((row): row is { label: string; value: string } => !!row);
 
   return (
