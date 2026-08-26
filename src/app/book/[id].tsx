@@ -2,6 +2,7 @@ import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { ActivityIndicator, Alert, Image, Modal, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 
+import { ExpandableDescription } from '@/components/ExpandableDescription';
 import { GenreEditor } from '@/components/GenreEditor';
 import { HeaderTextAction } from '@/components/HeaderTextAction';
 import { ThemedText } from '@/components/ThemedText';
@@ -16,8 +17,6 @@ import { getLanguageName } from '@/lib/languageNames';
 import { sanitizeDescription } from '@/lib/sanitizeHtml';
 
 const MAX_VISIBLE_GENRES = 3;
-const DESCRIPTION_COLLAPSED_LINES = 6;
-const FADE_BARS = 6;
 
 function formatPublishedDate(raw: string): string {
   const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(raw);
@@ -59,8 +58,6 @@ export default function BookDetailScreen() {
   const updateGenres = useUpdateBookGenres();
   const deleteBook = useDeleteBook();
   const [isGenreModalVisible, setGenreModalVisible] = useState(false);
-  const [isDescriptionExpanded, setDescriptionExpanded] = useState(false);
-  const [hasMoreDescription, setHasMoreDescription] = useState(false);
 
   if (isLoading) {
     return (
@@ -164,53 +161,7 @@ export default function BookDetailScreen() {
         </View>
       </View>
 
-      {description && (
-        <View style={styles.section}>
-          <ThemedText style={[Typography.sectionTitle, { color: textColor }]}>
-            {t('bookDetail.description')}
-          </ThemedText>
-          <View>
-            <ThemedText
-              style={[Typography.body, { color: textMutedColor }]}
-              numberOfLines={isDescriptionExpanded ? undefined : DESCRIPTION_COLLAPSED_LINES}
-              onTextLayout={(e) => {
-                if (!isDescriptionExpanded) {
-                  setHasMoreDescription(e.nativeEvent.lines.length >= DESCRIPTION_COLLAPSED_LINES);
-                }
-              }}>
-              {description}
-            </ThemedText>
-            {!isDescriptionExpanded && hasMoreDescription && (
-              <View style={styles.descriptionFade} pointerEvents="none">
-                {Array.from({ length: FADE_BARS }).map((_, i) => (
-                  <View
-                    key={i}
-                    style={[
-                      styles.descriptionFadeBar,
-                      { backgroundColor, opacity: (i + 1) / FADE_BARS },
-                    ]}
-                  />
-                ))}
-              </View>
-            )}
-          </View>
-          {hasMoreDescription && (
-            <Pressable
-              onPress={() => setDescriptionExpanded((v) => !v)}
-              hitSlop={8}
-              style={styles.expandButton}>
-              <ThemedText style={[Typography.button, { color: accentColor }]}>
-                {isDescriptionExpanded ? t('bookDetail.showLess') : t('bookDetail.showMore')}
-              </ThemedText>
-              <IconSymbol
-                name={isDescriptionExpanded ? 'chevron.up' : 'chevron.down'}
-                size={16}
-                color={accentColor}
-              />
-            </Pressable>
-          )}
-        </View>
-      )}
+      {description && <ExpandableDescription description={description} />}
 
       {detailRows.length > 0 && (
         <View style={styles.section}>
@@ -358,23 +309,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-  },
-  descriptionFade: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    bottom: 0,
-    height: 60,
-    flexDirection: 'column',
-  },
-  descriptionFadeBar: {
-    flex: 1,
-  },
-  expandButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 2,
-    alignSelf: 'flex-start',
   },
   detailsCard: {
     borderRadius: 14,

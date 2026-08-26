@@ -2,6 +2,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, Image, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 
+import { ExpandableDescription } from '@/components/ExpandableDescription';
 import { GenreEditor } from '@/components/GenreEditor';
 import { ThemedText } from '@/components/ThemedText';
 import { Typography } from '@/lib/theme/theme';
@@ -60,6 +61,7 @@ export default function AddBookScreen() {
   const { title, authors, description, publishedDate, pageCount, publisher, language, imageLinks } =
     volume.volumeInfo;
   const coverUrl = toHttpsUrl(imageLinks?.thumbnail);
+  const sanitizedDescription = description ? sanitizeDescription(description) : null;
 
   async function handleSave() {
     try {
@@ -69,7 +71,7 @@ export default function AddBookScreen() {
         authors: authors ?? [],
         genres,
         thumbnailUrl: coverUrl,
-        description: description ? sanitizeDescription(description) : null,
+        description: sanitizedDescription,
         publishedDate: publishedDate ?? null,
         pageCount: pageCount ?? null,
         publisher: publisher ?? null,
@@ -112,6 +114,8 @@ export default function AddBookScreen() {
           )}
         </View>
       </View>
+
+      {sanitizedDescription && <ExpandableDescription description={sanitizedDescription} />}
 
       <View style={styles.section}>
         <ThemedText style={[Typography.sectionTitle, { color: textColor }]}>
