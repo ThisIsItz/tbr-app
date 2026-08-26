@@ -7,11 +7,12 @@ import { Typography } from '@/lib/theme/theme';
 
 interface BookHeaderProps {
   title: string;
+  subtitle?: string | null;
   authors: string[];
   coverUrl: string | null;
 }
 
-export function BookHeader({ title, authors, coverUrl }: BookHeaderProps) {
+export function BookHeader({ title, subtitle, authors, coverUrl }: BookHeaderProps) {
   const { t } = useTranslation();
   const surfaceMutedColor = useThemeColor({}, 'surfaceMuted');
   const textColor = useThemeColor({}, 'text');
@@ -35,6 +36,7 @@ export function BookHeader({ title, authors, coverUrl }: BookHeaderProps) {
       )}
       <View style={styles.headerText}>
         <ThemedText style={[Typography.screenTitle, { color: textColor }]}>{title}</ThemedText>
+        {subtitle && <ThemedText style={[styles.subtitle, { color: textColor }]}>{subtitle}</ThemedText>}
         {authors.length > 0 && (
           <ThemedText style={[styles.author, { color: textMutedColor }]}>{authors.join(', ')}</ThemedText>
         )}
@@ -62,6 +64,11 @@ const styles = StyleSheet.create({
   headerText: {
     flex: 1,
     gap: 6,
+  },
+  subtitle: {
+    fontSize: 18,
+    lineHeight: 24,
+    fontWeight: '400',
   },
   author: {
     fontSize: 18,

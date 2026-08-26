@@ -6,6 +6,7 @@ export interface Book {
   id: string;
   googleBooksId: string | null;
   title: string;
+  subtitle: string | null;
   authors: string[];
   genres: string[];
   thumbnailUrl: string | null;
@@ -22,6 +23,7 @@ export interface Book {
 export interface NewBookInput {
   googleBooksId: string | null;
   title: string;
+  subtitle: string | null;
   authors: string[];
   genres: string[];
   thumbnailUrl: string | null;

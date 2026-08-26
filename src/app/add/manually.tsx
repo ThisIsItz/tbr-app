@@ -136,6 +136,7 @@ export default function AddManuallyScreen() {
         await addBook.mutateAsync({
           googleBooksId: null,
           title: trimmedTitle,
+          subtitle: null,
           authors,
           genres,
           thumbnailUrl,

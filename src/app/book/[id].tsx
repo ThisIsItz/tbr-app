@@ -96,7 +96,7 @@ export default function BookDetailScreen() {
         }}
       />
       <View style={styles.content}>
-      <BookHeader title={book.title} authors={book.authors} coverUrl={coverUrl} />
+      <BookHeader title={book.title} subtitle={book.subtitle} authors={book.authors} coverUrl={coverUrl} />
 
       {description && <ExpandableDescription description={description} />}
 

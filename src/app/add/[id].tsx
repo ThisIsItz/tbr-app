@@ -58,7 +58,7 @@ export default function AddBookScreen() {
     );
   }
 
-  const { title, authors, description, publishedDate, pageCount, publisher, language, imageLinks } =
+  const { title, subtitle, authors, description, publishedDate, pageCount, publisher, language, imageLinks } =
     volume.volumeInfo;
   const coverUrl = toHttpsUrl(imageLinks?.thumbnail);
   const sanitizedDescription = description ? sanitizeDescription(description) : null;
@@ -68,6 +68,7 @@ export default function AddBookScreen() {
       await addBook.mutateAsync({
         googleBooksId: volume!.id,
         title,
+        subtitle: subtitle ?? null,
         authors: authors ?? [],
         genres,
         thumbnailUrl: coverUrl,
@@ -88,7 +89,7 @@ export default function AddBookScreen() {
 
   return (
     <ScrollView style={{ backgroundColor }} contentContainerStyle={styles.container}>
-      <BookHeader title={title} authors={authors ?? []} coverUrl={coverUrl} />
+      <BookHeader title={title} subtitle={subtitle} authors={authors ?? []} coverUrl={coverUrl} />
 
       {sanitizedDescription && <ExpandableDescription description={sanitizedDescription} />}
 

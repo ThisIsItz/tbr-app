@@ -9,6 +9,7 @@ interface BookRow {
   id: string;
   google_books_id: string | null;
   title: string;
+  subtitle: string | null;
   authors: string;
   genres: string;
   thumbnail_url: string | null;
@@ -27,6 +28,7 @@ function rowToBook(row: BookRow): Book {
     id: row.id,
     googleBooksId: row.google_books_id,
     title: row.title,
+    subtitle: row.subtitle,
     authors: JSON.parse(row.authors) as string[],
     genres: JSON.parse(row.genres) as string[],
     thumbnailUrl: row.thumbnail_url,
@@ -72,14 +74,15 @@ export const sqliteBookRepository: BookRepository = {
 
     await db.runAsync(
       `INSERT INTO books (
-        id, google_books_id, title, authors, genres, thumbnail_url,
+        id, google_books_id, title, subtitle, authors, genres, thumbnail_url,
         description, published_date, page_count, publisher, language,
         status, created_at, updated_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'to_read', ?, ?)`,
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'to_read', ?, ?)`,
       [
         id,
         input.googleBooksId,
         input.title,
+        input.subtitle,
         JSON.stringify(input.authors),
         JSON.stringify(input.genres),
         input.thumbnailUrl,
@@ -156,22 +159,23 @@ export const sqliteBookRepository: BookRepository = {
         // that already exists — no separate existence check needed.
         const result = await db.runAsync(
           `INSERT OR IGNORE INTO books (
-            id, google_books_id, title, authors, genres, thumbnail_url,
+            id, google_books_id, title, subtitle, authors, genres, thumbnail_url,
             description, published_date, page_count, publisher, language,
             status, created_at, updated_at
-          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
           [
             book.id,
             book.googleBooksId,
             book.title,
+            // Older backups predate these fields — default to null rather
+            // than passing undefined to the SQLite bind params.
+            book.subtitle ?? null,
             JSON.stringify(book.authors),
             JSON.stringify(book.genres),
             book.thumbnailUrl,
             book.description,
             book.publishedDate,
             book.pageCount,
-            // Older backups predate these fields — default to null rather
-            // than passing undefined to the SQLite bind params.
             book.publisher ?? null,
             book.language ?? null,
             book.status,

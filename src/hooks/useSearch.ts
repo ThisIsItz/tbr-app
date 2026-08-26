@@ -32,11 +32,22 @@ export function useQuickAddBook() {
   const addBook = useAddBook();
 
   function quickAdd(volume: GoogleBooksVolume) {
-    const { title, authors, description, publishedDate, pageCount, publisher, language, imageLinks, categories } =
-      volume.volumeInfo;
+    const {
+      title,
+      subtitle,
+      authors,
+      description,
+      publishedDate,
+      pageCount,
+      publisher,
+      language,
+      imageLinks,
+      categories,
+    } = volume.volumeInfo;
     return addBook.mutateAsync({
       googleBooksId: volume.id,
       title,
+      subtitle: subtitle ?? null,
       authors: authors ?? [],
       genres: normalizeGenres(categories ?? []),
       thumbnailUrl: toHttpsUrl(imageLinks?.thumbnail),
