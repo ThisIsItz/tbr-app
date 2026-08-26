@@ -235,8 +235,10 @@ export default function MyTbrScreen() {
             {t('library.noMatchText')}
           </ThemedText>
           {hasActiveFilters && (
-            <Pressable onPress={clearFilters} style={[styles.clearButton, { backgroundColor: accentColor }]}>
-              <ThemedText style={[Typography.button, { color: '#fff' }]}>
+            <Pressable
+              onPress={clearFilters}
+              style={[styles.clearButton, { backgroundColor: surfaceMutedColor }]}>
+              <ThemedText style={[Typography.button, { color: accentColor }]}>
                 {t('library.clearFilters')}
               </ThemedText>
             </Pressable>
