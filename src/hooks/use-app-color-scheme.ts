@@ -1,6 +1,6 @@
 import { useContext } from 'react';
 
-import { ThemeContext } from '@/lib/theme/theme-provider';
+import { ThemeContext } from '@/lib/theme/AppThemeProvider';
 
 export function useAppColorScheme() {
   const context = useContext(ThemeContext);

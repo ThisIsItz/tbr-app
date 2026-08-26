@@ -11,7 +11,7 @@ import { useThemeColor } from '@/hooks/use-theme-color';
 import { useTranslation } from '@/hooks/use-translation';
 import { BackupFileError } from '@/lib/backup';
 import type { Locale } from '@/i18n/translations';
-import type { ThemePreference } from '@/lib/theme/theme-provider';
+import type { ThemePreference } from '@/lib/theme/AppThemeProvider';
 
 const LANGUAGE_OPTIONS: { value: Locale; labelKey: 'settings.english' | 'settings.spanish' }[] = [
   { value: 'en', labelKey: 'settings.english' },

@@ -12,10 +12,10 @@ import { useAppColorScheme } from '@/hooks/use-app-color-scheme';
 import { useTranslation } from '@/hooks/use-translation';
 import { getDb } from '@/data/db/client';
 import { GoogleBooksApiError } from '@/api/google-books';
-import { LanguageProvider } from '@/i18n/language-provider';
+import { LanguageProvider } from '@/i18n/LanguageProvider';
 import { DEFAULT_LOCALE, detectLocaleFromLanguageCode, type Locale } from '@/i18n/translations';
 import { getSetting } from '@/data/repository/settings-repository';
-import { AppThemeProvider, type ThemePreference } from '@/lib/theme/theme-provider';
+import { AppThemeProvider, type ThemePreference } from '@/lib/theme/AppThemeProvider';
 
 export const unstable_settings = {
   anchor: '(tabs)',
