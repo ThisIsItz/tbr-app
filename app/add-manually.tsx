@@ -105,41 +105,45 @@ export default function AddManuallyScreen() {
     const parsedPageCount = Number.parseInt(pageCountText.trim(), 10);
     const pageCount = Number.isFinite(parsedPageCount) ? parsedPageCount : null;
 
-    const coverChanged = coverUri !== initialCoverUri;
-    const thumbnailUrl = coverChanged && coverUri ? persistLocalImage(coverUri) : coverUri;
+    try {
+      const coverChanged = coverUri !== initialCoverUri;
+      const thumbnailUrl = coverChanged && coverUri ? persistLocalImage(coverUri) : coverUri;
 
-    if (isEditing && id) {
-      await updateBookDetails.mutateAsync({
-        id,
-        updates: {
+      if (isEditing && id) {
+        await updateBookDetails.mutateAsync({
+          id,
+          updates: {
+            title: trimmedTitle,
+            authors,
+            description: description.trim() || null,
+            thumbnailUrl,
+            publishedDate: publishedDate.trim() || null,
+            pageCount,
+            publisher: existingBook?.publisher ?? null,
+            language: existingBook?.language ?? null,
+          },
+        });
+        if (coverChanged && initialCoverUri) {
+          deleteLocalImage(initialCoverUri);
+        }
+        router.back();
+      } else {
+        await addBook.mutateAsync({
+          googleBooksId: null,
           title: trimmedTitle,
           authors,
-          description: description.trim() || null,
+          genres,
           thumbnailUrl,
+          description: description.trim() || null,
           publishedDate: publishedDate.trim() || null,
           pageCount,
-          publisher: existingBook?.publisher ?? null,
-          language: existingBook?.language ?? null,
-        },
-      });
-      if (coverChanged && initialCoverUri) {
-        deleteLocalImage(initialCoverUri);
+          publisher: null,
+          language: null,
+        });
+        router.dismissTo('/');
       }
-      router.back();
-    } else {
-      await addBook.mutateAsync({
-        googleBooksId: null,
-        title: trimmedTitle,
-        authors,
-        genres,
-        thumbnailUrl,
-        description: description.trim() || null,
-        publishedDate: publishedDate.trim() || null,
-        pageCount,
-        publisher: null,
-        language: null,
-      });
-      router.dismissTo('/');
+    } catch {
+      Alert.alert(t('common.genericError'));
     }
   }
 
