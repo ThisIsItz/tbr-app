@@ -110,13 +110,9 @@
     "scanAgain": "Scan Again"
   },
   "recognizeCover": {
-    "explainerTitle": "Scan a book cover",
-    "explainerBody": "Take a photo or choose one from your gallery. When available, we send it to an AI vision service to identify the book; otherwise your device reads the text locally. Either way, we'll suggest a title and author — always double-check them before searching.",
     "onDeviceFallbackNotice": "This guess was read directly from the photo on your device (smart scanning wasn't available) — it may be less reliable.",
     "cameraPermissionTitle": "Camera access needed",
     "cameraPermissionBody": "To take a photo of a cover, this app needs permission to use your camera.",
-    "takePhoto": "Take Photo",
-    "chooseFromGallery": "Choose from Gallery",
     "extracting": "Reading the cover…",
     "searching": "Searching Google Books…",
     "titleLabel": "Title",

@@ -110,13 +110,9 @@
     "scanAgain": "Escanear de nuevo"
   },
   "recognizeCover": {
-    "explainerTitle": "Escanea la portada de un libro",
-    "explainerBody": "Haz una foto o elige una de tu galería. Cuando esté disponible, la enviamos a un servicio de IA de visión para identificar el libro; si no, tu dispositivo lee el texto localmente. En ambos casos, sugeriremos un título y autor — revísalos siempre antes de buscar.",
     "onDeviceFallbackNotice": "Esta sugerencia se leyó directamente de la foto en tu dispositivo (el escaneo inteligente no estaba disponible) — puede ser menos fiable.",
     "cameraPermissionTitle": "Se necesita acceso a la cámara",
     "cameraPermissionBody": "Para hacer una foto de una portada, esta app necesita permiso para usar tu cámara.",
-    "takePhoto": "Hacer foto",
-    "chooseFromGallery": "Elegir de la galería",
     "extracting": "Leyendo la portada…",
     "searching": "Buscando en Google Books…",
     "titleLabel": "Título",

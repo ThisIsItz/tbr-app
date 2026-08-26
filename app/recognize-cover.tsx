@@ -205,33 +205,6 @@ export default function RecognizeCoverScreen() {
         />
       )}
 
-      {stage === 'idle' && !pickSource && (
-        <View style={styles.section}>
-          <ThemedText style={[Typography.sectionTitle, { color: textColor }]}>
-            {t('recognizeCover.explainerTitle')}
-          </ThemedText>
-          <ThemedText style={[Typography.body, { color: textMutedColor }]}>
-            {t('recognizeCover.explainerBody')}
-          </ThemedText>
-          <View style={styles.actionsRow}>
-            <Pressable
-              style={[styles.primaryButton, { backgroundColor: accentColor }]}
-              onPress={() => handlePick('camera')}>
-              <ThemedText style={[Typography.button, { color: '#fff' }]}>
-                {t('recognizeCover.takePhoto')}
-              </ThemedText>
-            </Pressable>
-            <Pressable
-              style={[styles.primaryButton, { backgroundColor: surfaceMutedColor }]}
-              onPress={() => handlePick('gallery')}>
-              <ThemedText style={[Typography.button, { color: textColor }]}>
-                {t('recognizeCover.chooseFromGallery')}
-              </ThemedText>
-            </Pressable>
-          </View>
-        </View>
-      )}
-
       {stage === 'unsupported' && (
         <View style={styles.section}>
           <ThemedText style={[Typography.sectionTitle, { color: textColor }]}>
