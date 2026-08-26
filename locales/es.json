@@ -11,7 +11,10 @@
   "library": {
     "title": "Mi TBR",
     "searchPlaceholder": "Buscar en tu TBR",
-    "bookCount": "{{count}} libros",
+    "bookCountOne": "{{count}} libro",
+    "bookCountOther": "{{count}} libros",
+    "bookCountFilteredOne": "{{count}} de {{total}} libro",
+    "bookCountFilteredOther": "{{count}} de {{total}} libros",
     "genre": "Género",
     "author": "Autor",
     "sort": "Ordenar",

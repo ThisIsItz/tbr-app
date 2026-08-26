@@ -11,7 +11,10 @@
   "library": {
     "title": "My TBR",
     "searchPlaceholder": "Search your TBR",
-    "bookCount": "{{count}} books",
+    "bookCountOne": "{{count}} book",
+    "bookCountOther": "{{count}} books",
+    "bookCountFilteredOne": "{{count}} of {{total}} book",
+    "bookCountFilteredOther": "{{count}} of {{total}} books",
     "genre": "Genre",
     "author": "Author",
     "sort": "Sort",

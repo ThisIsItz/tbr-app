@@ -10,6 +10,7 @@ import { ThemedText } from '@/components/themed-text';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Typography } from '@/constants/theme';
 import { useBooks } from '@/features/library/hooks';
+import { useDebouncedValue } from '@/hooks/use-debounced-value';
 import { useThemeColor } from '@/hooks/use-theme-color';
 import { useTranslation } from '@/hooks/use-translation';
 import { normalizeGenres } from '@/lib/genres';
@@ -29,6 +30,7 @@ export default function MyTbrScreen() {
   const { data: books, isLoading } = useBooks();
 
   const [searchQuery, setSearchQuery] = useState('');
+  const debouncedSearchQuery = useDebouncedValue(searchQuery, 300);
   const [genreFilters, setGenreFilters] = useState<string[]>([]);
   const [authorFilter, setAuthorFilter] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<SortBy>('title-asc');
@@ -59,12 +61,13 @@ export default function MyTbrScreen() {
     [books],
   );
 
-  const hasActiveFilters = genreFilters.length > 0 || !!authorFilter || searchQuery.trim().length > 0;
+  const hasActiveFilters = genreFilters.length > 0 || !!authorFilter || debouncedSearchQuery.trim().length > 0;
+  const totalBookCount = books?.length ?? 0;
 
   const filteredBooks = useMemo(() => {
     let list = books ?? [];
 
-    const query = searchQuery.trim().toLowerCase();
+    const query = debouncedSearchQuery.trim().toLowerCase();
     if (query) {
       list = list.filter(
         (book) =>
@@ -85,7 +88,16 @@ export default function MyTbrScreen() {
       return aValue.localeCompare(bValue);
     });
     return direction === 'desc' ? sorted.reverse() : sorted;
-  }, [books, searchQuery, genreFilters, authorFilter, sortBy, genresByBookId]);
+  }, [books, debouncedSearchQuery, genreFilters, authorFilter, sortBy, genresByBookId]);
+
+  const bookCountLabel = hasActiveFilters
+    ? t(totalBookCount === 1 ? 'library.bookCountFilteredOne' : 'library.bookCountFilteredOther', {
+        count: filteredBooks.length,
+        total: totalBookCount,
+      })
+    : t(totalBookCount === 1 ? 'library.bookCountOne' : 'library.bookCountOther', {
+        count: totalBookCount,
+      });
 
   function clearFilters() {
     setSearchQuery('');
@@ -118,9 +130,9 @@ export default function MyTbrScreen() {
           <ThemedText style={[Typography.screenTitle, { color: textColor }]}>
             {t('library.title')}
           </ThemedText>
-          {filteredBooks.length > 1 && (
+          {!isLibraryEmpty && (
             <ThemedText style={[Typography.metadata, { color: textMutedColor }]}>
-              {t('library.bookCount', { count: filteredBooks.length })}
+              {bookCountLabel}
             </ThemedText>
           )}
         </View>
@@ -134,45 +146,49 @@ export default function MyTbrScreen() {
         </View>
       </View>
 
-      <View style={[styles.searchBox, { backgroundColor: surfaceMutedColor }]}>
-        <IconSymbol name="magnifyingglass" size={18} color={textMutedColor} />
-        <TextInput
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-          placeholder={t('library.searchPlaceholder')}
-          placeholderTextColor={textMutedColor}
-          style={[Typography.body, styles.searchInput, { color: textColor }]}
-          autoCorrect={false}
-        />
-      </View>
+      {!isLibraryEmpty && (
+        <>
+          <View style={[styles.searchBox, { backgroundColor: surfaceMutedColor }]}>
+            <IconSymbol name="magnifyingglass" size={18} color={textMutedColor} />
+            <TextInput
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+              placeholder={t('library.searchPlaceholder')}
+              placeholderTextColor={textMutedColor}
+              style={[Typography.body, styles.searchInput, { color: textColor }]}
+              autoCorrect={false}
+            />
+          </View>
 
-      <View style={styles.filterRow}>
-        <MultiFilterSheet
-          label={t('library.genre')}
-          selected={genreFilters}
-          disabled={allGenres.length === 0}
-          onChange={setGenreFilters}
-          options={allGenres}
-        />
-        <FilterSheet
-          label={t('library.author')}
-          selected={authorFilter}
-          selectedLabel={authorFilter}
-          disabled={allAuthors.length === 0}
-          onSelect={setAuthorFilter}
-          options={[
-            { value: null, label: t('library.allAuthors') },
-            ...allAuthors.map((a) => ({ value: a, label: a })),
-          ]}
-        />
-        <FilterSheet
-          label={t('library.sort')}
-          staticLabel
-          selected={sortBy}
-          onSelect={(value) => setSortBy((value as SortBy) ?? 'title-asc')}
-          options={sortOptions}
-        />
-      </View>
+          <View style={styles.filterRow}>
+            <MultiFilterSheet
+              label={t('library.genre')}
+              selected={genreFilters}
+              disabled={allGenres.length === 0}
+              onChange={setGenreFilters}
+              options={allGenres}
+            />
+            <FilterSheet
+              label={t('library.author')}
+              selected={authorFilter}
+              selectedLabel={authorFilter}
+              disabled={allAuthors.length === 0}
+              onSelect={setAuthorFilter}
+              options={[
+                { value: null, label: t('library.allAuthors') },
+                ...allAuthors.map((a) => ({ value: a, label: a })),
+              ]}
+            />
+            <FilterSheet
+              label={t('library.sort')}
+              staticLabel
+              selected={sortBy}
+              onSelect={(value) => setSortBy((value as SortBy) ?? 'title-asc')}
+              options={sortOptions}
+            />
+          </View>
+        </>
+      )}
 
       {isLibraryEmpty ? (
         <View style={styles.centered}>
