@@ -21,8 +21,8 @@ import { GenreEditor } from '@/components/GenreEditor';
 import { ThemedText } from '@/components/ThemedText';
 import { Typography } from '@/constants/theme';
 import { useAddBook, useBook, useUpdateBookDetails } from '@/features/library/hooks';
-import { useThemeColor } from '@/hooks/use-theme-color';
-import { useTranslation } from '@/hooks/use-translation';
+import { useThemeColor } from '@/hooks/useThemeColor';
+import { useTranslation } from '@/hooks/useTranslation';
 import { deleteLocalImage, persistLocalImage } from '@/lib/local-image';
 
 const NARROW_SCREEN_WIDTH = 360;

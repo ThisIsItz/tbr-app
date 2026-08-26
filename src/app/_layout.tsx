@@ -7,9 +7,9 @@ import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
 import 'react-native-reanimated';
 
-import { useScreenHeaderOptions } from '@/hooks/use-screen-header-options';
-import { useAppColorScheme } from '@/hooks/use-app-color-scheme';
-import { useTranslation } from '@/hooks/use-translation';
+import { useScreenHeaderOptions } from '@/hooks/useScreenHeaderOptions';
+import { useAppColorScheme } from '@/hooks/useAppColorScheme';
+import { useTranslation } from '@/hooks/useTranslation';
 import { getDb } from '@/api/db/client';
 import { GoogleBooksApiError } from '@/api/google-books';
 import { LanguageProvider } from '@/i18n/LanguageProvider';

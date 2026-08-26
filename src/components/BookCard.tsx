@@ -3,8 +3,8 @@ import { Image, Pressable, StyleSheet, View } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { IconSymbol } from '@/components/IconSymbol';
 import { Typography } from '@/constants/theme';
-import { useThemeColor } from '@/hooks/use-theme-color';
-import { useTranslation } from '@/hooks/use-translation';
+import { useThemeColor } from '@/hooks/useThemeColor';
+import { useTranslation } from '@/hooks/useTranslation';
 import { toHttpsUrl } from '@/api/google-books';
 
 interface BookCardAction {

@@ -15,12 +15,12 @@ import {
 
 import { BookCard } from '@/components/BookCard';
 import { ThemedText } from '@/components/ThemedText';
-import { useScreenHeaderOptions } from '@/hooks/use-screen-header-options';
+import { useScreenHeaderOptions } from '@/hooks/useScreenHeaderOptions';
 import { Typography } from '@/constants/theme';
 import { useBooks } from '@/features/library/hooks';
 import { useQuickAddBook } from '@/features/search/hooks';
-import { useThemeColor } from '@/hooks/use-theme-color';
-import { useTranslation } from '@/hooks/use-translation';
+import { useThemeColor } from '@/hooks/useThemeColor';
+import { useTranslation } from '@/hooks/useTranslation';
 import { scoreVolume } from '@/api/book-relevance';
 import { searchGoogleBooks } from '@/api/google-books';
 import { bookCoverRecognitionService, type RecognitionConfidence } from '@/api/recognition';

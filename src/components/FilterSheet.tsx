@@ -4,7 +4,7 @@ import { FlatList, Modal, Pressable, StyleSheet } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { IconSymbol } from '@/components/IconSymbol';
 import { Typography } from '@/constants/theme';
-import { useThemeColor } from '@/hooks/use-theme-color';
+import { useThemeColor } from '@/hooks/useThemeColor';
 
 export interface FilterOption {
   value: string | null;

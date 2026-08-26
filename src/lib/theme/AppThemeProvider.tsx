@@ -1,6 +1,6 @@
 import { createContext, useMemo, useState, type ReactNode } from 'react';
 
-import { useColorScheme as useSystemColorScheme } from '@/hooks/use-color-scheme';
+import { useColorScheme as useSystemColorScheme } from '@/hooks/useColorScheme';
 import { setSetting } from '@/api/repository/settings-repository';
 
 export type ThemePreference = 'light' | 'dark' | 'system';

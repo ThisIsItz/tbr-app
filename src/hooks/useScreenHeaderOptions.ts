@@ -1,4 +1,4 @@
-import { useThemeColor } from '@/hooks/use-theme-color';
+import { useThemeColor } from '@/hooks/useThemeColor';
 
 // Shared native-stack header look (used by every pushed screen, e.g. Settings and Book Details).
 export function useScreenHeaderOptions() {

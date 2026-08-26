@@ -11,9 +11,9 @@ import { ThemedText } from '@/components/ThemedText';
 import { IconSymbol } from '@/components/IconSymbol';
 import { Typography } from '@/constants/theme';
 import { useBooks } from '@/features/library/hooks';
-import { useDebouncedValue } from '@/hooks/use-debounced-value';
-import { useThemeColor } from '@/hooks/use-theme-color';
-import { useTranslation } from '@/hooks/use-translation';
+import { useDebouncedValue } from '@/hooks/useDebouncedValue';
+import { useThemeColor } from '@/hooks/useThemeColor';
+import { useTranslation } from '@/hooks/useTranslation';
 import { normalizeGenres } from '@/lib/genres';
 import { type Book } from '@/types/book';
 

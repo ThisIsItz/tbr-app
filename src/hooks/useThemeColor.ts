@@ -1,5 +1,5 @@
 import { Colors } from '@/constants/theme'
-import { useAppColorScheme } from '@/hooks/use-app-color-scheme'
+import { useAppColorScheme } from '@/hooks/useAppColorScheme'
 
 export function useThemeColor(
   props: { light?: string; dark?: string },

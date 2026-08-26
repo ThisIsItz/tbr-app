@@ -3,8 +3,8 @@ import React from 'react';
 
 import { HapticTab } from '@/components/HapticTab';
 import { IconSymbol } from '@/components/IconSymbol';
-import { useThemeColor } from '@/hooks/use-theme-color';
-import { useTranslation } from '@/hooks/use-translation';
+import { useThemeColor } from '@/hooks/useThemeColor';
+import { useTranslation } from '@/hooks/useTranslation';
 
 // Single-tab today by product design (the TBR list is the whole app; adding
 // a book is a modal, not a tab — see app/add-book.tsx). The Tabs navigator
