@@ -2,8 +2,8 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, Image, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 
-import { GenreEditor } from '@/components/genre-editor';
-import { ThemedText } from '@/components/themed-text';
+import { GenreEditor } from '@/components/GenreEditor';
+import { ThemedText } from '@/components/ThemedText';
 import { Typography } from '@/constants/theme';
 import { useAddBook } from '@/features/library/hooks';
 import { useGoogleBookDetails } from '@/features/search/hooks';

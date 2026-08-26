@@ -2,8 +2,8 @@ import * as DocumentPicker from 'expo-document-picker';
 import { ActivityIndicator, Alert, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { ThemedText } from '@/components/themed-text';
-import { IconSymbol, type IconSymbolName } from '@/components/ui/icon-symbol';
+import { ThemedText } from '@/components/ThemedText';
+import { IconSymbol, type IconSymbolName } from '@/components/IconSymbol';
 import { Typography } from '@/constants/theme';
 import { useExportBackup, useImportBackup } from '@/features/library/hooks';
 import { useAppColorScheme } from '@/hooks/use-app-color-scheme';

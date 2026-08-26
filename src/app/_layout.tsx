@@ -7,7 +7,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
 import 'react-native-reanimated';
 
-import { useScreenHeaderOptions } from '@/components/navigation/use-screen-header-options';
+import { useScreenHeaderOptions } from '@/hooks/use-screen-header-options';
 import { useAppColorScheme } from '@/hooks/use-app-color-scheme';
 import { useTranslation } from '@/hooks/use-translation';
 import { getDb } from '@/data/db/client';

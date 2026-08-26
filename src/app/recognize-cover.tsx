@@ -13,9 +13,9 @@ import {
   View,
 } from 'react-native';
 
-import { BookCard } from '@/components/book-card';
-import { ThemedText } from '@/components/themed-text';
-import { useScreenHeaderOptions } from '@/components/navigation/use-screen-header-options';
+import { BookCard } from '@/components/BookCard';
+import { ThemedText } from '@/components/ThemedText';
+import { useScreenHeaderOptions } from '@/hooks/use-screen-header-options';
 import { Typography } from '@/constants/theme';
 import { useBooks } from '@/features/library/hooks';
 import { useQuickAddBook } from '@/features/search/hooks';

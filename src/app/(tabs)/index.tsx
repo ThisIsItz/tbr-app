@@ -3,12 +3,12 @@ import { useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, FlatList, Pressable, StyleSheet, View } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { BookCard } from '@/components/book-card';
-import { FilterSheet } from '@/components/filter-sheet';
-import { MultiFilterSheet } from '@/components/multi-filter-sheet';
-import { SearchInput } from '@/components/search-input';
-import { ThemedText } from '@/components/themed-text';
-import { IconSymbol } from '@/components/ui/icon-symbol';
+import { BookCard } from '@/components/BookCard';
+import { FilterSheet } from '@/components/FilterSheet';
+import { MultiFilterSheet } from '@/components/MultiFilterSheet';
+import { SearchInput } from '@/components/SearchInput';
+import { ThemedText } from '@/components/ThemedText';
+import { IconSymbol } from '@/components/IconSymbol';
 import { Typography } from '@/constants/theme';
 import { useBooks } from '@/features/library/hooks';
 import { useDebouncedValue } from '@/hooks/use-debounced-value';

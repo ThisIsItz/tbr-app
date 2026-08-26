@@ -17,8 +17,8 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { GenreEditor } from '@/components/genre-editor';
-import { ThemedText } from '@/components/themed-text';
+import { GenreEditor } from '@/components/GenreEditor';
+import { ThemedText } from '@/components/ThemedText';
 import { Typography } from '@/constants/theme';
 import { useAddBook, useBook, useUpdateBookDetails } from '@/features/library/hooks';
 import { useThemeColor } from '@/hooks/use-theme-color';

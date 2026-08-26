@@ -2,10 +2,10 @@ import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { ActivityIndicator, Alert, Image, Modal, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 
-import { GenreEditor } from '@/components/genre-editor';
-import { HeaderTextAction } from '@/components/navigation/header-text-action';
-import { ThemedText } from '@/components/themed-text';
-import { IconSymbol } from '@/components/ui/icon-symbol';
+import { GenreEditor } from '@/components/GenreEditor';
+import { HeaderTextAction } from '@/components/HeaderTextAction';
+import { ThemedText } from '@/components/ThemedText';
+import { IconSymbol } from '@/components/IconSymbol';
 import { Typography } from '@/constants/theme';
 import { useBook, useDeleteBook, useUpdateBookGenres } from '@/features/library/hooks';
 import { useThemeColor } from '@/hooks/use-theme-color';

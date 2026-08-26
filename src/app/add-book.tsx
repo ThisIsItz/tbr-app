@@ -3,9 +3,9 @@ import { useMemo, useState } from 'react';
 import { ActivityIndicator, Alert, FlatList, Pressable, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { BookCard } from '@/components/book-card';
-import { SearchInput } from '@/components/search-input';
-import { ThemedText } from '@/components/themed-text';
+import { BookCard } from '@/components/BookCard';
+import { SearchInput } from '@/components/SearchInput';
+import { ThemedText } from '@/components/ThemedText';
 import { Typography } from '@/constants/theme';
 import { useBooks } from '@/features/library/hooks';
 import { useQuickAddBook, useSearchBooks } from '@/features/search/hooks';
