@@ -276,7 +276,7 @@ export default function MyTbrScreen() {
         <Pressable
           onPress={() => router.push('/add-book')}
           style={[styles.floatingAddButton, { backgroundColor: accentColor, shadowColor: textColor }]}>
-          <IconSymbol name="plus.circle.fill" size={24} color="#fff" />
+          <IconSymbol name="plus.circle.fill" size={28} color="#fff" />
           <ThemedText style={[Typography.button, styles.floatingAddButtonText, { color: '#fff' }]}>
             {t('library.addBook')}
           </ThemedText>
@@ -381,7 +381,7 @@ const styles = StyleSheet.create({
     elevation: 4,
   },
   floatingAddButtonText: {
-    fontSize: 17,
-    lineHeight: 22,
+    fontSize: 18,
+    lineHeight: 24,
   },
 });
