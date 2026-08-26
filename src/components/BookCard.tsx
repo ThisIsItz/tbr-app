@@ -179,7 +179,7 @@ const styles = StyleSheet.create({
     flex: 1,
     minWidth: 0,
     gap: 4,
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
   },
   bodyLibrary: {
     justifyContent: 'space-between',
@@ -205,9 +205,8 @@ const styles = StyleSheet.create({
     marginTop: 6,
   },
   resultActions: {
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    gap: 8,
   },
   compactActionButton: {
     borderRadius: 10,
