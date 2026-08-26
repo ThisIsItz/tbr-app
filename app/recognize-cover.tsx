@@ -66,6 +66,7 @@ export default function RecognizeCoverScreen() {
   async function handlePick(source: 'camera' | 'gallery') {
     try {
       if (source === 'camera' && !(await ensureCameraPermission())) {
+        if (pickSource) router.back();
         return;
       }
 
@@ -74,7 +75,10 @@ export default function RecognizeCoverScreen() {
         source === 'camera'
           ? await ImagePicker.launchCameraAsync(options)
           : await ImagePicker.launchImageLibraryAsync(options);
-      if (result.canceled) return;
+      if (result.canceled) {
+        if (pickSource) router.back();
+        return;
+      }
 
       const uri = result.assets[0]?.uri;
       if (!uri) return;
@@ -131,14 +135,17 @@ export default function RecognizeCoverScreen() {
         return;
       }
       setStage('reviewing');
+      if (guess?.title) {
+        void searchByTitle(guess.title);
+      }
     } catch {
       setStage('noText');
     }
   }
 
-  async function handleSearch() {
-    // Search/score by title only — mixing in the author breaks matching.
-    const trimmedTitle = title.trim();
+  // Search/score by title only — mixing in the author breaks matching.
+  async function searchByTitle(rawTitle: string) {
+    const trimmedTitle = rawTitle.trim();
     if (!trimmedTitle) return;
 
     setSearchStatus('loading');
@@ -151,6 +158,10 @@ export default function RecognizeCoverScreen() {
     } finally {
       setSearchStatus('done');
     }
+  }
+
+  async function handleSearch() {
+    await searchByTitle(title);
   }
 
   function handleReset() {
@@ -194,7 +205,7 @@ export default function RecognizeCoverScreen() {
         />
       )}
 
-      {stage === 'idle' && (
+      {stage === 'idle' && !pickSource && (
         <View style={styles.section}>
           <ThemedText style={[Typography.sectionTitle, { color: textColor }]}>
             {t('recognizeCover.explainerTitle')}
@@ -350,7 +361,7 @@ export default function RecognizeCoverScreen() {
               disabled={searchStatus === 'loading' || !title.trim()}>
               <ThemedText
                 style={[Typography.button, { color: !title.trim() ? textMutedColor : '#fff' }]}>
-                {t('recognizeCover.searchWithDetails')}
+                {t('recognizeCover.searchAgain')}
               </ThemedText>
             </Pressable>
           </View>
