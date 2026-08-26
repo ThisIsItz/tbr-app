@@ -264,7 +264,7 @@ export default function MyTbrScreen() {
             <BookCard
               title={item.title}
               author={item.authors.join(', ') || null}
-              genre={genresByBookId.get(item.id)?.[0] ?? null}
+              genres={genresByBookId.get(item.id) ?? []}
               thumbnailUrl={item.thumbnailUrl}
               onPress={() => router.push(`/book/${item.id}`)}
             />

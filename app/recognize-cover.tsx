@@ -364,7 +364,7 @@ export default function RecognizeCoverScreen() {
                       variant="result"
                       title={matchTitle}
                       author={authors?.join(', ') ?? null}
-                      genre={categories?.[0] ?? null}
+                      genres={categories ?? []}
                       thumbnailUrl={imageLinks?.thumbnail ?? null}
                       onPress={() => router.push(`/add/${item.id}`)}
                       action={{

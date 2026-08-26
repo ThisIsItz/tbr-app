@@ -151,7 +151,7 @@ export default function AddBookScreen() {
               variant="result"
               title={title}
               author={authors?.join(', ') ?? null}
-              genre={normalizeGenres(categories ?? [])[0] ?? null}
+              genres={normalizeGenres(categories ?? [])}
               thumbnailUrl={imageLinks?.thumbnail ?? null}
               onPress={() => router.push(`/add/${item.id}`)}
               action={{

@@ -16,7 +16,7 @@ interface BookCardAction {
 interface BookCardProps {
   title: string;
   author?: string | null;
-  genre?: string | null;
+  genres?: string[];
   thumbnailUrl?: string | null;
   onPress?: () => void;
   action?: BookCardAction;
@@ -30,7 +30,7 @@ interface BookCardProps {
 export function BookCard({
   title,
   author,
-  genre,
+  genres = [],
   thumbnailUrl,
   onPress,
   action,
@@ -84,10 +84,10 @@ export function BookCard({
               {author || t('bookCard.unknownAuthor')}
             </ThemedText>
             <View style={styles.resultFooterRow}>
-              {!!genre && (
+              {!!genres[0] && (
                 <View style={[styles.tag, { backgroundColor: accentSoftColor }]}>
                   <ThemedText numberOfLines={1} style={[Typography.caption, { color: accentColor }]}>
-                    {genre}
+                    {genres[0]}
                   </ThemedText>
                 </View>
               )}
@@ -120,13 +120,13 @@ export function BookCard({
               </ThemedText>
             )}
             <View style={styles.tagRow}>
-              {!!genre && (
-                <View style={[styles.tag, { backgroundColor: accentSoftColor }]}>
+              {genres.slice(0, 2).map((genre) => (
+                <View key={genre} style={[styles.tag, { backgroundColor: accentSoftColor }]}>
                   <ThemedText numberOfLines={1} style={[Typography.caption, { color: accentColor }]}>
                     {genre}
                   </ThemedText>
                 </View>
-              )}
+              ))}
             </View>
           </View>
         )}
