@@ -156,12 +156,6 @@
     "importErrorTitle": "Import failed",
     "importInvalidFile": "This doesn't look like a valid TBR backup file."
   },
-  "status": {
-    "to_read": "To Read",
-    "reading": "Reading",
-    "read": "Read",
-    "dnf": "Did Not Finish"
-  },
   "errors": {
     "rateLimit": "Google Books rate limit reached. Wait a moment and try again, or set EXPO_PUBLIC_GOOGLE_BOOKS_API_KEY.",
     "generic": "Couldn't reach Google Books. Try again."

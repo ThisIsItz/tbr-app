@@ -98,16 +98,6 @@ export const sqliteBookRepository: BookRepository = {
     return created;
   },
 
-  async updateStatus(id: string, status: ReadingStatus) {
-    const db = await getDb();
-    const now = new Date().toISOString();
-    await db.runAsync('UPDATE books SET status = ?, updated_at = ? WHERE id = ?', [status, now, id]);
-
-    const updated = await getById(id);
-    if (!updated) throw new Error(`Book not found: ${id}`);
-    return updated;
-  },
-
   async updateGenres(id: string, genres: string[]) {
     const db = await getDb();
     const now = new Date().toISOString();

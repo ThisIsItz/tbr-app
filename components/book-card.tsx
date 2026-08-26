@@ -17,7 +17,6 @@ interface BookCardProps {
   title: string;
   author?: string | null;
   genre?: string | null;
-  statusLabel?: string | null;
   thumbnailUrl?: string | null;
   onPress?: () => void;
   action?: BookCardAction;
@@ -32,7 +31,6 @@ export function BookCard({
   title,
   author,
   genre,
-  statusLabel,
   thumbnailUrl,
   onPress,
   action,
@@ -120,13 +118,6 @@ export function BookCard({
                 <View style={[styles.tag, { backgroundColor: accentSoftColor }]}>
                   <ThemedText numberOfLines={1} style={[Typography.caption, { color: accentColor }]}>
                     {genre}
-                  </ThemedText>
-                </View>
-              )}
-              {!!statusLabel && (
-                <View style={[styles.tag, { backgroundColor: surfaceMutedColor }]}>
-                  <ThemedText numberOfLines={1} style={[Typography.caption, { color: textMutedColor }]}>
-                    {statusLabel}
                   </ThemedText>
                 </View>
               )}

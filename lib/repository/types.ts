@@ -1,4 +1,4 @@
-import type { Book, NewBookInput, ReadingStatus } from '@/types/book';
+import type { Book, NewBookInput } from '@/types/book';
 
 export interface ImportBooksResult {
   imported: number;
@@ -21,7 +21,6 @@ export interface BookRepository {
   getById(id: string): Promise<Book | null>;
   existsByGoogleBooksId(googleBooksId: string): Promise<boolean>;
   add(input: NewBookInput): Promise<Book>;
-  updateStatus(id: string, status: ReadingStatus): Promise<Book>;
   updateGenres(id: string, genres: string[]): Promise<Book>;
   /** Title/author/description/cover/etc — only meant to be called for
    * manually-added books (googleBooksId === null); Google-sourced data

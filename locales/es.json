@@ -156,12 +156,6 @@
     "importErrorTitle": "Error al importar",
     "importInvalidFile": "Este archivo no parece ser una copia de seguridad válida de TBR."
   },
-  "status": {
-    "to_read": "Por leer",
-    "reading": "Leyendo",
-    "read": "Leído",
-    "dnf": "Abandonado"
-  },
   "errors": {
     "rateLimit": "Se alcanzó el límite de solicitudes de Google Books. Espera un momento e inténtalo de nuevo, o configura EXPO_PUBLIC_GOOGLE_BOOKS_API_KEY.",
     "generic": "No se pudo conectar con Google Books. Inténtalo de nuevo."

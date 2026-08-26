@@ -225,7 +225,6 @@ export default function MyTbrScreen() {
               title={item.title}
               author={item.authors.join(', ') || null}
               genre={genresByBookId.get(item.id)?.[0] ?? null}
-              statusLabel={t(`status.${item.status}`)}
               thumbnailUrl={item.thumbnailUrl}
               onPress={() => router.push(`/book/${item.id}`)}
             />
