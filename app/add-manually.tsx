@@ -370,7 +370,7 @@ const styles = StyleSheet.create({
   },
   coverColumn: {
     gap: 4,
-    width: 80,
+    width: 130,
   },
   headerFields: {
     flex: 1,
@@ -399,10 +399,9 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   cover: {
-    width: 80,
-    // Matches Title+Author fields' combined height so bottoms line up.
-    height: 142,
-    borderRadius: 10,
+    width: 130,
+    height: 195,
+    borderRadius: 14,
   },
   coverPlaceholder: {
     alignItems: 'center',
