@@ -172,6 +172,15 @@ export default function MyTbrScreen() {
               style={[Typography.body, styles.searchInput, { color: textColor }]}
               autoCorrect={false}
             />
+            {searchQuery.length > 0 && (
+              <Pressable
+                onPress={() => setSearchQuery('')}
+                hitSlop={8}
+                accessibilityRole="button"
+                accessibilityLabel={t('common.clear')}>
+                <IconSymbol name="xmark.circle.fill" size={18} color={textMutedColor} />
+              </Pressable>
+            )}
           </View>
 
           <View style={styles.filterRow}>
