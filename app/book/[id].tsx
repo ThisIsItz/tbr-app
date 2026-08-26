@@ -154,7 +154,7 @@ export default function BookDetailScreen() {
             onPress={() => router.push({ pathname: '/add-manually', params: { id: book.id } })}
             hitSlop={8}
             style={[styles.editChip, styles.editBookChip, { backgroundColor: surfaceMutedColor }]}>
-            <ThemedText style={[Typography.button, { color: accentColor }]}>
+            <ThemedText style={[Typography.caption, { color: accentColor }]}>
               {t('bookDetail.editBook')}
             </ThemedText>
           </Pressable>
@@ -231,7 +231,7 @@ export default function BookDetailScreen() {
             onPress={() => setGenreModalVisible(true)}
             hitSlop={8}
             style={[styles.editChip, { backgroundColor: surfaceMutedColor }]}>
-            <ThemedText style={[Typography.button, { color: accentColor }]}>
+            <ThemedText style={[Typography.caption, { color: accentColor }]}>
               {t('bookDetail.editGenres')}
             </ThemedText>
           </Pressable>
