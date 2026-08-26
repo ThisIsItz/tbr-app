@@ -1,11 +1,6 @@
-export type RecognitionConfidence = 'low' | 'medium' | 'high';
+import type { BookGuess } from '@shared/recognition';
 
-// A guess only — never treated as verified metadata.
-export interface BookGuess {
-  title: string;
-  author: string | null;
-  confidence: RecognitionConfidence;
-}
+export type { BookGuess, RecognitionConfidence } from '@shared/recognition';
 
 export interface CoverRecognitionResult {
   // v1 only reads books[0]; kept as an array for future multi-book UI.

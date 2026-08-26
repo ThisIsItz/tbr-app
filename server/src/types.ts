@@ -1,8 +1,6 @@
-export interface BookGuess {
-  title: string;
-  author: string | null;
-  confidence: 'low' | 'medium' | 'high';
-}
+import type { BookGuess } from '../../shared/recognition';
+
+export type { BookGuess } from '../../shared/recognition';
 
 export interface RecognizeCoverResponse {
   books: BookGuess[];
