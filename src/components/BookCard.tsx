@@ -83,34 +83,15 @@ export function BookCard({
             <ThemedText numberOfLines={1} style={[Typography.metadata, { color: textMutedColor }]}>
               {author || t('bookCard.unknownAuthor')}
             </ThemedText>
-            <View style={styles.resultFooterRow}>
-              {!!genres[0] && (
+            {!!genres[0] && (
+              <View style={styles.resultFooterRow}>
                 <View style={[styles.tag, { backgroundColor: accentSoftColor }]}>
                   <ThemedText numberOfLines={1} style={[Typography.caption, { color: accentColor }]}>
                     {genres[0]}
                   </ThemedText>
                 </View>
-              )}
-              {action && (
-                <Pressable
-                  onPress={action.onPress}
-                  disabled={action.disabled}
-                  hitSlop={10}
-                  style={[
-                    styles.compactActionButton,
-                    { backgroundColor: action.disabled ? surfaceMutedColor : accentColor },
-                  ]}>
-                  <ThemedText
-                    style={[
-                      Typography.caption,
-                      styles.compactActionText,
-                      { color: action.disabled ? textMutedColor : '#fff' },
-                    ]}>
-                    {action.label}
-                  </ThemedText>
-                </Pressable>
-              )}
-            </View>
+              </View>
+            )}
           </>
         ) : (
           <View style={styles.libraryFooter}>
@@ -132,8 +113,33 @@ export function BookCard({
         )}
       </View>
 
-      {!isResult && (
-        <View style={[styles.chevronCircle, { backgroundColor: surfaceMutedColor }]}>
+      {isResult ? (
+        <View style={styles.resultActions}>
+          <View style={[styles.chevronCircle, styles.chevronCircleResult, { backgroundColor: surfaceMutedColor }]}>
+            <IconSymbol name="chevron.right" size={16} color={textMutedColor} />
+          </View>
+          {action && (
+            <Pressable
+              onPress={action.onPress}
+              disabled={action.disabled}
+              hitSlop={10}
+              style={[
+                styles.compactActionButton,
+                { backgroundColor: action.disabled ? surfaceMutedColor : accentColor },
+              ]}>
+              <ThemedText
+                style={[
+                  Typography.caption,
+                  styles.compactActionText,
+                  { color: action.disabled ? textMutedColor : '#fff' },
+                ]}>
+                {action.label}
+              </ThemedText>
+            </Pressable>
+          )}
+        </View>
+      ) : (
+        <View style={[styles.chevronCircle, styles.chevronCircleLibrary, { backgroundColor: surfaceMutedColor }]}>
           <IconSymbol name="chevron.right" size={22} color={textMutedColor} />
         </View>
       )}
@@ -198,8 +204,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 6,
   },
+  resultActions: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 8,
+  },
   compactActionButton: {
-    marginLeft: 'auto',
     borderRadius: 10,
     minHeight: 34,
     paddingHorizontal: 14,
@@ -213,10 +223,17 @@ const styles = StyleSheet.create({
   },
   chevronCircle: {
     alignSelf: 'center',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  chevronCircleLibrary: {
     width: 32,
     height: 32,
     borderRadius: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
+  },
+  chevronCircleResult: {
+    width: 26,
+    height: 26,
+    borderRadius: 13,
   },
 });
