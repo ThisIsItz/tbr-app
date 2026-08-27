@@ -7,7 +7,7 @@ import { useThemeColor } from '@/hooks/useThemeColor';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Typography } from '@/lib/theme/theme';
 
-const COLLAPSED_LINES = 6;
+const COLLAPSED_LINES = 10;
 const FADE_BARS = 6;
 
 interface ExpandableDescriptionProps {

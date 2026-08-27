@@ -13,11 +13,9 @@ import {
   View,
 } from 'react-native';
 
-import { BookDetailsSection } from '@/components/BookDetailsSection';
-import { BookHeader } from '@/components/BookHeader';
+import { BookHero, CircleButton } from '@/components/BookHero';
 import { ExpandableDescription } from '@/components/ExpandableDescription';
 import { GenreEditor } from '@/components/GenreEditor';
-import { HeaderIconAction } from '@/components/HeaderIconAction';
 import { ThemedText } from '@/components/ThemedText';
 import { Typography } from '@/lib/theme/theme';
 import { useBook, useDeleteBook, useUpdateBookGenres, useUpdateBookNotes } from '@/hooks/useLibrary';
@@ -109,37 +107,34 @@ export default function BookDetailScreen() {
   return (
     <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <ScrollView style={[styles.scrollView, { backgroundColor }]} contentContainerStyle={styles.container}>
-        <Stack.Screen
-          options={{
-            headerRight: () => (
-              <View style={styles.headerActions}>
-                <HeaderIconAction
-                  icon={Pencil}
-                  color={accentColor}
-                  label={t('common.edit')}
-                  onPress={() => router.push({ pathname: '/add/manually', params: { id: book.id } })}
-                />
-                <HeaderIconAction
-                  icon={Trash2}
-                  color={dangerColor}
-                  label={t('bookDetail.remove')}
-                  onPress={handleDelete}
-                />
-              </View>
-            ),
-          }}
-        />
-        <View style={styles.content}>
-        <BookHeader title={book.title} subtitle={book.subtitle} authors={book.authors} coverUrl={coverUrl} />
-
-        {description && <ExpandableDescription description={description} />}
-
-        <BookDetailsSection
+        <Stack.Screen options={{ headerShown: false }} />
+        <BookHero
+          title={book.title}
+          subtitle={book.subtitle}
+          authors={book.authors}
+          coverUrl={coverUrl}
           pageCount={book.pageCount}
           language={book.language}
-          publisher={book.publisher}
           publishedDate={book.publishedDate}
+          onBack={() => router.back()}
+          topRight={
+            <>
+              <CircleButton
+                onPress={() => router.push({ pathname: '/add/manually', params: { id: book.id } })}
+                accessibilityLabel={t('common.edit')}>
+                <Pencil size={18} color="#1A1310" strokeWidth={2} />
+              </CircleButton>
+              <CircleButton
+                onPress={handleDelete}
+                accessibilityLabel={t('bookDetail.remove')}
+                tint="rgba(255, 227, 227, 0.9)">
+                <Trash2 size={18} color={dangerColor} strokeWidth={2} />
+              </CircleButton>
+            </>
+          }
         />
+        <View style={styles.content}>
+        {description && <ExpandableDescription description={description} />}
 
         <View style={styles.section}>
           <View style={styles.sectionHeaderRow}>
@@ -245,11 +240,9 @@ const styles = StyleSheet.create({
   },
   container: {
     flexGrow: 1,
-    padding: 16,
-    justifyContent: 'space-between',
-    gap: 24,
   },
   content: {
+    padding: 16,
     gap: 24,
   },
   centered: {
