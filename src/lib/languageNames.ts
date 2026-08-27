@@ -31,12 +31,16 @@ const LANGUAGE_NAMES_EN: Record<string, string> = {
   uk: 'Ukrainian',
 };
 
+function capitalize(name: string): string {
+  return name.charAt(0).toUpperCase() + name.slice(1);
+}
+
 export function getLanguageName(code: string, locale: string): string {
   const normalized = code.toLowerCase();
   try {
     const displayNames = new Intl.DisplayNames([locale], { type: 'language' });
     const name = displayNames.of(normalized);
-    if (name && name !== normalized) return name;
+    if (name && name !== normalized) return capitalize(name);
   } catch {
     // Intl.DisplayNames unsupported — fall through to the static table.
   }
