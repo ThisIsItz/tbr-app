@@ -24,7 +24,7 @@ import { type Book } from '@/types/book';
 type SortBy = 'title-asc' | 'title-desc' | 'author-asc' | 'author-desc' | 'recent';
 
 export default function MyTbrScreen() {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const backgroundColor = useThemeColor({}, 'background');
   const textColor = useThemeColor({}, 'text');
   const textMutedColor = useThemeColor({}, 'textMuted');
@@ -90,9 +90,9 @@ export default function MyTbrScreen() {
   const allLanguages = useMemo(
     () =>
       Array.from(new Set(books?.map((book) => book.language).filter((l): l is string => !!l) ?? [])).sort(
-        (a, b) => getLanguageName(a).localeCompare(getLanguageName(b)),
+        (a, b) => getLanguageName(a, locale).localeCompare(getLanguageName(b, locale)),
       ),
-    [books],
+    [books, locale],
   );
 
   const hasActiveFilters =
@@ -134,7 +134,7 @@ export default function MyTbrScreen() {
   const activeFilterLabels = [
     ...genreFilters,
     ...(authorFilter ? [authorFilter] : []),
-    ...(languageFilter ? [getLanguageName(languageFilter)] : []),
+    ...(languageFilter ? [getLanguageName(languageFilter, locale)] : []),
     ...(debouncedSearchQuery.trim() ? [`"${debouncedSearchQuery.trim()}"`] : []),
   ];
 

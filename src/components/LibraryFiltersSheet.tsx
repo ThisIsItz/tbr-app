@@ -34,7 +34,7 @@ export function LibraryFiltersSheet({
   onLanguageChange,
   disabled,
 }: LibraryFiltersSheetProps) {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const [visible, setVisible] = useState(false);
 
   const surfaceColor = useThemeColor({}, 'surface');
@@ -204,7 +204,7 @@ export function LibraryFiltersSheet({
                   {languageOptions.map((language) =>
                     renderRow({
                       key: language,
-                      label: getLanguageName(language),
+                      label: getLanguageName(language, locale),
                       isSelected: language === selectedLanguage,
                       onPress: () => onLanguageChange(language),
                     }),

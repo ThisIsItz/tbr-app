@@ -1,5 +1,6 @@
+// Fallback for environments without Intl.DisplayNames support.
 // ISO 639-1 codes as returned by Google Books' volumeInfo.language.
-const LANGUAGE_NAMES: Record<string, string> = {
+const LANGUAGE_NAMES_EN: Record<string, string> = {
   en: 'English',
   es: 'Spanish',
   fr: 'French',
@@ -30,6 +31,14 @@ const LANGUAGE_NAMES: Record<string, string> = {
   uk: 'Ukrainian',
 };
 
-export function getLanguageName(code: string): string {
-  return LANGUAGE_NAMES[code.toLowerCase()] ?? code;
+export function getLanguageName(code: string, locale: string): string {
+  const normalized = code.toLowerCase();
+  try {
+    const displayNames = new Intl.DisplayNames([locale], { type: 'language' });
+    const name = displayNames.of(normalized);
+    if (name && name !== normalized) return name;
+  } catch {
+    // Intl.DisplayNames unsupported — fall through to the static table.
+  }
+  return LANGUAGE_NAMES_EN[normalized] ?? code;
 }
