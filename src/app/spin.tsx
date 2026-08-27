@@ -41,6 +41,11 @@ export default function SpinScreen() {
   const { data: books } = useBooks();
   const candidates = useMemo(() => (books ?? []).filter((book) => book.status === 'to_read'), [books]);
 
+  useEffect(() => {
+    const urls = candidates.map((book) => toHttpsUrl(book.thumbnailUrl)).filter((url): url is string => !!url);
+    if (urls.length > 0) Image.prefetch(urls);
+  }, [candidates]);
+
   const [spinToken, setSpinToken] = useState(0);
   const [isSpinning, setIsSpinning] = useState(false);
   const [landedBook, setLandedBook] = useState<Book | null>(null);
