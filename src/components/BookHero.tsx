@@ -1,6 +1,7 @@
+import { Image } from 'expo-image';
 import { ArrowLeft } from 'lucide-react-native';
 import type { ReactNode } from 'react';
-import { Image, Pressable, StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { ThemedText } from '@/components/ThemedText';
@@ -52,7 +53,7 @@ export function BookHero({
   return (
     <View style={styles.hero}>
       {coverUrl ? (
-        <Image source={{ uri: coverUrl }} style={StyleSheet.absoluteFill} resizeMode="cover" blurRadius={30} />
+        <Image source={{ uri: coverUrl }} style={StyleSheet.absoluteFill} contentFit="cover" blurRadius={30} />
       ) : (
         <View style={[StyleSheet.absoluteFill, { backgroundColor: surfaceMutedColor }]} />
       )}
@@ -68,7 +69,7 @@ export function BookHero({
 
         <View style={styles.bookRow}>
           {coverUrl ? (
-            <Image source={{ uri: coverUrl }} style={styles.thumbnail} resizeMode="cover" />
+            <Image source={{ uri: coverUrl }} style={styles.thumbnail} contentFit="cover" />
           ) : (
             <View style={[styles.thumbnail, styles.thumbnailPlaceholder, { backgroundColor: surfaceMutedColor }]}>
               <ThemedText style={[Typography.caption, styles.heroTextMuted]}>{t('bookCard.noCover')}</ThemedText>

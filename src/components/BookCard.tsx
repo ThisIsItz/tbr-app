@@ -1,4 +1,5 @@
-import { Image, Platform, Pressable, StyleSheet, View } from 'react-native';
+import { Image } from 'expo-image';
+import { Platform, Pressable, StyleSheet, View } from 'react-native';
 
 import { ThemedText } from '@/components/ThemedText';
 import { IconSymbol } from '@/components/IconSymbol';
@@ -64,8 +65,8 @@ export function BookCard({
         <Image
           source={{ uri: coverUrl }}
           style={[styles.cover, isResult ? styles.coverResult : styles.coverLibrary]}
-          resizeMode="cover"
-          onError={(e) => console.warn('[BookCard] cover failed to load:', coverUrl, e.nativeEvent.error)}
+          contentFit="cover"
+          onError={(e) => console.warn('[BookCard] cover failed to load:', coverUrl, e.error)}
         />
       ) : (
         <View

@@ -48,14 +48,13 @@
     "placeholder": "Busca por título, autor o ISBN",
     "scanIsbn": "Escanear ISBN",
     "scanCover": "Sacar foto",
-    "uploadPhoto": "Subir foto",
+    "uploadPhoto": "Subir portada",
     "addManually": "Añadir manualmente",
     "emptyTitle": "Busca un libro",
     "emptyText": "Busca por título, autor o ISBN para añadirlo a tu TBR.",
     "noResultsFor": "Sin resultados para \"{{query}}\".",
     "add": "+ Añadir",
-    "added": "Añadido",
-    "adding": "Añadiendo…"
+    "added": "Añadido"
   },
   "addConfirm": {
     "loadError": "No se pudo cargar este libro. Inténtalo de nuevo.",
@@ -175,16 +174,27 @@
     "iconAttribution": "Diseñado por Magnific, vía Flaticon"
   },
   "errors": {
-    "rateLimit": "Se alcanzó el límite de solicitudes de Google Books. Espera un momento e inténtalo de nuevo, o configura EXPO_PUBLIC_GOOGLE_BOOKS_API_KEY.",
+    "rateLimit": "Google Books está saturado ahora mismo. Espera un momento e inténtalo de nuevo.",
     "generic": "No se pudo conectar con Google Books. Inténtalo de nuevo."
+  },
+  "spin": {
+    "subtitle": "Gira para elegir un libro al azar de tu TBR.",
+    "spinButton": "Girar",
+    "spinningButton": "Girando…",
+    "spinAgainButton": "Girar de nuevo",
+    "viewDetails": "Ver detalles",
+    "emptyTitle": "Nada que girar",
+    "emptyText": "Añade algunos libros a tu TBR primero.",
+    "landedAccessibilityLabel": "Ha salido {{title}} de {{author}}"
   },
   "screenTitles": {
     "bookDetails": "Detalles del libro",
-    "addBook": "Añadir un libro",
+    "addBook": "Añadir",
     "addToTbr": "Añadir a mi TBR",
     "addManually": "Añadir manualmente",
     "editBook": "Editar libro",
     "scanIsbn": "Escanear ISBN",
-    "settings": "Ajustes"
+    "settings": "Ajustes",
+    "spin": "Selector de libros"
   }
 }

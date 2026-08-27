@@ -1,5 +1,3 @@
-import type { Env } from './types';
-
 const DAY_TTL_SECONDS = 60 * 60 * 26;
 
 function todayKey(prefix: string, suffix: string): string {
@@ -16,11 +14,16 @@ async function incrementAndCheck(kv: KVNamespace, key: string, limit: number): P
 }
 
 // Global daily ceiling — the real cost backstop.
-export async function checkGlobalBudget(env: Env): Promise<boolean> {
-  return incrementAndCheck(env.RECOGNITION_KV, todayKey('global', 'count'), env.DAILY_BUDGET_LIMIT);
+export async function checkGlobalBudget(kv: KVNamespace, feature: string, limit: number): Promise<boolean> {
+  return incrementAndCheck(kv, todayKey(`global:${feature}`, 'count'), limit);
 }
 
 // Soft per-client limit; token is spoofable, not a security boundary.
-export async function checkPerTokenLimit(env: Env, token: string): Promise<boolean> {
-  return incrementAndCheck(env.RECOGNITION_KV, todayKey('token', token), env.PER_TOKEN_DAILY_LIMIT);
+export async function checkPerTokenLimit(
+  kv: KVNamespace,
+  feature: string,
+  token: string,
+  limit: number,
+): Promise<boolean> {
+  return incrementAndCheck(kv, todayKey(`token:${feature}`, token), limit);
 }

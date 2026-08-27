@@ -1,6 +1,6 @@
 import * as DocumentPicker from 'expo-document-picker';
 import { router } from 'expo-router';
-import { ArrowUpDown, BookOpenText, Settings } from 'lucide-react-native';
+import { ArrowUpDown, BookOpenText, Dices, Settings } from 'lucide-react-native';
 import { useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Alert, FlatList, Pressable, StyleSheet, View } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -187,6 +187,14 @@ export default function MyTbrScreen() {
           )}
         </View>
         <View style={styles.headerActions}>
+          <Pressable
+            onPress={() => router.push('/spin')}
+            hitSlop={8}
+            accessibilityRole="button"
+            accessibilityLabel={t('spin.title')}
+            style={[styles.iconButton, { backgroundColor: surfaceMutedColor }]}>
+            <Dices size={20} color={textColor} strokeWidth={1.75} />
+          </Pressable>
           <Pressable
             onPress={() => router.push('/settings')}
             hitSlop={8}

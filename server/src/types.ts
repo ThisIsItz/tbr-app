@@ -1,6 +1,7 @@
 import type { BookGuess } from '../../shared/recognition';
 
 export type { BookGuess } from '../../shared/recognition';
+export type { GoogleBooksSearchResponse, GoogleBooksVolume } from '../../shared/google-books';
 
 export interface RecognizeCoverResponse {
   books: BookGuess[];
@@ -15,4 +16,7 @@ export interface Env {
   DAILY_BUDGET_LIMIT: number;
   PER_TOKEN_DAILY_LIMIT: number;
   MAX_BODY_BYTES: number;
+  GOOGLE_BOOKS_API_KEY: string;
+  BOOKS_DAILY_BUDGET_LIMIT: number;
+  BOOKS_PER_TOKEN_DAILY_LIMIT: number;
 }

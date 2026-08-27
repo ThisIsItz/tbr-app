@@ -13,6 +13,7 @@ export function useSearchBooks(query: string) {
     queryKey: ['google-books-search', trimmed],
     queryFn: () => searchGoogleBooks(trimmed),
     enabled: trimmed.length > 0,
+    staleTime: Infinity,
   });
 }
 
@@ -21,6 +22,7 @@ export function useGoogleBookDetails(volumeId: string | undefined) {
     queryKey: ['google-books-volume', volumeId],
     queryFn: () => getGoogleBookById(volumeId as string),
     enabled: !!volumeId,
+    staleTime: Infinity,
   });
 }
 

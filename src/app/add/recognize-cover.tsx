@@ -393,7 +393,7 @@ export default function RecognizeCoverScreen() {
                         thumbnailUrl={imageLinks?.thumbnail ?? null}
                         onPress={() => router.push(`/add/${item.id}`)}
                         action={{
-                          label: alreadySaved ? t('search.added') : adding ? t('search.adding') : t('search.add'),
+                          label: alreadySaved ? t('search.added') : t('search.add'),
                           disabled: alreadySaved || adding,
                           onPress: () => handleQuickAdd(item),
                         }}

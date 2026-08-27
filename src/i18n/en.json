@@ -48,14 +48,13 @@
     "placeholder": "Search by title, author, or ISBN",
     "scanIsbn": "Scan ISBN",
     "scanCover": "Take Photo",
-    "uploadPhoto": "Upload Photo",
+    "uploadPhoto": "Upload Cover",
     "addManually": "Add Manually",
     "emptyTitle": "Find a book",
     "emptyText": "Search by title, author, or ISBN to add it to your TBR.",
     "noResultsFor": "No results for \"{{query}}\".",
     "add": "+ Add",
-    "added": "Added",
-    "adding": "Adding…"
+    "added": "Added"
   },
   "addConfirm": {
     "loadError": "Couldn't load this book. Try again.",
@@ -175,16 +174,27 @@
     "iconAttribution": "Designed by Magnific, via Flaticon"
   },
   "errors": {
-    "rateLimit": "Google Books rate limit reached. Wait a moment and try again, or set EXPO_PUBLIC_GOOGLE_BOOKS_API_KEY.",
+    "rateLimit": "Google Books is busy right now. Wait a moment and try again.",
     "generic": "Couldn't reach Google Books. Try again."
+  },
+  "spin": {
+    "subtitle": "Spin to pick a random book from your TBR.",
+    "spinButton": "Spin",
+    "spinningButton": "Spinning…",
+    "spinAgainButton": "Spin Again",
+    "viewDetails": "View Details",
+    "emptyTitle": "Nothing to spin",
+    "emptyText": "Add a few books to your TBR first.",
+    "landedAccessibilityLabel": "Landed on {{title}} by {{author}}"
   },
   "screenTitles": {
     "bookDetails": "Book Details",
-    "addBook": "Add a Book",
+    "addBook": "Add",
     "addToTbr": "Add to My TBR",
     "addManually": "Add Manually",
     "editBook": "Edit Book",
     "scanIsbn": "Scan ISBN",
-    "settings": "Settings"
+    "settings": "Settings",
+    "spin": "Book Picker"
   }
 }

@@ -120,6 +120,7 @@ function RootLayoutNav() {
             name="settings/index"
             options={{ title: t('screenTitles.settings'), ...screenHeaderOptions }}
           />
+          <Stack.Screen name="spin" options={{ title: t('screenTitles.spin'), ...screenHeaderOptions }} />
         </Stack>
         <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
       </ThemeProvider>

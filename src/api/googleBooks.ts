@@ -1,10 +1,9 @@
 import { rankSearchResults } from '@/api/bookRelevance'
+import { getOrCreateDeviceToken } from '@/lib/deviceToken'
 import type {
   GoogleBooksSearchResponse,
   GoogleBooksVolume
 } from '@/types/google-books'
-
-const GOOGLE_BOOKS_API_URL = 'https://www.googleapis.com/books/v1/volumes'
 
 // If an `intitle:`-scoped search returns fewer than this many results, we
 // broaden to an unscoped search too — a title search alone can be too
@@ -25,7 +24,7 @@ export class GoogleBooksApiError extends Error {
 export function getErrorTranslationKey(
   error: unknown
 ): 'errors.rateLimit' | 'errors.generic' {
-  return error instanceof GoogleBooksApiError && error.status === 429
+  return error instanceof GoogleBooksApiError && (error.status === 429 || error.status === 503)
     ? 'errors.rateLimit'
     : 'errors.generic'
 }
@@ -35,26 +34,39 @@ export function toHttpsUrl(url: string | null | undefined): string | null {
   return url.replace(/^http:\/\//, 'https://')
 }
 
-function withApiKey(params: URLSearchParams): URLSearchParams {
-  const apiKey = process.env.EXPO_PUBLIC_GOOGLE_BOOKS_API_KEY
-  if (apiKey) {
-    params.set('key', apiKey)
+function booksApiUrl(): string {
+  const apiUrl = process.env.EXPO_PUBLIC_BOOKS_API_URL
+  if (!apiUrl) {
+    throw new Error('EXPO_PUBLIC_BOOKS_API_URL is not configured')
   }
-  return params
+  return apiUrl
 }
 
+async function fetchWithClientToken(url: string): Promise<Response> {
+  const deviceToken = await getOrCreateDeviceToken()
+  return fetch(url, { headers: { 'X-Client-Token': deviceToken } })
+}
+
+const volumesCache = new Map<string, Promise<GoogleBooksVolume[]>>()
+
 async function fetchVolumes(q: string): Promise<GoogleBooksVolume[]> {
-  const params = withApiKey(
-    new URLSearchParams({ q, maxResults: String(MAX_RESULTS_PER_QUERY) })
-  )
+  const cached = volumesCache.get(q)
+  if (cached) return cached
 
-  const response = await fetch(`${GOOGLE_BOOKS_API_URL}?${params.toString()}`)
-  if (!response.ok) {
-    throw new GoogleBooksApiError(response.status)
-  }
+  const promise = (async () => {
+    const params = new URLSearchParams({ q, maxResults: String(MAX_RESULTS_PER_QUERY) })
+    const response = await fetchWithClientToken(`${booksApiUrl()}/volumes?${params.toString()}`)
+    if (!response.ok) {
+      throw new GoogleBooksApiError(response.status)
+    }
 
-  const data = (await response.json()) as GoogleBooksSearchResponse
-  return data.items ?? []
+    const data = (await response.json()) as GoogleBooksSearchResponse
+    return data.items ?? []
+  })()
+
+  volumesCache.set(q, promise)
+  promise.catch(() => volumesCache.delete(q))
+  return promise
 }
 
 export async function searchGoogleBooks(
@@ -87,18 +99,22 @@ export async function searchGoogleBooksByIsbn(
   return results[0] ?? null
 }
 
-export async function getGoogleBookById(
-  volumeId: string
-): Promise<GoogleBooksVolume> {
-  const params = withApiKey(new URLSearchParams())
-  const query = params.toString()
+const volumeByIdCache = new Map<string, Promise<GoogleBooksVolume>>()
 
-  const response = await fetch(
-    `${GOOGLE_BOOKS_API_URL}/${volumeId}${query ? `?${query}` : ''}`
-  )
-  if (!response.ok) {
-    throw new GoogleBooksApiError(response.status)
-  }
+export function getGoogleBookById(volumeId: string): Promise<GoogleBooksVolume> {
+  const cached = volumeByIdCache.get(volumeId)
+  if (cached) return cached
 
-  return (await response.json()) as GoogleBooksVolume
+  const promise = (async () => {
+    const response = await fetchWithClientToken(`${booksApiUrl()}/volumes/${volumeId}`)
+    if (!response.ok) {
+      throw new GoogleBooksApiError(response.status)
+    }
+
+    return (await response.json()) as GoogleBooksVolume
+  })()
+
+  volumeByIdCache.set(volumeId, promise)
+  promise.catch(() => volumeByIdCache.delete(volumeId))
+  return promise
 }

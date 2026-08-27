@@ -111,9 +111,7 @@ export default function AddBookScreen() {
             disabled={addBook.isPending}
             accessibilityRole="button"
             accessibilityLabel={t('addConfirm.save')}>
-            <ThemedText style={[Typography.button, styles.addPillText]}>
-              {addBook.isPending ? t('search.adding') : t('search.add')}
-            </ThemedText>
+            <ThemedText style={[Typography.button, styles.addPillText]}>{t('search.add')}</ThemedText>
           </Pressable>
         }
       />
