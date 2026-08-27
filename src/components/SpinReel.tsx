@@ -1,6 +1,6 @@
 import { Image } from 'expo-image';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Dimensions, type LayoutChangeEvent, StyleSheet, View } from 'react-native';
+import { type LayoutChangeEvent, StyleSheet, View } from 'react-native';
 import Animated, {
   Easing,
   Extrapolation,
@@ -44,7 +44,7 @@ export function SpinReel({ candidates, spinToken, excludeIdFromTarget, onLanded 
   const accentColor = useThemeColor({}, 'accent');
   const translateX = useSharedValue(0);
   const [items, setItems] = useState<Book[] | null>(null);
-  const [viewportWidth, setViewportWidth] = useState(Dimensions.get('window').width);
+  const [viewportWidth, setViewportWidth] = useState(0);
   const layout = getLayout(viewportWidth);
   const { itemWidth, pitch, viewportHeight } = layout;
 
@@ -80,7 +80,7 @@ export function SpinReel({ candidates, spinToken, excludeIdFromTarget, onLanded 
   }, []);
 
   useEffect(() => {
-    if (items || spinToken > 0) return;
+    if (items || spinToken > 0 || viewportWidth === 0) return;
     const pool = candidatesRef.current;
     if (pool.length === 0) return;
 
@@ -161,18 +161,20 @@ export function SpinReel({ candidates, spinToken, excludeIdFromTarget, onLanded 
           ))}
         </Animated.View>
       )}
-      <View
-        pointerEvents="none"
-        style={[
-          styles.indicator,
-          {
-            left: viewportWidth / 2 - (itemWidth / 2 + 4),
-            width: itemWidth + 8,
-            height: viewportHeight - 12,
-            borderColor: accentColor,
-          },
-        ]}
-      />
+      {viewportWidth > 0 && (
+        <View
+          pointerEvents="none"
+          style={[
+            styles.indicator,
+            {
+              left: viewportWidth / 2 - (itemWidth / 2 + 4),
+              width: itemWidth + 8,
+              height: viewportHeight - 12,
+              borderColor: accentColor,
+            },
+          ]}
+        />
+      )}
     </View>
   );
 }
