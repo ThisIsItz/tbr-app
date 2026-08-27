@@ -1,9 +1,11 @@
 import * as DocumentPicker from 'expo-document-picker';
-import { Contrast, Download, Library, Moon, Sun, Upload, type LucideIcon } from 'lucide-react-native';
+import { Download, Library, Moon, Sun, Upload } from 'lucide-react-native';
+import type { ReactNode } from 'react';
 import { ActivityIndicator, Alert, Linking, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedText } from '@/components/ThemedText';
+import { IconSymbol } from '@/components/IconSymbol';
 import { AccentColors, Typography, type AccentName } from '@/lib/theme/theme';
 import { useExportBackup, useImportBackup } from '@/hooks/useLibrary';
 import { useAppColorScheme } from '@/hooks/useAppColorScheme';
@@ -24,12 +26,16 @@ const LANGUAGE_OPTIONS: { value: Locale; labelKey: 'settings.english' | 'setting
   { value: 'es', labelKey: 'settings.spanish' },
 ];
 
+function SystemAppearanceIcon({ size, color }: { size?: number; color?: string }) {
+  return <IconSymbol name="circle.lefthalf.filled" size={size} color={color ?? '#000'} />;
+}
+
 const APPEARANCE_OPTIONS: {
   value: ThemePreference;
   labelKey: 'settings.appearanceSystem' | 'settings.appearanceLight' | 'settings.appearanceDark';
-  icon: LucideIcon;
+  icon: (props: { size?: number; color?: string; fill?: string; strokeWidth?: number }) => ReactNode;
 }[] = [
-  { value: 'system', labelKey: 'settings.appearanceSystem', icon: Contrast },
+  { value: 'system', labelKey: 'settings.appearanceSystem', icon: SystemAppearanceIcon },
   { value: 'light', labelKey: 'settings.appearanceLight', icon: Sun },
   { value: 'dark', labelKey: 'settings.appearanceDark', icon: Moon },
 ];
