@@ -5,7 +5,9 @@ import {
   ActivityIndicator,
   Alert,
   Image,
+  KeyboardAvoidingView,
   Linking,
+  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -196,228 +198,44 @@ export default function RecognizeCoverScreen() {
   }
 
   return (
-    <ScrollView
-      style={{ backgroundColor }}
-      contentContainerStyle={styles.container}
-      keyboardShouldPersistTaps="handled">
-      <Stack.Screen
-        options={{
-          title: pickSource === 'gallery' ? t('search.uploadPhoto') : t('search.scanCover'),
-          ...screenHeaderOptions,
-        }}
-      />
-
-      {imageUri && (
-        <Image
-          source={{ uri: imageUri }}
-          style={[styles.preview, { backgroundColor: surfaceMutedColor }]}
-          resizeMode="contain"
+    <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+      <ScrollView
+        style={{ backgroundColor }}
+        contentContainerStyle={styles.container}
+        keyboardShouldPersistTaps="handled">
+        <Stack.Screen
+          options={{
+            title: pickSource === 'gallery' ? t('search.uploadPhoto') : t('search.scanCover'),
+            ...screenHeaderOptions,
+          }}
         />
-      )}
 
-      {stage === 'unsupported' && !pickSource && (
-        <View style={styles.section}>
-          <ThemedText style={[Typography.sectionTitle, { color: textColor }]}>
-            {t('recognizeCover.unsupportedTitle')}
-          </ThemedText>
-          <ThemedText style={[Typography.body, { color: textMutedColor }]}>
-            {t('recognizeCover.unsupportedBody')}
-          </ThemedText>
-          <View style={styles.actionsRow}>
-            <Pressable
-              style={[styles.secondaryButtonRow, { backgroundColor: surfaceMutedColor }]}
-              onPress={goToSearchManually}
-              accessibilityRole="button"
-              accessibilityLabel={t('recognizeCover.searchManually')}>
-              <ThemedText style={[Typography.button, { color: textColor }]}>
-                {t('recognizeCover.searchManually')}
-              </ThemedText>
-            </Pressable>
-            <Pressable
-              style={[styles.primaryButton, { backgroundColor: accentColor, shadowColor }]}
-              onPress={goToAddManually}
-              accessibilityRole="button"
-              accessibilityLabel={t('search.addManually')}>
-              <ThemedText style={[Typography.button, { color: onAccentColor }]}>
-                {t('search.addManually')}
-              </ThemedText>
-            </Pressable>
-          </View>
-        </View>
-      )}
+        {imageUri && (
+          <Image
+            source={{ uri: imageUri }}
+            style={[styles.preview, { backgroundColor: surfaceMutedColor }]}
+            resizeMode="contain"
+          />
+        )}
 
-      {stage === 'recognizing' && (
-        <View style={styles.centered}>
-          <ActivityIndicator color={accentColor} />
-          <ThemedText style={[Typography.body, { color: textMutedColor }]}>
-            {t('recognizeCover.extracting')}
-          </ThemedText>
-        </View>
-      )}
-
-      {stage === 'noText' && (
-        <View style={styles.section}>
-          <ThemedText style={[Typography.sectionTitle, { color: textColor }]}>
-            {t('recognizeCover.noTextTitle')}
-          </ThemedText>
-          <ThemedText style={[Typography.body, { color: textMutedColor }]}>
-            {t('recognizeCover.noTextBody')}
-          </ThemedText>
-          <View style={styles.actionsRow}>
-            <Pressable
-              style={[styles.secondaryButtonRow, { backgroundColor: surfaceMutedColor }]}
-              onPress={handleReset}
-              accessibilityRole="button"
-              accessibilityLabel={t('recognizeCover.tryAnotherPhoto')}>
-              <ThemedText style={[Typography.button, { color: textColor }]}>
-                {t('recognizeCover.tryAnotherPhoto')}
-              </ThemedText>
-            </Pressable>
-            <Pressable
-              style={[styles.secondaryButtonRow, { backgroundColor: surfaceMutedColor }]}
-              onPress={goToSearchManually}
-              accessibilityRole="button"
-              accessibilityLabel={t('recognizeCover.searchManually')}>
-              <ThemedText style={[Typography.button, { color: textColor }]}>
-                {t('recognizeCover.searchManually')}
-              </ThemedText>
-            </Pressable>
-            <Pressable
-              style={[styles.primaryButton, { backgroundColor: accentColor, shadowColor }]}
-              onPress={goToAddManually}
-              accessibilityRole="button"
-              accessibilityLabel={t('search.addManually')}>
-              <ThemedText style={[Typography.button, { color: onAccentColor }]}>
-                {t('search.addManually')}
-              </ThemedText>
-            </Pressable>
-          </View>
-        </View>
-      )}
-
-      {stage === 'reviewing' && (
-        <>
+        {stage === 'unsupported' && !pickSource && (
           <View style={styles.section}>
-            {source === 'ocr' && (
-              <View style={[styles.noticeBox, { backgroundColor: surfaceMutedColor }]}>
-                <ThemedText style={[Typography.caption, { color: textMutedColor }]}>
-                  {t('recognizeCover.onDeviceFallbackNotice')}
-                </ThemedText>
-              </View>
-            )}
-            {confidence === 'low' && (
-              <View style={[styles.noticeBox, { backgroundColor: surfaceMutedColor }]}>
-                <ThemedText style={[Typography.caption, { color: textMutedColor }]}>
-                  {t('recognizeCover.lowConfidenceNotice')}
-                </ThemedText>
-              </View>
-            )}
-
-            <View style={styles.field}>
-              <ThemedText style={[Typography.metadata, { color: textColor }]}>
-                {t('recognizeCover.titleLabel')}
-              </ThemedText>
-              <TextInput
-                value={title}
-                onChangeText={setTitle}
-                placeholder={t('recognizeCover.titlePlaceholder')}
-                placeholderTextColor={textMutedColor}
-                style={[
-                  Typography.body,
-                  styles.input,
-                  { color: textColor, backgroundColor: surfaceMutedColor },
-                ]}
-              />
-            </View>
-            <View style={styles.field}>
-              <ThemedText style={[Typography.metadata, { color: textColor }]}>
-                {t('recognizeCover.authorLabel')}
-              </ThemedText>
-              <TextInput
-                value={author}
-                onChangeText={setAuthor}
-                placeholder={t('recognizeCover.authorPlaceholder')}
-                placeholderTextColor={textMutedColor}
-                style={[
-                  Typography.body,
-                  styles.input,
-                  { color: textColor, backgroundColor: surfaceMutedColor },
-                ]}
-              />
-            </View>
-            <Pressable
-              style={[
-                styles.primaryButton,
-                { backgroundColor: !title.trim() ? surfaceMutedColor : accentColor, shadowColor },
-              ]}
-              onPress={handleSearch}
-              disabled={searchStatus === 'loading' || !title.trim()}
-              accessibilityRole="button"
-              accessibilityLabel={t('recognizeCover.searchAgain')}>
-              <ThemedText
-                style={[Typography.button, { color: !title.trim() ? textMutedColor : onAccentColor }]}>
-                {t('recognizeCover.searchAgain')}
-              </ThemedText>
-            </Pressable>
-          </View>
-
-          {searchStatus === 'loading' && (
-            <View style={styles.centered}>
-              <ActivityIndicator color={accentColor} />
-              <ThemedText style={[Typography.body, { color: textMutedColor }]}>
-                {t('recognizeCover.searching')}
-              </ThemedText>
-            </View>
-          )}
-
-          {searchStatus === 'done' && matches.length > 0 && (
-            <View style={styles.section}>
-              <ThemedText style={[Typography.metadata, { color: textMutedColor }]}>
-                {t('recognizeCover.matchesLabel')}
-              </ThemedText>
-              <View style={styles.resultsList}>
-                {matches.map((item) => {
-                  const alreadySaved = savedGoogleIds.has(item.id);
-                  const adding = isAdding(item.id);
-                  const { title: matchTitle, authors, categories, imageLinks } = item.volumeInfo;
-                  return (
-                    <BookCard
-                      key={item.id}
-                      variant="result"
-                      title={matchTitle}
-                      author={authors?.join(', ') ?? null}
-                      genres={categories ?? []}
-                      thumbnailUrl={imageLinks?.thumbnail ?? null}
-                      onPress={() => router.push(`/add/${item.id}`)}
-                      action={{
-                        label: alreadySaved ? t('search.added') : adding ? t('search.adding') : t('search.add'),
-                        disabled: alreadySaved || adding,
-                        onPress: () => handleQuickAdd(item),
-                      }}
-                    />
-                  );
-                })}
-              </View>
+            <ThemedText style={[Typography.sectionTitle, { color: textColor }]}>
+              {t('recognizeCover.unsupportedTitle')}
+            </ThemedText>
+            <ThemedText style={[Typography.body, { color: textMutedColor }]}>
+              {t('recognizeCover.unsupportedBody')}
+            </ThemedText>
+            <View style={styles.actionsRow}>
               <Pressable
-                style={[styles.secondaryButton, { backgroundColor: surfaceMutedColor }]}
-                onPress={goToAddManually}
+                style={[styles.secondaryButtonRow, { backgroundColor: surfaceMutedColor }]}
+                onPress={goToSearchManually}
                 accessibilityRole="button"
-                accessibilityLabel={t('recognizeCover.noneOfThese')}>
+                accessibilityLabel={t('recognizeCover.searchManually')}>
                 <ThemedText style={[Typography.button, { color: textColor }]}>
-                  {t('recognizeCover.noneOfThese')}
+                  {t('recognizeCover.searchManually')}
                 </ThemedText>
               </Pressable>
-            </View>
-          )}
-
-          {searchStatus === 'done' && matches.length === 0 && (
-            <View style={styles.section}>
-              <ThemedText style={[Typography.sectionTitle, { color: textColor }]}>
-                {t('recognizeCover.noMatchesTitle')}
-              </ThemedText>
-              <ThemedText style={[Typography.body, { color: textMutedColor }]}>
-                {t('recognizeCover.noMatchesBody')}
-              </ThemedText>
               <Pressable
                 style={[styles.primaryButton, { backgroundColor: accentColor, shadowColor }]}
                 onPress={goToAddManually}
@@ -428,26 +246,215 @@ export default function RecognizeCoverScreen() {
                 </ThemedText>
               </Pressable>
             </View>
-          )}
-
-          <View style={styles.section}>
-            <Pressable
-              style={[styles.secondaryButton, { backgroundColor: surfaceMutedColor }]}
-              onPress={handleReset}
-              accessibilityRole="button"
-              accessibilityLabel={t('recognizeCover.tryAnotherPhoto')}>
-              <ThemedText style={[Typography.button, { color: textColor }]}>
-                {t('recognizeCover.tryAnotherPhoto')}
-              </ThemedText>
-            </Pressable>
           </View>
-        </>
-      )}
-    </ScrollView>
+        )}
+
+        {stage === 'recognizing' && (
+          <View style={styles.centered}>
+            <ActivityIndicator color={accentColor} />
+            <ThemedText style={[Typography.body, { color: textMutedColor }]}>
+              {t('recognizeCover.extracting')}
+            </ThemedText>
+          </View>
+        )}
+
+        {stage === 'noText' && (
+          <View style={styles.section}>
+            <ThemedText style={[Typography.sectionTitle, { color: textColor }]}>
+              {t('recognizeCover.noTextTitle')}
+            </ThemedText>
+            <ThemedText style={[Typography.body, { color: textMutedColor }]}>
+              {t('recognizeCover.noTextBody')}
+            </ThemedText>
+            <View style={styles.actionsRow}>
+              <Pressable
+                style={[styles.secondaryButtonRow, { backgroundColor: surfaceMutedColor }]}
+                onPress={handleReset}
+                accessibilityRole="button"
+                accessibilityLabel={t('recognizeCover.tryAnotherPhoto')}>
+                <ThemedText style={[Typography.button, { color: textColor }]}>
+                  {t('recognizeCover.tryAnotherPhoto')}
+                </ThemedText>
+              </Pressable>
+              <Pressable
+                style={[styles.secondaryButtonRow, { backgroundColor: surfaceMutedColor }]}
+                onPress={goToSearchManually}
+                accessibilityRole="button"
+                accessibilityLabel={t('recognizeCover.searchManually')}>
+                <ThemedText style={[Typography.button, { color: textColor }]}>
+                  {t('recognizeCover.searchManually')}
+                </ThemedText>
+              </Pressable>
+              <Pressable
+                style={[styles.primaryButton, { backgroundColor: accentColor, shadowColor }]}
+                onPress={goToAddManually}
+                accessibilityRole="button"
+                accessibilityLabel={t('search.addManually')}>
+                <ThemedText style={[Typography.button, { color: onAccentColor }]}>
+                  {t('search.addManually')}
+                </ThemedText>
+              </Pressable>
+            </View>
+          </View>
+        )}
+
+        {stage === 'reviewing' && (
+          <>
+            <View style={styles.section}>
+              {source === 'ocr' && (
+                <View style={[styles.noticeBox, { backgroundColor: surfaceMutedColor }]}>
+                  <ThemedText style={[Typography.caption, { color: textMutedColor }]}>
+                    {t('recognizeCover.onDeviceFallbackNotice')}
+                  </ThemedText>
+                </View>
+              )}
+              {confidence === 'low' && (
+                <View style={[styles.noticeBox, { backgroundColor: surfaceMutedColor }]}>
+                  <ThemedText style={[Typography.caption, { color: textMutedColor }]}>
+                    {t('recognizeCover.lowConfidenceNotice')}
+                  </ThemedText>
+                </View>
+              )}
+
+              <View style={styles.field}>
+                <ThemedText style={[Typography.metadata, { color: textColor }]}>
+                  {t('recognizeCover.titleLabel')}
+                </ThemedText>
+                <TextInput
+                  value={title}
+                  onChangeText={setTitle}
+                  placeholder={t('recognizeCover.titlePlaceholder')}
+                  placeholderTextColor={textMutedColor}
+                  style={[
+                    Typography.body,
+                    styles.input,
+                    { color: textColor, backgroundColor: surfaceMutedColor },
+                  ]}
+                />
+              </View>
+              <View style={styles.field}>
+                <ThemedText style={[Typography.metadata, { color: textColor }]}>
+                  {t('recognizeCover.authorLabel')}
+                </ThemedText>
+                <TextInput
+                  value={author}
+                  onChangeText={setAuthor}
+                  placeholder={t('recognizeCover.authorPlaceholder')}
+                  placeholderTextColor={textMutedColor}
+                  style={[
+                    Typography.body,
+                    styles.input,
+                    { color: textColor, backgroundColor: surfaceMutedColor },
+                  ]}
+                />
+              </View>
+              <Pressable
+                style={[
+                  styles.primaryButton,
+                  { backgroundColor: !title.trim() ? surfaceMutedColor : accentColor, shadowColor },
+                ]}
+                onPress={handleSearch}
+                disabled={searchStatus === 'loading' || !title.trim()}
+                accessibilityRole="button"
+                accessibilityLabel={t('recognizeCover.searchAgain')}>
+                <ThemedText
+                  style={[Typography.button, { color: !title.trim() ? textMutedColor : onAccentColor }]}>
+                  {t('recognizeCover.searchAgain')}
+                </ThemedText>
+              </Pressable>
+            </View>
+
+            {searchStatus === 'loading' && (
+              <View style={styles.centered}>
+                <ActivityIndicator color={accentColor} />
+                <ThemedText style={[Typography.body, { color: textMutedColor }]}>
+                  {t('recognizeCover.searching')}
+                </ThemedText>
+              </View>
+            )}
+
+            {searchStatus === 'done' && matches.length > 0 && (
+              <View style={styles.section}>
+                <ThemedText style={[Typography.metadata, { color: textMutedColor }]}>
+                  {t('recognizeCover.matchesLabel')}
+                </ThemedText>
+                <View style={styles.resultsList}>
+                  {matches.map((item) => {
+                    const alreadySaved = savedGoogleIds.has(item.id);
+                    const adding = isAdding(item.id);
+                    const { title: matchTitle, authors, categories, imageLinks } = item.volumeInfo;
+                    return (
+                      <BookCard
+                        key={item.id}
+                        variant="result"
+                        title={matchTitle}
+                        author={authors?.join(', ') ?? null}
+                        genres={categories ?? []}
+                        thumbnailUrl={imageLinks?.thumbnail ?? null}
+                        onPress={() => router.push(`/add/${item.id}`)}
+                        action={{
+                          label: alreadySaved ? t('search.added') : adding ? t('search.adding') : t('search.add'),
+                          disabled: alreadySaved || adding,
+                          onPress: () => handleQuickAdd(item),
+                        }}
+                      />
+                    );
+                  })}
+                </View>
+                <Pressable
+                  style={[styles.secondaryButton, { backgroundColor: surfaceMutedColor }]}
+                  onPress={goToAddManually}
+                  accessibilityRole="button"
+                  accessibilityLabel={t('recognizeCover.noneOfThese')}>
+                  <ThemedText style={[Typography.button, { color: textColor }]}>
+                    {t('recognizeCover.noneOfThese')}
+                  </ThemedText>
+                </Pressable>
+              </View>
+            )}
+
+            {searchStatus === 'done' && matches.length === 0 && (
+              <View style={styles.section}>
+                <ThemedText style={[Typography.sectionTitle, { color: textColor }]}>
+                  {t('recognizeCover.noMatchesTitle')}
+                </ThemedText>
+                <ThemedText style={[Typography.body, { color: textMutedColor }]}>
+                  {t('recognizeCover.noMatchesBody')}
+                </ThemedText>
+                <Pressable
+                  style={[styles.primaryButton, { backgroundColor: accentColor, shadowColor }]}
+                  onPress={goToAddManually}
+                  accessibilityRole="button"
+                  accessibilityLabel={t('search.addManually')}>
+                  <ThemedText style={[Typography.button, { color: onAccentColor }]}>
+                    {t('search.addManually')}
+                  </ThemedText>
+                </Pressable>
+              </View>
+            )}
+
+            <View style={styles.section}>
+              <Pressable
+                style={[styles.secondaryButton, { backgroundColor: surfaceMutedColor }]}
+                onPress={handleReset}
+                accessibilityRole="button"
+                accessibilityLabel={t('recognizeCover.tryAnotherPhoto')}>
+                <ThemedText style={[Typography.button, { color: textColor }]}>
+                  {t('recognizeCover.tryAnotherPhoto')}
+                </ThemedText>
+              </Pressable>
+            </View>
+          </>
+        )}
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
+  flex: {
+    flex: 1,
+  },
   container: {
     padding: 16,
     gap: 20,
