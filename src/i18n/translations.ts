@@ -5,7 +5,6 @@ export type Locale = 'en' | 'es';
 
 export const DEFAULT_LOCALE: Locale = 'en';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const dictionaries: Record<Locale, any> = { en, es };
 
 function lookup(dictionary: unknown, key: string): string | undefined {

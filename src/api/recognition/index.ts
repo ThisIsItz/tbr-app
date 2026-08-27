@@ -6,7 +6,6 @@ export type { BookCoverRecognitionService, BookGuess, CoverRecognitionResult, Re
 
 const isVisionConfigured = !!process.env.EXPO_PUBLIC_RECOGNIZE_COVER_API_URL;
 
-// Tries vision first, falls back to OCR on any failure.
 export const bookCoverRecognitionService: BookCoverRecognitionService = {
   isSupported: isVisionConfigured || ocrBookCoverRecognitionService.isSupported,
   async recognizeCover(imageUri: string): Promise<CoverRecognitionResult> {

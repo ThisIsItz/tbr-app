@@ -31,7 +31,6 @@ import type { GoogleBooksVolume } from '@/types/google-books';
 type Stage = 'idle' | 'unsupported' | 'recognizing' | 'reviewing' | 'noText';
 type SearchStatus = 'idle' | 'loading' | 'done';
 
-// Minimum relevance score for a Google Books result to count as a match.
 const MIN_RELIABLE_SCORE = 30;
 
 export default function RecognizeCoverScreen() {

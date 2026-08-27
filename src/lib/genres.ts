@@ -1,4 +1,3 @@
-// Extracts the leaf of each hierarchical genre path (e.g. "Fiction / Fantasy / Epic") and dedupes near-duplicates.
 const GENERIC_GENRE_TERMS = new Set(['fiction', 'general', 'nonfiction', 'non-fiction']);
 
 function extractLeaf(path: string): string | null {

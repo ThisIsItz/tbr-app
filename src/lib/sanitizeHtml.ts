@@ -8,7 +8,6 @@ const HTML_ENTITIES: Record<string, string> = {
   '&nbsp;': ' ',
 };
 
-// Strips HTML tags from Google Books descriptions, converting line breaks and decoding entities.
 export function sanitizeDescription(html: string): string {
   return html
     .replace(/<br\s*\/?>/gi, '\n')
