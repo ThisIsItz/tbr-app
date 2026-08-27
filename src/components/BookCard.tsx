@@ -1,4 +1,4 @@
-import { Image, Pressable, StyleSheet, View } from 'react-native';
+import { Image, Platform, Pressable, StyleSheet, View } from 'react-native';
 
 import { ThemedText } from '@/components/ThemedText';
 import { IconSymbol } from '@/components/IconSymbol';
@@ -55,7 +55,11 @@ export function BookCard({
       onPress={onPress}
       accessibilityRole="button"
       accessibilityLabel={author ? `${title}, ${author}` : title}
-      style={[styles.card, { backgroundColor: surfaceColor, shadowColor }]}>
+      style={[
+        styles.card,
+        { backgroundColor: surfaceColor, shadowColor },
+        Platform.OS === 'web' && { boxShadow: `0px 3px 12px ${shadowColor}` },
+      ]}>
       {coverUrl ? (
         <Image
           source={{ uri: coverUrl }}
@@ -160,10 +164,10 @@ const styles = StyleSheet.create({
     padding: 10,
     gap: 12,
     width: '100%',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 1,
-    shadowRadius: 6,
-    elevation: 2,
+    shadowRadius: 10,
+    elevation: 4,
   },
   cover: {
     borderRadius: 8,
