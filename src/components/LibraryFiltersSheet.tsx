@@ -67,14 +67,12 @@ export function LibraryFiltersSheet({
     key,
     label,
     isSelected,
-    isFirst,
     checkbox,
     onPress,
   }: {
     key: string;
     label: string;
     isSelected: boolean;
-    isFirst: boolean;
     checkbox?: boolean;
     onPress: () => void;
   }) {
@@ -85,7 +83,7 @@ export function LibraryFiltersSheet({
         accessibilityRole={checkbox ? 'checkbox' : 'radio'}
         accessibilityLabel={label}
         accessibilityState={checkbox ? { checked: isSelected } : { selected: isSelected }}
-        style={[styles.optionRow, !isFirst && { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: borderColor }]}>
+        style={styles.optionRow}>
         <ThemedText
           style={[
             Typography.body,
@@ -157,12 +155,11 @@ export function LibraryFiltersSheet({
                   <ThemedText style={[Typography.body, { color: textMutedColor }]}>—</ThemedText>
                 ) : (
                   <View>
-                    {genreOptions.map((genre, index) =>
+                    {genreOptions.map((genre) =>
                       renderRow({
                         key: genre,
                         label: genre,
                         isSelected: selectedGenres.includes(genre),
-                        isFirst: index === 0,
                         checkbox: true,
                         onPress: () => toggleGenre(genre),
                       }),
@@ -180,7 +177,6 @@ export function LibraryFiltersSheet({
                     key: '__all_authors',
                     label: t('library.allAuthors'),
                     isSelected: !selectedAuthor,
-                    isFirst: true,
                     onPress: () => onAuthorChange(null),
                   })}
                   {authorOptions.map((author) =>
@@ -188,7 +184,6 @@ export function LibraryFiltersSheet({
                       key: author,
                       label: author,
                       isSelected: author === selectedAuthor,
-                      isFirst: false,
                       onPress: () => onAuthorChange(author),
                     }),
                   )}
@@ -204,7 +199,6 @@ export function LibraryFiltersSheet({
                     key: '__all_languages',
                     label: t('library.allLanguages'),
                     isSelected: !selectedLanguage,
-                    isFirst: true,
                     onPress: () => onLanguageChange(null),
                   })}
                   {languageOptions.map((language) =>
@@ -212,7 +206,6 @@ export function LibraryFiltersSheet({
                       key: language,
                       label: getLanguageName(language),
                       isSelected: language === selectedLanguage,
-                      isFirst: false,
                       onPress: () => onLanguageChange(language),
                     }),
                   )}
