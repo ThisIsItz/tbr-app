@@ -1,3 +1,4 @@
+import type { LucideIcon } from 'lucide-react-native';
 import { useState } from 'react';
 import { FlatList, Modal, Pressable, StyleSheet } from 'react-native';
 
@@ -19,10 +20,10 @@ interface FilterSheetProps {
   onSelect: (value: string | null) => void;
   selectedLabel?: string | null;
   disabled?: boolean;
-  /** When true, the trigger always shows `label` and never switches to the
-   * active/selected styling — for controls like Sort that always have a
-   * value rather than an on/off filter. */
-  staticLabel?: boolean;
+  /** Leading icon shown before the label on the trigger. */
+  icon?: LucideIcon;
+  /** Sizes the trigger to its content instead of stretching to fill the row. */
+  compact?: boolean;
 }
 
 export function FilterSheet({
@@ -32,11 +33,12 @@ export function FilterSheet({
   onSelect,
   selectedLabel,
   disabled,
-  staticLabel,
+  icon: Icon,
+  compact,
 }: FilterSheetProps) {
   const { t } = useTranslation();
   const [visible, setVisible] = useState(false);
-  const isActive = !staticLabel && selected !== null && selected !== undefined;
+  const isActive = selected !== null && selected !== undefined;
 
   const surfaceColor = useThemeColor({}, 'surface');
   const surfaceMutedColor = useThemeColor({}, 'surfaceMuted');
@@ -55,11 +57,13 @@ export function FilterSheet({
         accessibilityLabel={isActive ? (selectedLabel ?? label) : label}
         style={[
           styles.trigger,
+          compact && styles.triggerCompact,
           {
             backgroundColor: isActive ? accentSoftColor : surfaceMutedColor,
             opacity: disabled ? 0.5 : 1,
           },
         ]}>
+        {Icon && <Icon size={16} color={isActive ? onAccentSoftColor : textColor} strokeWidth={2} />}
         <ThemedText
           numberOfLines={1}
           style={[Typography.button, styles.triggerText, { color: isActive ? onAccentSoftColor : textColor }]}>
@@ -128,6 +132,12 @@ const styles = StyleSheet.create({
     minHeight: 44,
     borderRadius: 10,
     paddingHorizontal: 10,
+  },
+  triggerCompact: {
+    flexGrow: 0,
+    flexShrink: 0,
+    flexBasis: 'auto',
+    paddingHorizontal: 14,
   },
   triggerText: {
     flexShrink: 1,

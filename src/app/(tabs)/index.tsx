@@ -1,21 +1,24 @@
+import * as DocumentPicker from 'expo-document-picker';
 import { router } from 'expo-router';
-import { Settings } from 'lucide-react-native';
+import { ArrowUpDown, BookOpenText, Settings } from 'lucide-react-native';
 import { useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, FlatList, Pressable, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Alert, FlatList, Pressable, StyleSheet, View } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { BookCard } from '@/components/BookCard';
 import { FilterSheet } from '@/components/FilterSheet';
-import { MultiFilterSheet } from '@/components/MultiFilterSheet';
+import { LibraryFiltersSheet } from '@/components/LibraryFiltersSheet';
 import { SearchInput } from '@/components/SearchInput';
 import { ThemedText } from '@/components/ThemedText';
 import { IconSymbol } from '@/components/IconSymbol';
 import { Typography } from '@/lib/theme/theme';
-import { useBooks } from '@/hooks/useLibrary';
+import { useBooks, useImportBackup } from '@/hooks/useLibrary';
 import { useDebouncedValue } from '@/hooks/useDebouncedValue';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { useTranslation } from '@/hooks/useTranslation';
+import { BackupFileError } from '@/lib/backup';
 import { normalizeGenres } from '@/lib/genres';
+import { getLanguageName } from '@/lib/languageNames';
 import { type Book } from '@/types/book';
 
 type SortBy = 'title-asc' | 'title-desc' | 'author-asc' | 'author-desc' | 'recent';
@@ -31,19 +34,39 @@ export default function MyTbrScreen() {
 
   const insets = useSafeAreaInsets();
   const { data: books, isLoading } = useBooks();
+  const importBackup = useImportBackup();
+
+  async function handleImportBackup() {
+    const result = await DocumentPicker.getDocumentAsync();
+    if (result.canceled) return;
+
+    const uri = result.assets[0]?.uri;
+    if (!uri) return;
+
+    try {
+      const { imported, skipped } = await importBackup.mutateAsync(uri);
+      Alert.alert(t('settings.importSuccessTitle'), t('settings.importSuccessBody', { imported, skipped }));
+    } catch (error) {
+      Alert.alert(
+        t('settings.importErrorTitle'),
+        error instanceof BackupFileError ? t('settings.importInvalidFile') : t('common.genericError'),
+      );
+    }
+  }
 
   const [searchQuery, setSearchQuery] = useState('');
   const debouncedSearchQuery = useDebouncedValue(searchQuery, 300);
   const [genreFilters, setGenreFilters] = useState<string[]>([]);
   const [authorFilter, setAuthorFilter] = useState<string | null>(null);
+  const [languageFilter, setLanguageFilter] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<SortBy>('title-asc');
 
   const sortOptions = [
-    { value: 'recent', label: t('library.sortRecent') },
-    { value: 'title-asc', label: t('library.sortTitleAsc') },
-    { value: 'title-desc', label: t('library.sortTitleDesc') },
-    { value: 'author-asc', label: t('library.sortAuthorAsc') },
-    { value: 'author-desc', label: t('library.sortAuthorDesc') },
+    { value: 'recent', label: t('library.sortRecent'), shortLabel: t('library.sortRecentShort') },
+    { value: 'title-asc', label: t('library.sortTitleAsc'), shortLabel: t('library.sortTitleAscShort') },
+    { value: 'title-desc', label: t('library.sortTitleDesc'), shortLabel: t('library.sortTitleDescShort') },
+    { value: 'author-asc', label: t('library.sortAuthorAsc'), shortLabel: t('library.sortAuthorAscShort') },
+    { value: 'author-desc', label: t('library.sortAuthorDesc'), shortLabel: t('library.sortAuthorDescShort') },
   ];
 
   const genresByBookId = useMemo(() => {
@@ -64,8 +87,16 @@ export default function MyTbrScreen() {
       Array.from(new Set(books?.flatMap((book) => book.authors) ?? [])).sort((a, b) => a.localeCompare(b)),
     [books],
   );
+  const allLanguages = useMemo(
+    () =>
+      Array.from(new Set(books?.map((book) => book.language).filter((l): l is string => !!l) ?? [])).sort(
+        (a, b) => getLanguageName(a).localeCompare(getLanguageName(b)),
+      ),
+    [books],
+  );
 
-  const hasActiveFilters = genreFilters.length > 0 || !!authorFilter || debouncedSearchQuery.trim().length > 0;
+  const hasActiveFilters =
+    genreFilters.length > 0 || !!authorFilter || !!languageFilter || debouncedSearchQuery.trim().length > 0;
   const totalBookCount = books?.length ?? 0;
 
   const filteredBooks = useMemo(() => {
@@ -85,6 +116,7 @@ export default function MyTbrScreen() {
       list = list.filter((book) => genresByBookId.get(book.id)?.some((g) => genreFilters.includes(g)));
     }
     if (authorFilter) list = list.filter((book) => book.authors.includes(authorFilter));
+    if (languageFilter) list = list.filter((book) => book.language === languageFilter);
 
     if (sortBy === 'recent') {
       return [...list].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
@@ -97,11 +129,12 @@ export default function MyTbrScreen() {
       return aValue.localeCompare(bValue);
     });
     return direction === 'desc' ? sorted.reverse() : sorted;
-  }, [books, debouncedSearchQuery, genreFilters, authorFilter, sortBy, genresByBookId]);
+  }, [books, debouncedSearchQuery, genreFilters, authorFilter, languageFilter, sortBy, genresByBookId]);
 
   const activeFilterLabels = [
     ...genreFilters,
     ...(authorFilter ? [authorFilter] : []),
+    ...(languageFilter ? [getLanguageName(languageFilter)] : []),
     ...(debouncedSearchQuery.trim() ? [`"${debouncedSearchQuery.trim()}"`] : []),
   ];
 
@@ -118,6 +151,7 @@ export default function MyTbrScreen() {
     setSearchQuery('');
     setGenreFilters([]);
     setAuthorFilter(null);
+    setLanguageFilter(null);
   }
 
   // Reset filters once the library is empty, so they don't hide new books.
@@ -127,6 +161,7 @@ export default function MyTbrScreen() {
     setSearchQuery('');
     setGenreFilters([]);
     setAuthorFilter(null);
+    setLanguageFilter(null);
     setSortBy('title-asc');
   }, [isLibraryEmpty]);
 
@@ -173,28 +208,24 @@ export default function MyTbrScreen() {
           />
 
           <View style={styles.filterRow}>
-            <MultiFilterSheet
-              label={t('library.genre')}
-              selected={genreFilters}
-              disabled={allGenres.length === 0}
-              onChange={setGenreFilters}
-              options={allGenres}
-            />
-            <FilterSheet
-              label={t('library.author')}
-              selected={authorFilter}
-              selectedLabel={authorFilter}
-              disabled={allAuthors.length === 0}
-              onSelect={setAuthorFilter}
-              options={[
-                { value: null, label: t('library.allAuthors') },
-                ...allAuthors.map((a) => ({ value: a, label: a })),
-              ]}
+            <LibraryFiltersSheet
+              genreOptions={allGenres}
+              selectedGenres={genreFilters}
+              onGenresChange={setGenreFilters}
+              authorOptions={allAuthors}
+              selectedAuthor={authorFilter}
+              onAuthorChange={setAuthorFilter}
+              languageOptions={allLanguages}
+              selectedLanguage={languageFilter}
+              onLanguageChange={setLanguageFilter}
+              disabled={allGenres.length === 0 && allAuthors.length === 0 && allLanguages.length === 0}
             />
             <FilterSheet
               label={t('library.sort')}
-              staticLabel
+              icon={ArrowUpDown}
+              compact
               selected={sortBy}
+              selectedLabel={sortOptions.find((option) => option.value === sortBy)?.shortLabel}
               onSelect={(value) => setSortBy((value as SortBy) ?? 'title-asc')}
               options={sortOptions}
             />
@@ -221,12 +252,23 @@ export default function MyTbrScreen() {
 
       {isLibraryEmpty ? (
         <View style={styles.centered}>
-          <ThemedText style={[Typography.bookTitle, styles.centeredText, { color: textColor }]}>
+          <BookOpenText size={64} color={textMutedColor} strokeWidth={1.5} />
+          <ThemedText style={[Typography.sectionTitle, styles.centeredText, { color: textColor }]}>
             {t('library.emptyTitle')}
           </ThemedText>
-          <ThemedText style={[Typography.metadata, styles.centeredText, { color: textMutedColor }]}>
+          <ThemedText style={[Typography.body, styles.centeredText, { color: textMutedColor }]}>
             {t('library.emptyText')}
           </ThemedText>
+          <Pressable
+            onPress={handleImportBackup}
+            hitSlop={8}
+            accessibilityRole="button"
+            accessibilityLabel={t('library.emptyImportPrompt')}
+            style={styles.importPrompt}>
+            <ThemedText style={[Typography.metadata, { color: accentColor }]}>
+              {t('library.emptyImportPrompt')}
+            </ThemedText>
+          </Pressable>
         </View>
       ) : filteredBooks.length === 0 ? (
         <View style={styles.centered}>
@@ -290,11 +332,14 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 6,
+    gap: 10,
     paddingHorizontal: 24,
   },
   centeredText: {
     textAlign: 'center',
+  },
+  importPrompt: {
+    marginTop: 8,
   },
   header: {
     paddingTop: 12,
@@ -328,6 +373,7 @@ const styles = StyleSheet.create({
   activeFiltersRow: {
     flexDirection: 'row',
     alignSelf: 'flex-start',
+    maxWidth: '100%',
     alignItems: 'center',
     gap: 6,
     marginBottom: 14,
@@ -348,6 +394,8 @@ const styles = StyleSheet.create({
   },
   listContent: {
     gap: 10,
+    paddingHorizontal: 10,
+    paddingTop: 10,
     paddingBottom: 88,
   },
   floatingAddWrapper: {
