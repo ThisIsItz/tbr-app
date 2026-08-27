@@ -1,5 +1,6 @@
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import * as Sentry from '@sentry/react-native';
 import * as Localization from 'expo-localization';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
@@ -24,6 +25,13 @@ export const unstable_settings = {
 
 SplashScreen.preventAutoHideAsync();
 
+Sentry.init({
+  dsn: process.env.EXPO_PUBLIC_SENTRY_DSN,
+  enabled: !!process.env.EXPO_PUBLIC_SENTRY_DSN,
+  sendDefaultPii: false,
+  tracesSampleRate: 0.2,
+});
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -47,7 +55,7 @@ function isAccentPreference(value: string | null): value is AccentPreference {
   return value === 'orange' || value === 'teal' || value === 'pink';
 }
 
-export default function RootLayout() {
+function RootLayout() {
   const [isReady, setIsReady] = useState(false);
   const [initialLocale, setInitialLocale] = useState<Locale>(DEFAULT_LOCALE);
   const [initialThemePreference, setInitialThemePreference] = useState<ThemePreference>('system');
@@ -85,6 +93,8 @@ export default function RootLayout() {
     </LanguageProvider>
   );
 }
+
+export default Sentry.wrap(RootLayout);
 
 function RootLayoutNav() {
   const { colorScheme } = useAppColorScheme();

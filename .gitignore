@@ -48,3 +48,4 @@ app-example
 # Cloudflare Worker local secrets (server/)
 .dev.vars
 .wrangler/
+.env.local
