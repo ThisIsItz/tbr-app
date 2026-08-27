@@ -3,7 +3,6 @@ import { Pencil, Trash2 } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
-  Alert,
   KeyboardAvoidingView,
   Modal,
   Platform,
@@ -24,6 +23,7 @@ import { Typography } from '@/lib/theme/theme';
 import { useBook, useDeleteBook, useUpdateBookGenres, useUpdateBookNotes } from '@/hooks/useLibrary';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { useTranslation } from '@/hooks/useTranslation';
+import { confirmAsync } from '@/lib/confirm';
 import { normalizeGenres } from '@/lib/genres';
 import { toHttpsUrl } from '@/api/googleBooks';
 import { sanitizeDescription } from '@/lib/sanitizeHtml';
@@ -87,22 +87,17 @@ export default function BookDetailScreen() {
     );
   }
 
-  function handleDelete() {
-    Alert.alert(
+  async function handleDelete() {
+    const confirmed = await confirmAsync(
       t('bookDetail.removeTitle'),
       t('bookDetail.removeBody', { title: book!.title }),
-      [
-        { text: t('common.cancel'), style: 'cancel' },
-        {
-          text: t('common.remove'),
-          style: 'destructive',
-          onPress: async () => {
-            await deleteBook.mutateAsync(book!.id);
-            router.back();
-          },
-        },
-      ],
+      t('common.remove'),
+      t('common.cancel'),
     );
+    if (!confirmed) return;
+
+    await deleteBook.mutateAsync(book!.id);
+    router.back();
   }
 
   const coverUrl = toHttpsUrl(book.thumbnailUrl);
