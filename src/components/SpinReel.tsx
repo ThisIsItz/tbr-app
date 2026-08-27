@@ -24,10 +24,10 @@ const SPIN_EASING = Easing.bezier(0.16, 1, 0.3, 1);
 const SPIN_DURATION = 3400;
 
 function getLayout(viewportWidth: number) {
-  const itemWidth = Math.min(132, Math.max(88, viewportWidth * 0.28));
-  const itemGap = itemWidth * 0.12;
+  const itemWidth = Math.min(160, Math.max(100, viewportWidth * 0.38));
+  const itemGap = itemWidth * 0.06;
   const pitch = itemWidth + itemGap;
-  const coverWidth = itemWidth * 0.88;
+  const coverWidth = itemWidth * 0.92;
   const coverHeight = coverWidth * 1.5;
   const viewportHeight = coverHeight + 36;
   return { itemWidth, itemGap, pitch, coverWidth, coverHeight, viewportHeight };
