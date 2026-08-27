@@ -2,7 +2,7 @@ import { router } from 'expo-router';
 import { Dices } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Image } from 'expo-image';
-import { Platform, Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
+import { ActivityIndicator, Platform, Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
 import Animated, {
   Easing,
   FadeInUp,
@@ -41,9 +41,21 @@ export default function SpinScreen() {
   const { data: books } = useBooks();
   const candidates = useMemo(() => (books ?? []).filter((book) => book.status === 'to_read'), [books]);
 
+  const [coversReady, setCoversReady] = useState(false);
   useEffect(() => {
     const urls = candidates.map((book) => toHttpsUrl(book.thumbnailUrl)).filter((url): url is string => !!url);
-    if (urls.length > 0) Image.prefetch(urls);
+    if (urls.length === 0) {
+      setCoversReady(true);
+      return;
+    }
+    setCoversReady(false);
+    let cancelled = false;
+    Image.prefetch(urls).finally(() => {
+      if (!cancelled) setCoversReady(true);
+    });
+    return () => {
+      cancelled = true;
+    };
   }, [candidates]);
 
   const [spinToken, setSpinToken] = useState(0);
@@ -114,25 +126,32 @@ export default function SpinScreen() {
         <ThemedText style={[Typography.body, { color: textMutedColor }]}>{t('spin.subtitle')}</ThemedText>
       </View>
 
-      <SpinReel
-        candidates={candidates}
-        spinToken={spinToken}
-        excludeIdFromTarget={lastLandedId}
-        onLanded={handleLanded}
-      />
+      {coversReady ? (
+        <SpinReel
+          candidates={candidates}
+          spinToken={spinToken}
+          excludeIdFromTarget={lastLandedId}
+          onLanded={handleLanded}
+        />
+      ) : (
+        <View style={styles.reelLoading}>
+          <ActivityIndicator color={accentColor} />
+        </View>
+      )}
 
       <Animated.View style={spinButtonAnimatedStyle}>
         <Pressable
           onPress={handleSpinPress}
-          disabled={isSpinning}
+          disabled={isSpinning || !coversReady}
           accessibilityRole="button"
           accessibilityLabel={t(spinButtonLabelKey)}
           style={[
             styles.spinButton,
-            { backgroundColor: isSpinning ? surfaceMutedColor : accentColor },
+            { backgroundColor: isSpinning || !coversReady ? surfaceMutedColor : accentColor },
           ]}>
-          <Dices size={20} color={isSpinning ? textMutedColor : onAccentColor} strokeWidth={1.75} />
-          <ThemedText style={[Typography.button, { color: isSpinning ? textMutedColor : onAccentColor }]}>
+          <Dices size={20} color={isSpinning || !coversReady ? textMutedColor : onAccentColor} strokeWidth={1.75} />
+          <ThemedText
+            style={[Typography.button, { color: isSpinning || !coversReady ? textMutedColor : onAccentColor }]}>
             {t(spinButtonLabelKey)}
           </ThemedText>
         </Pressable>
@@ -193,6 +212,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: 16,
+  },
+  reelLoading: {
+    height: 220,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   centered: {
     flex: 1,
