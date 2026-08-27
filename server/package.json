@@ -2,6 +2,7 @@
   "name": "tbr-cover-recognition-server",
   "private": true,
   "version": "1.0.0",
+  "license": "UNLICENSED",
   "scripts": {
     "dev": "wrangler dev",
     "deploy": "wrangler deploy",
