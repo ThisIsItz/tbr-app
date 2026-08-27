@@ -19,15 +19,19 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { toHttpsUrl } from '@/api/googleBooks';
 import type { Book } from '@/types/book';
 
-const ITEM_WIDTH = 128;
-const ITEM_GAP = 16;
-const PITCH = ITEM_WIDTH + ITEM_GAP;
-const COVER_WIDTH = 112;
-const COVER_HEIGHT = 168;
-const VIEWPORT_HEIGHT = 204;
 const REEL_LENGTH = 26;
 const SPIN_EASING = Easing.bezier(0.16, 1, 0.3, 1);
 const SPIN_DURATION = 3400;
+
+function getLayout(viewportWidth: number) {
+  const itemWidth = Math.min(132, Math.max(88, viewportWidth * 0.28));
+  const itemGap = itemWidth * 0.12;
+  const pitch = itemWidth + itemGap;
+  const coverWidth = itemWidth * 0.88;
+  const coverHeight = coverWidth * 1.5;
+  const viewportHeight = coverHeight + 36;
+  return { itemWidth, itemGap, pitch, coverWidth, coverHeight, viewportHeight };
+}
 
 interface SpinReelProps {
   candidates: Book[];
@@ -41,6 +45,8 @@ export function SpinReel({ candidates, spinToken, excludeIdFromTarget, onLanded 
   const translateX = useSharedValue(0);
   const [items, setItems] = useState<Book[] | null>(null);
   const [viewportWidth, setViewportWidth] = useState(Dimensions.get('window').width);
+  const layout = getLayout(viewportWidth);
+  const { itemWidth, pitch, viewportHeight } = layout;
 
   const candidatesRef = useRef(candidates);
   candidatesRef.current = candidates;
@@ -51,20 +57,20 @@ export function SpinReel({ candidates, spinToken, excludeIdFromTarget, onLanded 
   const currentBookRef = useRef<Book | null>(null);
 
   const centerXForIndex = useCallback(
-    (index: number) => -(index * PITCH) + (viewportWidth / 2 - ITEM_WIDTH / 2),
-    [viewportWidth],
+    (index: number) => -(index * pitch) + (viewportWidth / 2 - itemWidth / 2),
+    [viewportWidth, pitch, itemWidth],
   );
 
   const buildFiller = useCallback(
     (pool: Book[]) => {
-      const count = Math.ceil(viewportWidth / PITCH) + 2;
+      const count = Math.ceil(viewportWidth / pitch) + 2;
       const filler: Book[] = [];
       for (let i = 0; i < count; i++) {
         filler.push(pool[i % pool.length]);
       }
       return filler;
     },
-    [viewportWidth],
+    [viewportWidth, pitch],
   );
 
   const rotateToStart = useCallback((pool: Book[], startBook: Book) => {
@@ -140,7 +146,7 @@ export function SpinReel({ candidates, spinToken, excludeIdFromTarget, onLanded 
   }
 
   return (
-    <View style={styles.viewport} onLayout={handleLayout}>
+    <View style={[styles.viewport, { height: viewportHeight }]} onLayout={handleLayout}>
       {items && (
         <Animated.View style={[styles.row, animatedStyle]}>
           {items.map((book, index) => (
@@ -150,6 +156,7 @@ export function SpinReel({ candidates, spinToken, excludeIdFromTarget, onLanded 
               index={index}
               translateX={translateX}
               viewportWidth={viewportWidth}
+              layout={layout}
             />
           ))}
         </Animated.View>
@@ -158,7 +165,12 @@ export function SpinReel({ candidates, spinToken, excludeIdFromTarget, onLanded 
         pointerEvents="none"
         style={[
           styles.indicator,
-          { left: viewportWidth / 2 - (ITEM_WIDTH / 2 + 4), borderColor: accentColor },
+          {
+            left: viewportWidth / 2 - (itemWidth / 2 + 4),
+            width: itemWidth + 8,
+            height: viewportHeight - 12,
+            borderColor: accentColor,
+          },
         ]}
       />
     </View>
@@ -170,28 +182,30 @@ interface ReelItemProps {
   index: number;
   translateX: SharedValue<number>;
   viewportWidth: number;
+  layout: ReturnType<typeof getLayout>;
 }
 
-function ReelItem({ book, index, translateX, viewportWidth }: ReelItemProps) {
+function ReelItem({ book, index, translateX, viewportWidth, layout }: ReelItemProps) {
   const surfaceMutedColor = useThemeColor({}, 'surfaceMuted');
   const textMutedColor = useThemeColor({}, 'textMuted');
   const { t } = useTranslation();
   const coverUrl = toHttpsUrl(book.thumbnailUrl);
   const [failed, setFailed] = useState(false);
+  const { itemWidth, itemGap, pitch, coverWidth, coverHeight } = layout;
 
-  const itemCenterX = index * PITCH + ITEM_WIDTH / 2;
+  const itemCenterX = index * pitch + itemWidth / 2;
   const scaleStyle = useAnimatedStyle(() => {
     const distance = Math.abs(translateX.value + itemCenterX - viewportWidth / 2);
-    const scale = interpolate(distance, [0, PITCH], [1, 0.85], Extrapolation.CLAMP);
+    const scale = interpolate(distance, [0, pitch], [1, 0.85], Extrapolation.CLAMP);
     return { transform: [{ scale }] };
   });
 
   return (
-    <Animated.View style={[styles.item, scaleStyle]}>
+    <Animated.View style={[styles.item, { width: itemWidth, marginRight: itemGap }, scaleStyle]}>
       {coverUrl && !failed ? (
         <Image
           source={{ uri: coverUrl }}
-          style={styles.cover}
+          style={{ width: coverWidth, height: coverHeight, borderRadius: 8 }}
           contentFit="cover"
           onError={(e) => {
             console.warn('[SpinReel] cover failed to load:', coverUrl, e.error);
@@ -199,7 +213,11 @@ function ReelItem({ book, index, translateX, viewportWidth }: ReelItemProps) {
           }}
         />
       ) : (
-        <View style={[styles.cover, styles.coverPlaceholder, { backgroundColor: surfaceMutedColor }]}>
+        <View
+          style={[
+            styles.coverPlaceholder,
+            { width: coverWidth, height: coverHeight, borderRadius: 8, backgroundColor: surfaceMutedColor },
+          ]}>
           <ThemedText style={[Typography.caption, { color: textMutedColor }]}>{t('bookCard.noCover')}</ThemedText>
         </View>
       )}
@@ -209,7 +227,6 @@ function ReelItem({ book, index, translateX, viewportWidth }: ReelItemProps) {
 
 const styles = StyleSheet.create({
   viewport: {
-    height: VIEWPORT_HEIGHT,
     width: '100%',
     overflow: 'hidden',
     justifyContent: 'center',
@@ -218,14 +235,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   item: {
-    width: ITEM_WIDTH,
-    marginRight: ITEM_GAP,
     alignItems: 'center',
-  },
-  cover: {
-    width: COVER_WIDTH,
-    height: COVER_HEIGHT,
-    borderRadius: 8,
   },
   coverPlaceholder: {
     alignItems: 'center',
@@ -235,8 +245,6 @@ const styles = StyleSheet.create({
   indicator: {
     position: 'absolute',
     top: 6,
-    width: ITEM_WIDTH + 8,
-    height: VIEWPORT_HEIGHT - 12,
     borderWidth: 3,
     borderRadius: 12,
   },
