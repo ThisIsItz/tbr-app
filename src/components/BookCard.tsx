@@ -43,6 +43,8 @@ export function BookCard({
   const textColor = useThemeColor({}, 'text');
   const textMutedColor = useThemeColor({}, 'textMuted');
   const accentColor = useThemeColor({}, 'accent');
+  const onAccentColor = useThemeColor({}, 'onAccent');
+  const onAccentSoftColor = useThemeColor({}, 'onAccentSoft');
   const accentSoftColor = useThemeColor({}, 'accentSoft');
 
   const coverUrl = toHttpsUrl(thumbnailUrl);
@@ -88,7 +90,7 @@ export function BookCard({
             {!!genres[0] && (
               <View style={styles.resultFooterRow}>
                 <View style={[styles.tag, { backgroundColor: accentSoftColor }]}>
-                  <ThemedText numberOfLines={1} style={[Typography.caption, { color: accentColor }]}>
+                  <ThemedText numberOfLines={1} style={[Typography.caption, { color: onAccentSoftColor }]}>
                     {genres[0]}
                   </ThemedText>
                 </View>
@@ -105,7 +107,7 @@ export function BookCard({
             <View style={styles.tagRow}>
               {genres.slice(0, 2).map((genre) => (
                 <View key={genre} style={[styles.tag, { backgroundColor: accentSoftColor }]}>
-                  <ThemedText numberOfLines={1} style={[Typography.caption, { color: accentColor }]}>
+                  <ThemedText numberOfLines={1} style={[Typography.caption, { color: onAccentSoftColor }]}>
                     {genre}
                   </ThemedText>
                 </View>
@@ -135,7 +137,7 @@ export function BookCard({
                 style={[
                   Typography.caption,
                   styles.compactActionText,
-                  { color: action.disabled ? textMutedColor : '#fff' },
+                  { color: action.disabled ? textMutedColor : onAccentColor },
                 ]}>
                 {action.label}
               </ThemedText>

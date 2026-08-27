@@ -44,6 +44,7 @@ export function FilterSheet({
   const textMutedColor = useThemeColor({}, 'textMuted');
   const accentColor = useThemeColor({}, 'accent');
   const accentSoftColor = useThemeColor({}, 'accentSoft');
+  const onAccentSoftColor = useThemeColor({}, 'onAccentSoft');
 
   return (
     <>
@@ -61,10 +62,10 @@ export function FilterSheet({
         ]}>
         <ThemedText
           numberOfLines={1}
-          style={[Typography.button, styles.triggerText, { color: isActive ? accentColor : textColor }]}>
+          style={[Typography.button, styles.triggerText, { color: isActive ? onAccentSoftColor : textColor }]}>
           {isActive ? (selectedLabel ?? label) : label}
         </ThemedText>
-        <IconSymbol name="chevron.down" size={16} color={isActive ? accentColor : textMutedColor} />
+        <IconSymbol name="chevron.down" size={16} color={isActive ? onAccentSoftColor : textMutedColor} />
       </Pressable>
 
       <Modal visible={visible} transparent animationType="fade" onRequestClose={() => setVisible(false)}>

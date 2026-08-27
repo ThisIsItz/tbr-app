@@ -25,6 +25,7 @@ export default function ScanIsbnScreen() {
   const textColor = useThemeColor({}, 'text');
   const textMutedColor = useThemeColor({}, 'textMuted');
   const accentColor = useThemeColor({}, 'accent');
+  const onAccentColor = useThemeColor({}, 'onAccent');
 
   async function handleBarcodeScanned(result: BarcodeScanningResult) {
     setIsLocked(true);
@@ -68,7 +69,7 @@ export default function ScanIsbnScreen() {
           onPress={() => (permission.canAskAgain ? requestPermission() : Linking.openSettings())}
           accessibilityRole="button"
           accessibilityLabel={permission.canAskAgain ? t('scanIsbn.grantPermission') : t('scanIsbn.openSettings')}>
-          <ThemedText style={[Typography.button, { color: '#fff' }]}>
+          <ThemedText style={[Typography.button, { color: onAccentColor }]}>
             {permission.canAskAgain ? t('scanIsbn.grantPermission') : t('scanIsbn.openSettings')}
           </ThemedText>
         </Pressable>
@@ -121,7 +122,7 @@ export default function ScanIsbnScreen() {
                 onPress={handleScanAgain}
                 accessibilityRole="button"
                 accessibilityLabel={t('scanIsbn.scanAgain')}>
-                <ThemedText style={[Typography.button, { color: '#fff' }]}>
+                <ThemedText style={[Typography.button, { color: onAccentColor }]}>
                   {t('scanIsbn.scanAgain')}
                 </ThemedText>
               </Pressable>

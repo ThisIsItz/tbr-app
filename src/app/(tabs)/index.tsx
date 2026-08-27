@@ -1,4 +1,5 @@
 import { router } from 'expo-router';
+import { Settings } from 'lucide-react-native';
 import { useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, FlatList, Pressable, StyleSheet, View } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -25,6 +26,7 @@ export default function MyTbrScreen() {
   const textColor = useThemeColor({}, 'text');
   const textMutedColor = useThemeColor({}, 'textMuted');
   const accentColor = useThemeColor({}, 'accent');
+  const onAccentColor = useThemeColor({}, 'onAccent');
   const surfaceMutedColor = useThemeColor({}, 'surfaceMuted');
 
   const insets = useSafeAreaInsets();
@@ -156,7 +158,7 @@ export default function MyTbrScreen() {
             accessibilityRole="button"
             accessibilityLabel={t('settings.title')}
             style={[styles.iconButton, { backgroundColor: surfaceMutedColor }]}>
-            <IconSymbol name="gearshape.fill" size={20} color={textColor} />
+            <Settings size={20} color={textColor} strokeWidth={1.75} />
           </Pressable>
         </View>
       </View>
@@ -269,8 +271,8 @@ export default function MyTbrScreen() {
           accessibilityRole="button"
           accessibilityLabel={t('library.addBook')}
           style={[styles.floatingAddButton, { backgroundColor: accentColor, shadowColor: textColor }]}>
-          <IconSymbol name="plus.circle.fill" size={28} color="#fff" />
-          <ThemedText style={[Typography.button, styles.floatingAddButtonText, { color: '#fff' }]}>
+          <IconSymbol name="plus.circle.fill" size={28} color={onAccentColor} />
+          <ThemedText style={[Typography.button, styles.floatingAddButtonText, { color: onAccentColor }]}>
             {t('library.addBook')}
           </ThemedText>
         </Pressable>
@@ -325,16 +327,16 @@ const styles = StyleSheet.create({
   },
   activeFiltersRow: {
     flexDirection: 'row',
+    alignSelf: 'flex-start',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: 8,
+    gap: 6,
     marginBottom: 14,
-    borderRadius: 10,
-    paddingVertical: 10,
+    borderRadius: 999,
+    paddingVertical: 6,
     paddingHorizontal: 12,
   },
   activeFiltersText: {
-    flex: 1,
+    flexShrink: 1,
   },
   clearButton: {
     marginTop: 8,

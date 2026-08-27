@@ -1,10 +1,10 @@
 import * as DocumentPicker from 'expo-document-picker';
-import { ActivityIndicator, Alert, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { Contrast, Download, Library, Moon, Sun, Upload, type LucideIcon } from 'lucide-react-native';
+import { ActivityIndicator, Alert, Linking, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedText } from '@/components/ThemedText';
-import { IconSymbol, type IconSymbolName } from '@/components/IconSymbol';
-import { Typography } from '@/lib/theme/theme';
+import { AccentColors, Typography, type AccentName } from '@/lib/theme/theme';
 import { useExportBackup, useImportBackup } from '@/hooks/useLibrary';
 import { useAppColorScheme } from '@/hooks/useAppColorScheme';
 import { useThemeColor } from '@/hooks/useThemeColor';
@@ -12,6 +12,12 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { BackupFileError } from '@/lib/backup';
 import type { Locale } from '@/i18n/translations';
 import type { ThemePreference } from '@/lib/theme/AppThemeProvider';
+
+const ACCENT_OPTIONS: { value: AccentName; labelKey: 'settings.accentOrange' | 'settings.accentTeal' | 'settings.accentPink' }[] = [
+  { value: 'orange', labelKey: 'settings.accentOrange' },
+  { value: 'teal', labelKey: 'settings.accentTeal' },
+  { value: 'pink', labelKey: 'settings.accentPink' },
+];
 
 const LANGUAGE_OPTIONS: { value: Locale; labelKey: 'settings.english' | 'settings.spanish' }[] = [
   { value: 'en', labelKey: 'settings.english' },
@@ -21,11 +27,11 @@ const LANGUAGE_OPTIONS: { value: Locale; labelKey: 'settings.english' | 'setting
 const APPEARANCE_OPTIONS: {
   value: ThemePreference;
   labelKey: 'settings.appearanceSystem' | 'settings.appearanceLight' | 'settings.appearanceDark';
-  icon: IconSymbolName;
+  icon: LucideIcon;
 }[] = [
-  { value: 'system', labelKey: 'settings.appearanceSystem', icon: 'circle.lefthalf.filled' },
-  { value: 'light', labelKey: 'settings.appearanceLight', icon: 'sun.max.fill' },
-  { value: 'dark', labelKey: 'settings.appearanceDark', icon: 'moon.fill' },
+  { value: 'system', labelKey: 'settings.appearanceSystem', icon: Contrast },
+  { value: 'light', labelKey: 'settings.appearanceLight', icon: Sun },
+  { value: 'dark', labelKey: 'settings.appearanceDark', icon: Moon },
 ];
 
 interface OptionsCardProps<T extends string> {
@@ -40,8 +46,8 @@ function OptionsCard<T extends string>({ options, selected, onSelect, t }: Optio
   const shadowColor = useThemeColor({}, 'shadow');
   const textColor = useThemeColor({}, 'text');
   const borderColor = useThemeColor({}, 'border');
-  const accentColor = useThemeColor({}, 'accent');
   const accentSoftColor = useThemeColor({}, 'accentSoft');
+  const onAccentSoftColor = useThemeColor({}, 'onAccentSoft');
 
   return (
     <View style={[styles.optionsCard, { shadowColor }]}>
@@ -63,7 +69,7 @@ function OptionsCard<T extends string>({ options, selected, onSelect, t }: Optio
               <ThemedText
                 style={[
                   Typography.body,
-                  { color: isActive ? accentColor : textColor, fontWeight: isActive ? '700' : '400' },
+                  { color: isActive ? onAccentSoftColor : textColor, fontWeight: isActive ? '700' : '400' },
                 ]}>
                 {t(option.labelKey)}
               </ThemedText>
@@ -90,11 +96,15 @@ function AppearanceCards({
   const textMutedColor = useThemeColor({}, 'textMuted');
   const accentColor = useThemeColor({}, 'accent');
   const accentSoftColor = useThemeColor({}, 'accentSoft');
+  const onAccentSoftColor = useThemeColor({}, 'onAccentSoft');
 
   return (
     <View style={styles.appearanceRow}>
       {APPEARANCE_OPTIONS.map((option) => {
         const isActive = option.value === selected;
+        const Icon = option.icon;
+        const iconColor = isActive ? onAccentSoftColor : textMutedColor;
+        const isFilled = option.value === 'light' || option.value === 'dark';
         return (
           <Pressable
             key={option.value}
@@ -110,11 +120,65 @@ function AppearanceCards({
                 shadowColor,
               },
             ]}>
-            <IconSymbol name={option.icon} size={22} color={isActive ? accentColor : textMutedColor} />
+            <Icon
+              size={22}
+              color={iconColor}
+              fill={isFilled ? iconColor : 'none'}
+              strokeWidth={1.75}
+            />
             <ThemedText
               style={[
                 Typography.metadata,
-                { color: isActive ? accentColor : textColor, fontWeight: isActive ? '700' : '500' },
+                { color: isActive ? onAccentSoftColor : textColor, fontWeight: isActive ? '700' : '500' },
+              ]}>
+              {t(option.labelKey)}
+            </ThemedText>
+          </Pressable>
+        );
+      })}
+    </View>
+  );
+}
+
+function AccentCards({
+  selected,
+  onSelect,
+  t,
+}: {
+  selected: AccentName;
+  onSelect: (value: AccentName) => void;
+  t: (key: string) => string;
+}) {
+  const { colorScheme } = useAppColorScheme();
+  const surfaceColor = useThemeColor({}, 'surface');
+  const shadowColor = useThemeColor({}, 'shadow');
+  const textColor = useThemeColor({}, 'text');
+
+  return (
+    <View style={styles.appearanceRow}>
+      {ACCENT_OPTIONS.map((option) => {
+        const isActive = option.value === selected;
+        const palette = AccentColors[option.value][colorScheme];
+        return (
+          <Pressable
+            key={option.value}
+            onPress={() => onSelect(option.value)}
+            accessibilityRole="radio"
+            accessibilityLabel={t(option.labelKey)}
+            accessibilityState={{ selected: isActive }}
+            style={[
+              styles.appearanceCard,
+              {
+                backgroundColor: isActive ? palette.accentSoft : surfaceColor,
+                borderColor: isActive ? palette.accent : 'transparent',
+                shadowColor,
+              },
+            ]}>
+            <View style={[styles.accentSwatch, { backgroundColor: palette.accent }]} />
+            <ThemedText
+              style={[
+                Typography.metadata,
+                { color: isActive ? palette.onAccentSoft : textColor, fontWeight: isActive ? '700' : '500' },
               ]}>
               {t(option.labelKey)}
             </ThemedText>
@@ -126,7 +190,7 @@ function AppearanceCards({
 }
 
 export default function SettingsScreen() {
-  const { themePreference, setThemePreference } = useAppColorScheme();
+  const { themePreference, setThemePreference, accentPreference, setAccentPreference } = useAppColorScheme();
   const { t, locale, setLocale } = useTranslation();
   const backgroundColor = useThemeColor({}, 'background');
   const surfaceColor = useThemeColor({}, 'surface');
@@ -184,6 +248,11 @@ export default function SettingsScreen() {
         <AppearanceCards selected={themePreference} onSelect={setThemePreference} t={t} />
 
         <ThemedText style={[Typography.sectionTitle, styles.sectionLabel, { color: textColor }]}>
+          {t('settings.accentColor')}
+        </ThemedText>
+        <AccentCards selected={accentPreference} onSelect={setAccentPreference} t={t} />
+
+        <ThemedText style={[Typography.sectionTitle, styles.sectionLabel, { color: textColor }]}>
           {t('settings.data')}
         </ThemedText>
         <View style={[styles.optionsCard, { shadowColor }]}>
@@ -195,7 +264,7 @@ export default function SettingsScreen() {
               accessibilityLabel={t('settings.exportBackup')}
               accessibilityHint={t('settings.exportBackupDescription')}
               style={styles.dataRow}>
-              <IconSymbol name="square.and.arrow.up" size={20} color={textColor} />
+              <Upload size={20} color={textColor} strokeWidth={1.75} />
               <View style={styles.dataRowText}>
                 <ThemedText style={[Typography.body, { color: textColor }]}>
                   {t('settings.exportBackup')}
@@ -213,7 +282,7 @@ export default function SettingsScreen() {
               accessibilityLabel={t('settings.importBackup')}
               accessibilityHint={t('settings.importBackupDescription')}
               style={[styles.dataRow, { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: borderColor }]}>
-              <IconSymbol name="tray.and.arrow.down" size={20} color={textColor} />
+              <Download size={20} color={textColor} strokeWidth={1.75} />
               <View style={styles.dataRowText}>
                 <ThemedText style={[Typography.body, { color: textColor }]}>
                   {t('settings.importBackup')}
@@ -223,6 +292,30 @@ export default function SettingsScreen() {
                 </ThemedText>
               </View>
               {importBackup.isPending && <ActivityIndicator size="small" color={accentColor} />}
+            </Pressable>
+          </View>
+        </View>
+
+        <ThemedText style={[Typography.sectionTitle, styles.sectionLabel, { color: textColor }]}>
+          {t('settings.about')}
+        </ThemedText>
+        <View style={[styles.optionsCard, { shadowColor }]}>
+          <View style={[styles.optionsCardInner, { backgroundColor: surfaceColor }]}>
+            <Pressable
+              onPress={() => Linking.openURL('https://www.flaticon.com/free-icons/library')}
+              accessibilityRole="link"
+              accessibilityLabel={t('settings.appIcon')}
+              accessibilityHint={t('settings.iconAttribution')}
+              style={styles.dataRow}>
+              <Library size={20} color={textColor} strokeWidth={1.75} />
+              <View style={styles.dataRowText}>
+                <ThemedText style={[Typography.body, { color: textColor }]}>
+                  {t('settings.appIcon')}
+                </ThemedText>
+                <ThemedText style={[Typography.caption, { color: textMutedColor }]}>
+                  {t('settings.iconAttribution')}
+                </ThemedText>
+              </View>
             </Pressable>
           </View>
         </View>
@@ -288,5 +381,10 @@ const styles = StyleSheet.create({
     shadowOpacity: 1,
     shadowRadius: 6,
     elevation: 2,
+  },
+  accentSwatch: {
+    width: 22,
+    height: 22,
+    borderRadius: 11,
   },
 });

@@ -1,50 +1,124 @@
 import { Platform } from 'react-native'
 
+// Tokens that don't carry any hue bias and stay the same across every accent.
 export const Colors = {
   light: {
-    background: '#F8F4EE',
-    surface: '#FFFFFF',
-    surfaceMuted: '#EEE7DE',
-
     text: '#241C17',
     textMuted: '#74685E',
-
-    accent: '#9C492D',
-    accentSoft: '#F4DED2',
-    tint: '#9C492D',
-
-    border: '#E3D8CC',
-    icon: '#74685E',
-
-    tabIconDefault: '#8B8178',
-    tabIconSelected: '#9C492D',
-
     shadow: 'rgba(36, 28, 23, 0.10)',
-    danger: '#B83A32'
+    danger: '#B83A32',
+    // Text/icon color for anything drawn on top of an accent-colored surface (buttons).
+    onAccent: '#FFFFFF'
   },
 
   dark: {
-    background: '#15120F',
-    surface: '#211C18',
-    surfaceMuted: '#2B2520',
-
     text: '#F5EFE8',
     textMuted: '#AAA096',
-
-    accent: '#E98A5B',
-    accentSoft: '#44291D',
-    tint: '#E98A5B',
-
-    border: '#40372F',
-    icon: '#AAA096',
-
-    tabIconDefault: '#857B72',
-    tabIconSelected: '#E98A5B',
-
     shadow: 'rgba(0, 0, 0, 0.45)',
-    danger: '#E26458'
+    danger: '#E26458',
+    // Dark accents are bright, so white text on them fails contrast — use dark ink instead.
+    onAccent: '#1A1310'
   }
 } as const
+
+// Accent hues sampled from the app icon's three book spines. Each accent also carries
+// its own tinted neutrals (background/surface/surfaceMuted/border/icon) so the warm or
+// cool undertone of the accent runs through the whole screen, cards included, not just
+// the buttons.
+export type AccentName = 'orange' | 'teal' | 'pink'
+
+interface AccentPalette {
+  accent: string
+  accentSoft: string
+  // Text/icon color for content drawn on top of accentSoft (chips, selected cards).
+  // Kept separate from `accent` because accentSoft needs to stay visibly tinted —
+  // making accentSoft pale enough for `accent` text to pass AA on it made it blend
+  // into white, so the on-soft text goes darker/richer instead.
+  onAccentSoft: string
+  background: string
+  surface: string
+  surfaceMuted: string
+  border: string
+  icon: string
+  tabIconDefault: string
+}
+
+export const AccentColors: Record<AccentName, { light: AccentPalette; dark: AccentPalette }> = {
+  orange: {
+    light: {
+      accent: '#AB551C',
+      accentSoft: '#EACCB8',
+      onAccentSoft: '#8A400F',
+      background: '#F8F2ED',
+      surface: '#FFFFFF',
+      surfaceMuted: '#EEE6DD',
+      border: '#E4D9CE',
+      icon: '#73695E',
+      tabIconDefault: '#8C8278'
+    },
+    dark: {
+      accent: '#EA762A',
+      accentSoft: '#3B281C',
+      onAccentSoft: '#EA762A',
+      background: '#15120F',
+      surface: '#211C18',
+      surfaceMuted: '#2C2621',
+      border: '#413830',
+      icon: '#ABA196',
+      tabIconDefault: '#847A71'
+    }
+  },
+  teal: {
+    light: {
+      accent: '#17798C',
+      accentSoft: '#B8E2EA',
+      onAccentSoft: '#0D6677',
+      background: '#EDF6F8',
+      surface: '#FFFFFF',
+      surfaceMuted: '#DDEBEE',
+      border: '#CEE0E4',
+      icon: '#5E7073',
+      tabIconDefault: '#78898C'
+    },
+    dark: {
+      accent: '#19C4E6',
+      accentSoft: '#1C353B',
+      onAccentSoft: '#19C4E6',
+      background: '#0F1415',
+      surface: '#181F21',
+      surfaceMuted: '#212A2C',
+      border: '#303E41',
+      icon: '#96A8AB',
+      tabIconDefault: '#718184'
+    }
+  },
+  pink: {
+    light: {
+      accent: '#C5204C',
+      accentSoft: '#EAB8C5',
+      onAccentSoft: '#9A1337',
+      background: '#F8EDEF',
+      surface: '#FFFFFF',
+      surfaceMuted: '#EEDDE0',
+      border: '#E4CED1',
+      icon: '#735E62',
+      tabIconDefault: '#8C787B'
+    },
+    dark: {
+      accent: '#EB5C82',
+      accentSoft: '#3B1C24',
+      onAccentSoft: '#EB5C82',
+      background: '#150F10',
+      surface: '#211819',
+      surfaceMuted: '#2C2122',
+      border: '#413032',
+      icon: '#AB969A',
+      tabIconDefault: '#847174'
+    }
+  }
+}
+
+export const DEFAULT_ACCENT: AccentName = 'orange'
 
 export const Fonts = Platform.select({
   ios: {

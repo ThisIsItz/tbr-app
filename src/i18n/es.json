@@ -38,7 +38,7 @@
   "search": {
     "placeholder": "Busca por título, autor o ISBN",
     "scanIsbn": "Escanear ISBN",
-    "scanCover": "Escanear portada",
+    "scanCover": "Sacar foto",
     "uploadPhoto": "Subir foto",
     "addManually": "Añadir manualmente",
     "emptyTitle": "Busca un libro",
@@ -152,6 +152,10 @@
     "appearanceSystem": "Sistema",
     "appearanceLight": "Claro",
     "appearanceDark": "Oscuro",
+    "accentColor": "Color de la app",
+    "accentOrange": "Terracota",
+    "accentTeal": "Azul",
+    "accentPink": "Rosa",
     "data": "Datos",
     "exportBackup": "Exportar copia de seguridad",
     "exportBackupDescription": "Guarda tu biblioteca en un archivo que puedes conservar o compartir.",
@@ -161,7 +165,10 @@
     "importSuccessTitle": "Importación completa",
     "importSuccessBody": "Importados: {{imported}}. Ya en tu biblioteca: {{skipped}}.",
     "importErrorTitle": "Error al importar",
-    "importInvalidFile": "Este archivo no parece ser una copia de seguridad válida de TBR."
+    "importInvalidFile": "Este archivo no parece ser una copia de seguridad válida de TBR.",
+    "about": "Acerca de",
+    "appIcon": "Icono de la app",
+    "iconAttribution": "Diseñado por Magnific, vía Flaticon"
   },
   "errors": {
     "rateLimit": "Se alcanzó el límite de solicitudes de Google Books. Espera un momento e inténtalo de nuevo, o configura EXPO_PUBLIC_GOOGLE_BOOKS_API_KEY.",
@@ -174,7 +181,6 @@
     "addManually": "Añadir manualmente",
     "editBook": "Editar libro",
     "scanIsbn": "Escanear ISBN",
-    "recognizeCover": "Escanear portada",
     "settings": "Ajustes"
   }
 }

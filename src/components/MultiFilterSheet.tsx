@@ -26,7 +26,9 @@ export function MultiFilterSheet({ label, options, selected, onChange, disabled 
   const textColor = useThemeColor({}, 'text');
   const textMutedColor = useThemeColor({}, 'textMuted');
   const accentColor = useThemeColor({}, 'accent');
+  const onAccentSoftColor = useThemeColor({}, 'onAccentSoft');
   const accentSoftColor = useThemeColor({}, 'accentSoft');
+  const onAccentColor = useThemeColor({}, 'onAccent');
 
   const triggerLabel =
     selected.length === 0 ? label : selected.length === 1 ? selected[0] : `${label} (${selected.length})`;
@@ -48,10 +50,10 @@ export function MultiFilterSheet({ label, options, selected, onChange, disabled 
         ]}>
         <ThemedText
           numberOfLines={1}
-          style={[Typography.button, styles.triggerText, { color: isActive ? accentColor : textColor }]}>
+          style={[Typography.button, styles.triggerText, { color: isActive ? onAccentSoftColor : textColor }]}>
           {triggerLabel}
         </ThemedText>
-        <IconSymbol name="chevron.down" size={16} color={isActive ? accentColor : textMutedColor} />
+        <IconSymbol name="chevron.down" size={16} color={isActive ? onAccentSoftColor : textMutedColor} />
       </Pressable>
 
       <Modal visible={visible} transparent animationType="fade" onRequestClose={() => setVisible(false)}>
@@ -111,7 +113,7 @@ export function MultiFilterSheet({ label, options, selected, onChange, disabled 
               accessibilityRole="button"
               accessibilityLabel={t('common.done')}
               style={[styles.doneButton, { backgroundColor: accentColor }]}>
-              <ThemedText style={[Typography.button, { color: '#fff' }]}>{t('common.done')}</ThemedText>
+              <ThemedText style={[Typography.button, { color: onAccentColor }]}>{t('common.done')}</ThemedText>
             </Pressable>
           </Pressable>
         </Pressable>

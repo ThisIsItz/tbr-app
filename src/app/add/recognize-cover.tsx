@@ -41,6 +41,7 @@ export default function RecognizeCoverScreen() {
   const textColor = useThemeColor({}, 'text');
   const textMutedColor = useThemeColor({}, 'textMuted');
   const accentColor = useThemeColor({}, 'accent');
+  const onAccentColor = useThemeColor({}, 'onAccent');
   const shadowColor = useThemeColor({}, 'shadow');
 
   const [stage, setStage] = useState<Stage>(
@@ -61,6 +62,7 @@ export default function RecognizeCoverScreen() {
   async function handleQuickAdd(item: GoogleBooksVolume) {
     try {
       await quickAdd(item);
+      router.dismissTo('/');
     } catch {
       Alert.alert(t('common.genericError'));
     }
@@ -200,7 +202,7 @@ export default function RecognizeCoverScreen() {
       keyboardShouldPersistTaps="handled">
       <Stack.Screen
         options={{
-          title: pickSource === 'gallery' ? t('search.uploadPhoto') : t('screenTitles.recognizeCover'),
+          title: pickSource === 'gallery' ? t('search.uploadPhoto') : t('search.scanCover'),
           ...screenHeaderOptions,
         }}
       />
@@ -236,7 +238,7 @@ export default function RecognizeCoverScreen() {
               onPress={goToAddManually}
               accessibilityRole="button"
               accessibilityLabel={t('search.addManually')}>
-              <ThemedText style={[Typography.button, { color: '#fff' }]}>
+              <ThemedText style={[Typography.button, { color: onAccentColor }]}>
                 {t('search.addManually')}
               </ThemedText>
             </Pressable>
@@ -285,7 +287,7 @@ export default function RecognizeCoverScreen() {
               onPress={goToAddManually}
               accessibilityRole="button"
               accessibilityLabel={t('search.addManually')}>
-              <ThemedText style={[Typography.button, { color: '#fff' }]}>
+              <ThemedText style={[Typography.button, { color: onAccentColor }]}>
                 {t('search.addManually')}
               </ThemedText>
             </Pressable>
@@ -353,7 +355,7 @@ export default function RecognizeCoverScreen() {
               accessibilityRole="button"
               accessibilityLabel={t('recognizeCover.searchAgain')}>
               <ThemedText
-                style={[Typography.button, { color: !title.trim() ? textMutedColor : '#fff' }]}>
+                style={[Typography.button, { color: !title.trim() ? textMutedColor : onAccentColor }]}>
                 {t('recognizeCover.searchAgain')}
               </ThemedText>
             </Pressable>
@@ -421,7 +423,7 @@ export default function RecognizeCoverScreen() {
                 onPress={goToAddManually}
                 accessibilityRole="button"
                 accessibilityLabel={t('search.addManually')}>
-                <ThemedText style={[Typography.button, { color: '#fff' }]}>
+                <ThemedText style={[Typography.button, { color: onAccentColor }]}>
                   {t('search.addManually')}
                 </ThemedText>
               </Pressable>

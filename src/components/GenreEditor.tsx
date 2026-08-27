@@ -20,6 +20,8 @@ export function GenreEditor({ genres, onChange }: GenreEditorProps) {
   const textMutedColor = useThemeColor({}, 'textMuted');
   const accentColor = useThemeColor({}, 'accent');
   const accentSoftColor = useThemeColor({}, 'accentSoft');
+  const onAccentColor = useThemeColor({}, 'onAccent');
+  const onAccentSoftColor = useThemeColor({}, 'onAccentSoft');
   const surfaceMutedColor = useThemeColor({}, 'surfaceMuted');
 
   function handleAdd() {
@@ -42,13 +44,13 @@ export function GenreEditor({ genres, onChange }: GenreEditorProps) {
         )}
         {genres.map((genre) => (
           <View key={genre} style={[styles.chip, { backgroundColor: accentSoftColor }]}>
-            <ThemedText style={[Typography.caption, { color: accentColor }]}>{genre}</ThemedText>
+            <ThemedText style={[Typography.caption, { color: onAccentSoftColor }]}>{genre}</ThemedText>
             <Pressable
               onPress={() => handleRemove(genre)}
               hitSlop={8}
               accessibilityRole="button"
               accessibilityLabel={`${t('common.remove')} ${genre}`}>
-              <ThemedText style={[Typography.button, styles.chipRemove, { color: accentColor }]}>
+              <ThemedText style={[Typography.button, styles.chipRemove, { color: onAccentSoftColor }]}>
                 ×
               </ThemedText>
             </Pressable>
@@ -74,7 +76,7 @@ export function GenreEditor({ genres, onChange }: GenreEditorProps) {
           accessibilityRole="button"
           accessibilityLabel={t('genreEditor.add')}
           style={[styles.addButton, { backgroundColor: accentColor }]}>
-          <ThemedText style={[Typography.button, styles.addButtonText]}>
+          <ThemedText style={[Typography.button, { color: onAccentColor }]}>
             {t('genreEditor.add')}
           </ThemedText>
         </Pressable>
@@ -120,8 +122,5 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  addButtonText: {
-    color: '#fff',
   },
 });

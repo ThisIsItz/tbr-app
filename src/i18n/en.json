@@ -38,7 +38,7 @@
   "search": {
     "placeholder": "Search by title, author, or ISBN",
     "scanIsbn": "Scan ISBN",
-    "scanCover": "Scan Cover",
+    "scanCover": "Take Photo",
     "uploadPhoto": "Upload Photo",
     "addManually": "Add Manually",
     "emptyTitle": "Find a book",
@@ -152,6 +152,10 @@
     "appearanceSystem": "System",
     "appearanceLight": "Light",
     "appearanceDark": "Dark",
+    "accentColor": "App color",
+    "accentOrange": "Terracotta",
+    "accentTeal": "Blue",
+    "accentPink": "Pink",
     "data": "Data",
     "exportBackup": "Export Backup",
     "exportBackupDescription": "Save your library to a file you can keep or share.",
@@ -161,7 +165,10 @@
     "importSuccessTitle": "Import complete",
     "importSuccessBody": "Imported: {{imported}}. Already in your library: {{skipped}}.",
     "importErrorTitle": "Import failed",
-    "importInvalidFile": "This doesn't look like a valid TBR backup file."
+    "importInvalidFile": "This doesn't look like a valid TBR backup file.",
+    "about": "About",
+    "appIcon": "App icon",
+    "iconAttribution": "Designed by Magnific, via Flaticon"
   },
   "errors": {
     "rateLimit": "Google Books rate limit reached. Wait a moment and try again, or set EXPO_PUBLIC_GOOGLE_BOOKS_API_KEY.",
@@ -174,7 +181,6 @@
     "addManually": "Add Manually",
     "editBook": "Edit Book",
     "scanIsbn": "Scan ISBN",
-    "recognizeCover": "Scan Cover",
     "settings": "Settings"
   }
 }

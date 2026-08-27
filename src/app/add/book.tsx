@@ -23,6 +23,7 @@ export default function AddBookScreen() {
   const textColor = useThemeColor({}, 'text');
   const textMutedColor = useThemeColor({}, 'textMuted');
   const accentColor = useThemeColor({}, 'accent');
+  const onAccentColor = useThemeColor({}, 'onAccent');
   const [query, setQuery] = useState('');
   const debouncedQuery = useDebouncedValue(query, 400);
 
@@ -74,11 +75,11 @@ export default function AddBookScreen() {
               </Pressable>
               <Pressable
                 style={[styles.quickAction, { backgroundColor: surfaceMutedColor }]}
-                onPress={() => router.push({ pathname: '/add/recognize-cover', params: { pickSource: 'camera' } })}
+                onPress={() => router.push('/add/manually')}
                 accessibilityRole="button"
-                accessibilityLabel={t('search.scanCover')}>
+                accessibilityLabel={t('search.addManually')}>
                 <ThemedText style={[Typography.button, { color: textColor }]}>
-                  {t('search.scanCover')}
+                  {t('search.addManually')}
                 </ThemedText>
               </Pressable>
               <Pressable
@@ -92,11 +93,11 @@ export default function AddBookScreen() {
               </Pressable>
               <Pressable
                 style={[styles.quickAction, { backgroundColor: surfaceMutedColor }]}
-                onPress={() => router.push('/add/manually')}
+                onPress={() => router.push({ pathname: '/add/recognize-cover', params: { pickSource: 'camera' } })}
                 accessibilityRole="button"
-                accessibilityLabel={t('search.addManually')}>
+                accessibilityLabel={t('search.scanCover')}>
                 <ThemedText style={[Typography.button, { color: textColor }]}>
-                  {t('search.addManually')}
+                  {t('search.scanCover')}
                 </ThemedText>
               </Pressable>
             </View>
@@ -124,7 +125,7 @@ export default function AddBookScreen() {
                   accessibilityRole="button"
                   accessibilityLabel={t('common.retry')}
                   style={[styles.retryButton, { backgroundColor: accentColor }]}>
-                  <ThemedText style={[Typography.button, { color: '#fff' }]}>{t('common.retry')}</ThemedText>
+                  <ThemedText style={[Typography.button, { color: onAccentColor }]}>{t('common.retry')}</ThemedText>
                 </Pressable>
               </View>
             )}

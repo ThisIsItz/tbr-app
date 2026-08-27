@@ -45,6 +45,8 @@ export default function AddManuallyScreen() {
   const textColor = useThemeColor({}, 'text');
   const textMutedColor = useThemeColor({}, 'textMuted');
   const accentColor = useThemeColor({}, 'accent');
+  const onAccentSoftColor = useThemeColor({}, 'onAccentSoft');
+  const onAccentColor = useThemeColor({}, 'onAccent');
   const accentSoftColor = useThemeColor({}, 'accentSoft');
   const shadowColor = useThemeColor({}, 'shadow');
   const dangerColor = useThemeColor({}, 'danger');
@@ -317,7 +319,7 @@ export default function AddManuallyScreen() {
                 accessibilityLabel={genres.length > 0 ? t('bookDetail.editGenres') : t('addManually.addGenres')}>
                 {genres.map((genre) => (
                   <View key={genre} style={[styles.genreChip, { backgroundColor: accentSoftColor }]}>
-                    <ThemedText style={[Typography.caption, { color: accentColor }]}>{genre}</ThemedText>
+                    <ThemedText style={[Typography.caption, { color: onAccentSoftColor }]}>{genre}</ThemedText>
                   </View>
                 ))}
                 <View style={[styles.genreChip, styles.addGenreChip, { borderColor: textMutedColor }]}>
@@ -355,7 +357,7 @@ export default function AddManuallyScreen() {
             disabled={isSaving}
             accessibilityRole="button"
             accessibilityLabel={t(isEditing ? 'addManually.saveChanges' : 'addManually.save')}>
-            <ThemedText style={[Typography.button, styles.saveButtonText]}>
+            <ThemedText style={[Typography.button, { color: onAccentColor }]}>
               {isSaving
                 ? t(isEditing ? 'addManually.savingChanges' : 'addManually.saving')
                 : t(isEditing ? 'addManually.saveChanges' : 'addManually.save')}
@@ -386,7 +388,7 @@ export default function AddManuallyScreen() {
               accessibilityRole="button"
               accessibilityLabel={t('common.done')}
               style={[styles.doneButton, { backgroundColor: accentColor }]}>
-              <ThemedText style={[Typography.button, { color: '#fff' }]}>{t('common.done')}</ThemedText>
+              <ThemedText style={[Typography.button, { color: onAccentColor }]}>{t('common.done')}</ThemedText>
             </Pressable>
           </Pressable>
         </Pressable>
@@ -487,9 +489,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: 8,
-  },
-  saveButtonText: {
-    color: '#fff',
   },
   backdrop: {
     flex: 1,

@@ -21,20 +21,11 @@ const MAPPING = {
   'chevron.down': 'expand-more',
   'chevron.up': 'expand-less',
   'books.vertical.fill': 'library-books',
-  'magnifyingglass': 'search',
   'plus.circle.fill': 'add-circle',
   'checkmark.circle.fill': 'check-circle',
   'checkmark': 'check',
   'circle': 'radio-button-unchecked',
-  'circle.lefthalf.filled': 'brightness-auto',
-  'sun.max.fill': 'light-mode',
-  'moon.fill': 'dark-mode',
-  'trash.fill': 'delete',
-  'gearshape.fill': 'settings',
   'xmark.circle.fill': 'cancel',
-  'pencil': 'edit',
-  'square.and.arrow.up': 'file-upload',
-  'tray.and.arrow.down': 'file-download',
 } as IconMapping;
 
 /**

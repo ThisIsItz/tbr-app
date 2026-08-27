@@ -1,4 +1,5 @@
 import { router, Stack, useLocalSearchParams } from 'expo-router';
+import { Pencil, Trash2 } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
@@ -17,9 +18,8 @@ import { BookDetailsSection } from '@/components/BookDetailsSection';
 import { BookHeader } from '@/components/BookHeader';
 import { ExpandableDescription } from '@/components/ExpandableDescription';
 import { GenreEditor } from '@/components/GenreEditor';
-import { HeaderTextAction } from '@/components/HeaderTextAction';
+import { HeaderIconAction } from '@/components/HeaderIconAction';
 import { ThemedText } from '@/components/ThemedText';
-import { IconSymbol } from '@/components/IconSymbol';
 import { Typography } from '@/lib/theme/theme';
 import { useBook, useDeleteBook, useUpdateBookGenres, useUpdateBookNotes } from '@/hooks/useLibrary';
 import { useThemeColor } from '@/hooks/useThemeColor';
@@ -39,6 +39,8 @@ export default function BookDetailScreen() {
   const textColor = useThemeColor({}, 'text');
   const textMutedColor = useThemeColor({}, 'textMuted');
   const accentColor = useThemeColor({}, 'accent');
+  const onAccentSoftColor = useThemeColor({}, 'onAccentSoft');
+  const onAccentColor = useThemeColor({}, 'onAccent');
   const accentSoftColor = useThemeColor({}, 'accentSoft');
   const dangerColor = useThemeColor({}, 'danger');
 
@@ -115,10 +117,20 @@ export default function BookDetailScreen() {
         <Stack.Screen
           options={{
             headerRight: () => (
-              <HeaderTextAction
-                label={t('common.edit')}
-                onPress={() => router.push({ pathname: '/add/manually', params: { id: book.id } })}
-              />
+              <View style={styles.headerActions}>
+                <HeaderIconAction
+                  icon={Pencil}
+                  color={accentColor}
+                  label={t('common.edit')}
+                  onPress={() => router.push({ pathname: '/add/manually', params: { id: book.id } })}
+                />
+                <HeaderIconAction
+                  icon={Trash2}
+                  color={dangerColor}
+                  label={t('bookDetail.remove')}
+                  onPress={handleDelete}
+                />
+              </View>
             ),
           }}
         />
@@ -144,7 +156,7 @@ export default function BookDetailScreen() {
               hitSlop={8}
               accessibilityRole="button"
               accessibilityLabel={t('bookDetail.editGenres')}>
-              <IconSymbol name="pencil" size={18} color={accentColor} />
+              <Pencil size={18} color={accentColor} strokeWidth={1.75} />
             </Pressable>
           </View>
 
@@ -156,7 +168,7 @@ export default function BookDetailScreen() {
             )}
             {visibleGenres.map((genre) => (
               <View key={genre} style={[styles.genreChip, { backgroundColor: accentSoftColor }]}>
-                <ThemedText style={[Typography.caption, { color: accentColor }]}>{genre}</ThemedText>
+                <ThemedText style={[Typography.caption, { color: onAccentSoftColor }]}>{genre}</ThemedText>
               </View>
             ))}
             {extraGenreCount > 0 && (
@@ -194,19 +206,6 @@ export default function BookDetailScreen() {
         </View>
         </View>
 
-        <Pressable
-          style={[
-            styles.deleteButton,
-            { backgroundColor: surfaceMutedColor, borderWidth: 1.5, borderColor: dangerColor },
-          ]}
-          onPress={handleDelete}
-          accessibilityRole="button"
-          accessibilityLabel={t('bookDetail.remove')}>
-          <ThemedText style={[Typography.button, { color: dangerColor }]}>
-            {t('bookDetail.remove')}
-          </ThemedText>
-        </Pressable>
-
         <Modal
           visible={isGenreModalVisible}
           transparent
@@ -232,7 +231,7 @@ export default function BookDetailScreen() {
                 accessibilityRole="button"
                 accessibilityLabel={t('common.done')}
                 style={[styles.doneButton, { backgroundColor: accentColor }]}>
-                <ThemedText style={[Typography.button, { color: '#fff' }]}>{t('common.done')}</ThemedText>
+                <ThemedText style={[Typography.button, { color: onAccentColor }]}>{t('common.done')}</ThemedText>
               </Pressable>
             </Pressable>
           </Pressable>
@@ -301,6 +300,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: 8,
+  },
+  headerActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 20,
   },
   backdrop: {
     flex: 1,

@@ -15,7 +15,8 @@ import { GoogleBooksApiError } from '@/api/googleBooks';
 import { LanguageProvider } from '@/i18n/LanguageProvider';
 import { DEFAULT_LOCALE, detectLocaleFromLanguageCode, type Locale } from '@/i18n/translations';
 import { getSetting } from '@/api/repository/settingsRepository';
-import { AppThemeProvider, type ThemePreference } from '@/lib/theme/AppThemeProvider';
+import { AppThemeProvider, type AccentPreference, type ThemePreference } from '@/lib/theme/AppThemeProvider';
+import { DEFAULT_ACCENT } from '@/lib/theme/theme';
 
 export const unstable_settings = {
   anchor: '(tabs)',
@@ -42,23 +43,30 @@ function isThemePreference(value: string | null): value is ThemePreference {
   return value === 'light' || value === 'dark' || value === 'system';
 }
 
+function isAccentPreference(value: string | null): value is AccentPreference {
+  return value === 'orange' || value === 'teal' || value === 'pink';
+}
+
 export default function RootLayout() {
   const [isReady, setIsReady] = useState(false);
   const [initialLocale, setInitialLocale] = useState<Locale>(DEFAULT_LOCALE);
   const [initialThemePreference, setInitialThemePreference] = useState<ThemePreference>('system');
+  const [initialAccentPreference, setInitialAccentPreference] = useState<AccentPreference>(DEFAULT_ACCENT);
 
   useEffect(() => {
     (async () => {
       await getDb();
-      const [savedLocale, savedTheme] = await Promise.all([
+      const [savedLocale, savedTheme, savedAccent] = await Promise.all([
         getSetting('locale'),
         getSetting('themePreference'),
+        getSetting('accentPreference'),
       ]);
       const locale = isLocale(savedLocale)
         ? savedLocale
         : detectLocaleFromLanguageCode(Localization.getLocales()[0]?.languageCode);
       setInitialLocale(locale);
       setInitialThemePreference(isThemePreference(savedTheme) ? savedTheme : 'system');
+      setInitialAccentPreference(isAccentPreference(savedAccent) ? savedAccent : DEFAULT_ACCENT);
       setIsReady(true);
     })().finally(() => SplashScreen.hideAsync());
   }, []);
@@ -69,7 +77,9 @@ export default function RootLayout() {
 
   return (
     <LanguageProvider initialLocale={initialLocale}>
-      <AppThemeProvider initialPreference={initialThemePreference}>
+      <AppThemeProvider
+        initialPreference={initialThemePreference}
+        initialAccentPreference={initialAccentPreference}>
         <RootLayoutNav />
       </AppThemeProvider>
     </LanguageProvider>

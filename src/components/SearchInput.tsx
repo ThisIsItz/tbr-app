@@ -1,3 +1,4 @@
+import { Search } from 'lucide-react-native';
 import { Pressable, StyleSheet, TextInput, View, type StyleProp, type ViewStyle } from 'react-native';
 
 import { IconSymbol } from '@/components/IconSymbol';
@@ -29,7 +30,7 @@ export function SearchInput({
 
   return (
     <View style={[styles.searchBox, { backgroundColor: surfaceMutedColor }, style]}>
-      <IconSymbol name="magnifyingglass" size={18} color={textMutedColor} />
+      <Search size={18} color={textMutedColor} strokeWidth={1.75} />
       <TextInput
         value={value}
         onChangeText={onChangeText}

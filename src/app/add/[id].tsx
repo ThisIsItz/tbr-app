@@ -22,6 +22,7 @@ export default function AddBookScreen() {
   const backgroundColor = useThemeColor({}, 'background');
   const textColor = useThemeColor({}, 'text');
   const accentColor = useThemeColor({}, 'accent');
+  const onAccentColor = useThemeColor({}, 'onAccent');
 
   const { data: volume, isLoading, isError, error, refetch } = useGoogleBookDetails(id);
   const addBook = useAddBook();
@@ -56,7 +57,7 @@ export default function AddBookScreen() {
           accessibilityRole="button"
           accessibilityLabel={t('common.retry')}
           style={[styles.retryButton, { backgroundColor: accentColor }]}>
-          <ThemedText style={[Typography.button, { color: '#fff' }]}>{t('common.retry')}</ThemedText>
+          <ThemedText style={[Typography.button, { color: onAccentColor }]}>{t('common.retry')}</ThemedText>
         </Pressable>
       </View>
     );
@@ -118,7 +119,7 @@ export default function AddBookScreen() {
         disabled={addBook.isPending}
         accessibilityRole="button"
         accessibilityLabel={t('addConfirm.save')}>
-        <ThemedText style={[Typography.button, styles.saveButtonText]}>
+        <ThemedText style={[Typography.button, { color: onAccentColor }]}>
           {addBook.isPending ? t('addConfirm.saving') : t('addConfirm.save')}
         </ThemedText>
       </Pressable>
@@ -157,8 +158,5 @@ const styles = StyleSheet.create({
     minHeight: 44,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  saveButtonText: {
-    color: '#fff',
   },
 });
