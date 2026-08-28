@@ -187,6 +187,23 @@
     "emptyText": "Add a few books to your TBR first.",
     "landedAccessibilityLabel": "Landed on {{title}} by {{author}}"
   },
+  "paywall": {
+    "title": "Unlock TBR Pro",
+    "subtitle": "A one-time purchase that unlocks everything below, for good.",
+    "featureScanTitle": "Take a Cover Photo",
+    "featureScanBody": "Snap a photo of a book's cover and add it to your list instantly — no searching or typing.",
+    "featureUploadTitle": "Upload a Cover",
+    "featureUploadBody": "Already have the photo? Upload it from your gallery and add the book instantly.",
+    "featureSpinTitle": "Book Picker",
+    "featureSpinBody": "Not sure what to read? Spin and let chance decide.",
+    "featureColorsTitle": "Color Themes",
+    "featureColorsBody": "Customize the app's colors to your taste.",
+    "unlockButton": "Unlock",
+    "unlockButtonWithPrice": "Unlock — {{price}}",
+    "restoreButton": "Restore Purchases",
+    "purchaseError": "Couldn't complete the purchase. Try again.",
+    "restoreError": "Couldn't restore your purchase. Try again."
+  },
   "screenTitles": {
     "bookDetails": "Book Details",
     "addBook": "Add",
@@ -195,6 +212,7 @@
     "editBook": "Edit Book",
     "scanIsbn": "Scan ISBN",
     "settings": "Settings",
-    "spin": "Book Picker"
+    "spin": "Book Picker",
+    "paywall": "TBR Pro"
   }
 }

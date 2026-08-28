@@ -18,6 +18,7 @@ import { DEFAULT_LOCALE, detectLocaleFromLanguageCode, type Locale } from '@/i18
 import { getSetting } from '@/api/repository/settingsRepository';
 import { AppThemeProvider, type AccentPreference, type ThemePreference } from '@/lib/theme/AppThemeProvider';
 import { DEFAULT_ACCENT } from '@/lib/theme/theme';
+import { PurchasesProvider } from '@/lib/purchases/PurchasesProvider';
 
 export const unstable_settings = {
   anchor: '(tabs)',
@@ -88,7 +89,9 @@ function RootLayout() {
       <AppThemeProvider
         initialPreference={initialThemePreference}
         initialAccentPreference={initialAccentPreference}>
-        <RootLayoutNav />
+        <PurchasesProvider>
+          <RootLayoutNav />
+        </PurchasesProvider>
       </AppThemeProvider>
     </LanguageProvider>
   );
@@ -131,6 +134,10 @@ function RootLayoutNav() {
             options={{ title: t('screenTitles.settings'), ...screenHeaderOptions }}
           />
           <Stack.Screen name="spin" options={{ title: t('screenTitles.spin'), ...screenHeaderOptions }} />
+          <Stack.Screen
+            name="paywall"
+            options={{ title: t('screenTitles.paywall'), ...screenHeaderOptions }}
+          />
         </Stack>
         <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
       </ThemeProvider>

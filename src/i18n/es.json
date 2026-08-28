@@ -187,6 +187,23 @@
     "emptyText": "Añade algunos libros a tu TBR primero.",
     "landedAccessibilityLabel": "Ha salido {{title}} de {{author}}"
   },
+  "paywall": {
+    "title": "Desbloquea TBR Pro",
+    "subtitle": "Una compra única que desbloquea todo esto, para siempre.",
+    "featureScanTitle": "Añade libros con tu cámara",
+    "featureScanBody": "Hazle una foto a la portada de un libro y añádelo a tu lista al instante, sin buscarlo ni escribirlo.",
+    "featureUploadTitle": "Sube la portada",
+    "featureUploadBody": "¿Ya tienes la foto? Súbela desde tu galería y añade el libro al instante.",
+    "featureSpinTitle": "Selector de libros",
+    "featureSpinBody": "¿No sabes qué leer? Gira y deja que el azar elija por ti.",
+    "featureColorsTitle": "Temas de color",
+    "featureColorsBody": "Personaliza los colores de toda la app a tu gusto.",
+    "unlockButton": "Desbloquear",
+    "unlockButtonWithPrice": "Desbloquear — {{price}}",
+    "restoreButton": "Restaurar compras",
+    "purchaseError": "No se pudo completar la compra. Inténtalo de nuevo.",
+    "restoreError": "No se pudo restaurar tu compra. Inténtalo de nuevo."
+  },
   "screenTitles": {
     "bookDetails": "Detalles del libro",
     "addBook": "Añadir",
@@ -195,6 +212,7 @@
     "editBook": "Editar libro",
     "scanIsbn": "Escanear ISBN",
     "settings": "Ajustes",
-    "spin": "Selector de libros"
+    "spin": "Selector de libros",
+    "paywall": "TBR Pro"
   }
 }

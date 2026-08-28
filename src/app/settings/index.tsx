@@ -1,5 +1,6 @@
 import * as DocumentPicker from 'expo-document-picker';
-import { Download, Library, Moon, Sun, Upload } from 'lucide-react-native';
+import { router } from 'expo-router';
+import { Download, Library, Lock, Moon, Sun, Upload } from 'lucide-react-native';
 import type { ReactNode } from 'react';
 import { ActivityIndicator, Alert, Linking, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -9,6 +10,7 @@ import { IconSymbol } from '@/components/IconSymbol';
 import { AccentColors, Typography, type AccentName } from '@/lib/theme/theme';
 import { useExportBackup, useImportBackup } from '@/hooks/useLibrary';
 import { useAppColorScheme } from '@/hooks/useAppColorScheme';
+import { usePurchases } from '@/hooks/usePurchases';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { useTranslation } from '@/hooks/useTranslation';
 import { BackupFileError } from '@/lib/backup';
@@ -197,6 +199,7 @@ function AccentCards({
 
 export default function SettingsScreen() {
   const { themePreference, setThemePreference, accentPreference, setAccentPreference } = useAppColorScheme();
+  const { isPro } = usePurchases();
   const { t, locale, setLocale } = useTranslation();
   const backgroundColor = useThemeColor({}, 'background');
   const surfaceColor = useThemeColor({}, 'surface');
@@ -256,7 +259,27 @@ export default function SettingsScreen() {
         <ThemedText style={[Typography.sectionTitle, styles.sectionLabel, { color: textColor }]}>
           {t('settings.accentColor')}
         </ThemedText>
-        <AccentCards selected={accentPreference} onSelect={setAccentPreference} t={t} />
+        {isPro ? (
+          <AccentCards selected={accentPreference} onSelect={setAccentPreference} t={t} />
+        ) : (
+          <Pressable
+            onPress={() => router.push('/paywall')}
+            accessibilityRole="button"
+            accessibilityLabel={t('paywall.unlockButton')}
+            style={styles.lockedSection}>
+            <View pointerEvents="none" style={styles.lockedPreview}>
+              <AccentCards selected={accentPreference} onSelect={() => {}} t={t} />
+            </View>
+            <View style={styles.lockBadge} pointerEvents="none">
+              <View style={[styles.lockPill, { backgroundColor: surfaceColor, shadowColor }]}>
+                <Lock size={16} color={textColor} strokeWidth={1.75} />
+                <ThemedText style={[Typography.button, { color: textColor }]}>
+                  {t('paywall.unlockButton')}
+                </ThemedText>
+              </View>
+            </View>
+          </Pressable>
+        )}
 
         <ThemedText style={[Typography.sectionTitle, styles.sectionLabel, { color: textColor }]}>
           {t('settings.data')}
@@ -392,5 +415,32 @@ const styles = StyleSheet.create({
     width: 22,
     height: 22,
     borderRadius: 11,
+  },
+  lockedSection: {
+    position: 'relative',
+  },
+  lockedPreview: {
+    opacity: 0.35,
+  },
+  lockBadge: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  lockPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 20,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 1,
+    shadowRadius: 6,
+    elevation: 3,
   },
 });

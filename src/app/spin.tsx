@@ -15,10 +15,12 @@ import Animated, {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import ConfettiCannon from 'react-native-confetti-cannon';
 
+import { Paywall } from '@/components/Paywall';
 import { SpinReel } from '@/components/SpinReel';
 import { ThemedText } from '@/components/ThemedText';
 import { Typography } from '@/lib/theme/theme';
 import { useBooks } from '@/hooks/useLibrary';
+import { usePurchases } from '@/hooks/usePurchases';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { useTranslation } from '@/hooks/useTranslation';
 import { toHttpsUrl } from '@/api/googleBooks';
@@ -37,6 +39,7 @@ export default function SpinScreen() {
 
   const { width: windowWidth } = useWindowDimensions();
   const confettiRef = useRef<ConfettiCannon>(null);
+  const { isPro, isLoading: purchasesLoading } = usePurchases();
 
   const { data: books } = useBooks();
   const candidates = useMemo(() => (books ?? []).filter((book) => book.status === 'to_read'), [books]);
@@ -90,6 +93,24 @@ export default function SpinScreen() {
   const spinButtonAnimatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: inviteScale.value }],
   }));
+
+  if (purchasesLoading) {
+    return (
+      <SafeAreaView style={[styles.container, { backgroundColor }]} edges={['bottom']}>
+        <View style={styles.centered}>
+          <ActivityIndicator color={accentColor} />
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  if (!isPro) {
+    return (
+      <SafeAreaView style={[styles.flex, { backgroundColor }]} edges={['bottom']}>
+        <Paywall />
+      </SafeAreaView>
+    );
+  }
 
   if (candidates.length === 0) {
     return (
@@ -200,6 +221,9 @@ export default function SpinScreen() {
 }
 
 const styles = StyleSheet.create({
+  flex: {
+    flex: 1,
+  },
   container: {
     flex: 1,
     paddingHorizontal: 16,

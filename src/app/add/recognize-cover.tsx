@@ -16,10 +16,12 @@ import {
 } from 'react-native';
 
 import { BookCard } from '@/components/BookCard';
+import { Paywall } from '@/components/Paywall';
 import { ThemedText } from '@/components/ThemedText';
 import { useScreenHeaderOptions } from '@/hooks/useScreenHeaderOptions';
 import { Typography } from '@/lib/theme/theme';
 import { useBooks } from '@/hooks/useLibrary';
+import { usePurchases } from '@/hooks/usePurchases';
 import { useQuickAddBook } from '@/hooks/useSearch';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -35,6 +37,7 @@ const MIN_RELIABLE_SCORE = 30;
 
 export default function RecognizeCoverScreen() {
   const { pickSource } = useLocalSearchParams<{ pickSource?: 'camera' | 'gallery' }>();
+  const { isPro, isLoading: purchasesLoading } = usePurchases();
   const { t } = useTranslation();
   const screenHeaderOptions = useScreenHeaderOptions();
   const backgroundColor = useThemeColor({}, 'background');
@@ -99,11 +102,11 @@ export default function RecognizeCoverScreen() {
 
   const hasAutoTriggered = useRef(false);
   useEffect(() => {
-    if (hasAutoTriggered.current || !pickSource) return;
+    if (hasAutoTriggered.current || !pickSource || purchasesLoading || !isPro) return;
     hasAutoTriggered.current = true;
     handlePick(pickSource);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pickSource]);
+  }, [pickSource, isPro, purchasesLoading]);
 
   async function ensureCameraPermission(): Promise<boolean> {
     const current = await ImagePicker.getCameraPermissionsAsync();
@@ -194,6 +197,34 @@ export default function RecognizeCoverScreen() {
 
   function goToSearchManually() {
     router.push('/add/book');
+  }
+
+  if (purchasesLoading) {
+    return (
+      <View style={[styles.flex, styles.centered, { backgroundColor }]}>
+        <Stack.Screen
+          options={{
+            title: pickSource === 'gallery' ? t('search.uploadPhoto') : t('search.scanCover'),
+            ...screenHeaderOptions,
+          }}
+        />
+        <ActivityIndicator color={accentColor} />
+      </View>
+    );
+  }
+
+  if (!isPro) {
+    return (
+      <View style={[styles.flex, { backgroundColor }]}>
+        <Stack.Screen
+          options={{
+            title: pickSource === 'gallery' ? t('search.uploadPhoto') : t('search.scanCover'),
+            ...screenHeaderOptions,
+          }}
+        />
+        <Paywall />
+      </View>
+    );
   }
 
   return (
