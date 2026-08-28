@@ -174,7 +174,7 @@ export default function AddManuallyScreen() {
   return (
     <KeyboardAvoidingView
       style={styles.flex}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
       <SafeAreaView style={[styles.flex, { backgroundColor }]} edges={['bottom']}>
         <ScrollView
           style={{ backgroundColor }}
@@ -376,27 +376,31 @@ export default function AddManuallyScreen() {
         transparent
         animationType="fade"
         onRequestClose={() => setGenreModalVisible(false)}>
-        <Pressable
-          style={styles.backdrop}
-          onPress={() => setGenreModalVisible(false)}
-          accessibilityRole="button"
-          accessibilityLabel={t('common.done')}>
+        <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
           <Pressable
-            style={[styles.sheet, { backgroundColor: surfaceColor, shadowColor }]}
-            onPress={(e) => e.stopPropagation()}>
-            <ThemedText style={[Typography.sectionTitle, { color: textColor }]}>
-              {t('addManually.genres')}
-            </ThemedText>
-            <GenreEditor genres={genres} onChange={setGenres} />
+            style={styles.backdrop}
+            onPress={() => setGenreModalVisible(false)}
+            accessibilityRole="button"
+            accessibilityLabel={t('common.done')}>
             <Pressable
-              onPress={() => setGenreModalVisible(false)}
-              accessibilityRole="button"
-              accessibilityLabel={t('common.done')}
-              style={[styles.doneButton, { backgroundColor: accentColor }]}>
-              <ThemedText style={[Typography.button, { color: onAccentColor }]}>{t('common.done')}</ThemedText>
+              style={[styles.sheet, { backgroundColor: surfaceColor, shadowColor }]}
+              onPress={(e) => e.stopPropagation()}>
+              <ThemedText style={[Typography.sectionTitle, { color: textColor }]}>
+                {t('addManually.genres')}
+              </ThemedText>
+              <GenreEditor genres={genres} onChange={setGenres} />
+              <Pressable
+                onPress={() => setGenreModalVisible(false)}
+                accessibilityRole="button"
+                accessibilityLabel={t('common.done')}
+                style={[styles.doneButton, { backgroundColor: accentColor }]}>
+                <ThemedText style={[Typography.button, { color: onAccentColor }]}>
+                  {t('common.done')}
+                </ThemedText>
+              </Pressable>
             </Pressable>
           </Pressable>
-        </Pressable>
+        </KeyboardAvoidingView>
       </Modal>
     </KeyboardAvoidingView>
   );

@@ -228,7 +228,7 @@ export default function RecognizeCoverScreen() {
   }
 
   return (
-    <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+    <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
       <ScrollView
         style={{ backgroundColor }}
         contentContainerStyle={styles.container}

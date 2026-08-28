@@ -109,7 +109,7 @@ export default function BookDetailScreen() {
   const description = book.description ? sanitizeDescription(book.description) : null;
 
   return (
-    <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+    <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
       <ScrollView style={[styles.scrollView, { backgroundColor }]} contentContainerStyle={styles.container}>
         <Stack.Screen options={{ headerShown: false }} />
         <BookHero
@@ -207,30 +207,36 @@ export default function BookDetailScreen() {
           transparent
           animationType="fade"
           onRequestClose={() => setGenreModalVisible(false)}>
-          <Pressable
-            style={styles.backdrop}
-            onPress={() => setGenreModalVisible(false)}
-            accessibilityRole="button"
-            accessibilityLabel={t('common.done')}>
+          <KeyboardAvoidingView
+            style={styles.flex}
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
             <Pressable
-              style={[styles.sheet, { backgroundColor: surfaceColor }]}
-              onPress={(e) => e.stopPropagation()}>
-              <ThemedText style={[Typography.sectionTitle, { color: textColor }]}>
-                {t('bookDetail.genres')}
-              </ThemedText>
-              <GenreEditor
-                genres={genres}
-                onChange={(updated) => updateGenres.mutate({ id: book.id, genres: updated })}
-              />
+              style={styles.backdrop}
+              onPress={() => setGenreModalVisible(false)}
+              accessibilityRole="button"
+              accessibilityLabel={t('common.done')}>
               <Pressable
-                onPress={() => setGenreModalVisible(false)}
-                accessibilityRole="button"
-                accessibilityLabel={t('common.done')}
-                style={[styles.doneButton, { backgroundColor: accentColor }]}>
-                <ThemedText style={[Typography.button, { color: onAccentColor }]}>{t('common.done')}</ThemedText>
+                style={[styles.sheet, { backgroundColor: surfaceColor }]}
+                onPress={(e) => e.stopPropagation()}>
+                <ThemedText style={[Typography.sectionTitle, { color: textColor }]}>
+                  {t('bookDetail.genres')}
+                </ThemedText>
+                <GenreEditor
+                  genres={genres}
+                  onChange={(updated) => updateGenres.mutate({ id: book.id, genres: updated })}
+                />
+                <Pressable
+                  onPress={() => setGenreModalVisible(false)}
+                  accessibilityRole="button"
+                  accessibilityLabel={t('common.done')}
+                  style={[styles.doneButton, { backgroundColor: accentColor }]}>
+                  <ThemedText style={[Typography.button, { color: onAccentColor }]}>
+                    {t('common.done')}
+                  </ThemedText>
+                </Pressable>
               </Pressable>
             </Pressable>
-          </Pressable>
+          </KeyboardAvoidingView>
         </Modal>
       </ScrollView>
     </KeyboardAvoidingView>
