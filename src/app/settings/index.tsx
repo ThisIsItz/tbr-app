@@ -17,10 +17,20 @@ import { BackupFileError } from '@/lib/backup';
 import type { Locale } from '@/i18n/translations';
 import type { ThemePreference } from '@/lib/theme/AppThemeProvider';
 
-const ACCENT_OPTIONS: { value: AccentName; labelKey: 'settings.accentOrange' | 'settings.accentTeal' | 'settings.accentPink' }[] = [
+const ACCENT_OPTIONS: {
+  value: AccentName;
+  labelKey:
+    | 'settings.accentOrange'
+    | 'settings.accentTeal'
+    | 'settings.accentPink'
+    | 'settings.accentGreen'
+    | 'settings.accentRed';
+}[] = [
   { value: 'orange', labelKey: 'settings.accentOrange' },
   { value: 'teal', labelKey: 'settings.accentTeal' },
   { value: 'pink', labelKey: 'settings.accentPink' },
+  { value: 'green', labelKey: 'settings.accentGreen' },
+  { value: 'red', labelKey: 'settings.accentRed' },
 ];
 
 const LANGUAGE_OPTIONS: { value: Locale; labelKey: 'settings.english' | 'settings.spanish' }[] = [
@@ -163,7 +173,7 @@ function AccentCards({
   const textColor = useThemeColor({}, 'text');
 
   return (
-    <View style={styles.appearanceRow}>
+    <View style={styles.accentGrid}>
       {ACCENT_OPTIONS.map((option) => {
         const isActive = option.value === selected;
         const palette = AccentColors[option.value][colorScheme];
@@ -175,7 +185,7 @@ function AccentCards({
             accessibilityLabel={t(option.labelKey)}
             accessibilityState={{ selected: isActive }}
             style={[
-              styles.appearanceCard,
+              styles.accentCard,
               {
                 backgroundColor: isActive ? palette.accentSoft : surfaceColor,
                 borderColor: isActive ? palette.accent : 'transparent',
@@ -400,6 +410,24 @@ const styles = StyleSheet.create({
   },
   appearanceCard: {
     flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    paddingVertical: 14,
+    borderRadius: 14,
+    borderWidth: 1.5,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 1,
+    shadowRadius: 6,
+    elevation: 2,
+  },
+  accentGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  accentCard: {
+    width: '31%',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 6,

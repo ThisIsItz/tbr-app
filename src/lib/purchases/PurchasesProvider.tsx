@@ -18,6 +18,8 @@ export interface PurchasesContextValue {
   isPro: boolean;
   offering: PurchasesOffering | null;
   error: PurchaseErrorKind;
+  justPurchased: boolean;
+  dismissJustPurchased: () => void;
   purchase: () => Promise<void>;
   restore: () => Promise<void>;
 }
@@ -48,6 +50,9 @@ export function PurchasesProvider({ children }: { children: ReactNode }) {
   const [isPro, setIsPro] = useState(!apiKey && __DEV__);
   const [offering, setOffering] = useState<PurchasesOffering | null>(null);
   const [error, setError] = useState<PurchaseErrorKind>(null);
+  const [justPurchased, setJustPurchased] = useState(false);
+
+  const dismissJustPurchased = useCallback(() => setJustPurchased(false), []);
 
   useEffect(() => {
     if (!apiKey) return;
@@ -79,7 +84,9 @@ export function PurchasesProvider({ children }: { children: ReactNode }) {
     setError(null);
     try {
       const { customerInfo } = await Purchases.purchasePackage(pkg);
-      setIsPro(hasProEntitlement(customerInfo));
+      const nowPro = hasProEntitlement(customerInfo);
+      setIsPro(nowPro);
+      if (nowPro) setJustPurchased(true);
     } catch (err) {
       if (!(err as { userCancelled?: boolean })?.userCancelled) {
         console.warn('[Purchases] purchase failed:', err);
@@ -100,8 +107,8 @@ export function PurchasesProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const value = useMemo<PurchasesContextValue>(
-    () => ({ isLoading, isPro, offering, error, purchase, restore }),
-    [isLoading, isPro, offering, error, purchase, restore],
+    () => ({ isLoading, isPro, offering, error, justPurchased, dismissJustPurchased, purchase, restore }),
+    [isLoading, isPro, offering, error, justPurchased, dismissJustPurchased, purchase, restore],
   );
 
   return <PurchasesContext.Provider value={value}>{children}</PurchasesContext.Provider>;

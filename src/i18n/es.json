@@ -159,6 +159,8 @@
     "accentOrange": "Terracota",
     "accentTeal": "Azul",
     "accentPink": "Rosa",
+    "accentGreen": "Verde",
+    "accentRed": "Rojo",
     "data": "Datos",
     "exportBackup": "Exportar copia de seguridad",
     "exportBackupDescription": "Guarda tu biblioteca en un archivo que puedes conservar o compartir.",
@@ -202,7 +204,8 @@
     "unlockButtonWithPrice": "Desbloquear — {{price}}",
     "restoreButton": "Restaurar compras",
     "purchaseError": "No se pudo completar la compra. Inténtalo de nuevo.",
-    "restoreError": "No se pudo restaurar tu compra. Inténtalo de nuevo."
+    "restoreError": "No se pudo restaurar tu compra. Inténtalo de nuevo.",
+    "purchaseSuccess": "¡Ya tienes TBR Pro!"
   },
   "screenTitles": {
     "bookDetails": "Detalles del libro",

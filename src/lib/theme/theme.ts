@@ -25,7 +25,7 @@ export const Colors = {
 // its own tinted neutrals (background/surface/surfaceMuted/border/icon) so the warm or
 // cool undertone of the accent runs through the whole screen, cards included, not just
 // the buttons.
-export type AccentName = 'orange' | 'teal' | 'pink'
+export type AccentName = 'orange' | 'teal' | 'pink' | 'green' | 'red'
 
 interface AccentPalette {
   accent: string
@@ -114,6 +114,54 @@ export const AccentColors: Record<AccentName, { light: AccentPalette; dark: Acce
       border: '#413032',
       icon: '#AB969A',
       tabIconDefault: '#847174'
+    }
+  },
+  green: {
+    light: {
+      accent: '#2E5E3F',
+      accentSoft: '#C6DFCA',
+      onAccentSoft: '#1F4A2C',
+      background: '#EFF5EF',
+      surface: '#FFFFFF',
+      surfaceMuted: '#E3EDE4',
+      border: '#D5E4D6',
+      icon: '#63756A',
+      tabIconDefault: '#7F9184'
+    },
+    dark: {
+      accent: '#4CBB6C',
+      accentSoft: '#1E3A28',
+      onAccentSoft: '#4CBB6C',
+      background: '#0F1512',
+      surface: '#1A211D',
+      surfaceMuted: '#242E27',
+      border: '#37423A',
+      icon: '#9AAB9E',
+      tabIconDefault: '#7C8C80'
+    }
+  },
+  red: {
+    light: {
+      accent: '#7A2A34',
+      accentSoft: '#E6C3C7',
+      onAccentSoft: '#5C1F27',
+      background: '#F9F0F0',
+      surface: '#FFFFFF',
+      surfaceMuted: '#EFDEDF',
+      border: '#E5D0D1',
+      icon: '#7A6264',
+      tabIconDefault: '#8F797B'
+    },
+    dark: {
+      accent: '#EE5A64',
+      accentSoft: '#3B1E20',
+      onAccentSoft: '#EE5A64',
+      background: '#160F0F',
+      surface: '#221819',
+      surfaceMuted: '#2D2122',
+      border: '#423031',
+      icon: '#AC9698',
+      tabIconDefault: '#857274'
     }
   }
 }

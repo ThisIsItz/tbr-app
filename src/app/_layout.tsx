@@ -8,6 +8,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
 import 'react-native-reanimated';
 
+import { PurchaseCelebration } from '@/components/PurchaseCelebration';
 import { useScreenHeaderOptions } from '@/hooks/useScreenHeaderOptions';
 import { useAppColorScheme } from '@/hooks/useAppColorScheme';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -53,7 +54,7 @@ function isThemePreference(value: string | null): value is ThemePreference {
 }
 
 function isAccentPreference(value: string | null): value is AccentPreference {
-  return value === 'orange' || value === 'teal' || value === 'pink';
+  return value === 'orange' || value === 'teal' || value === 'pink' || value === 'green' || value === 'red';
 }
 
 function RootLayout() {
@@ -140,6 +141,7 @@ function RootLayoutNav() {
           />
         </Stack>
         <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
+        <PurchaseCelebration />
       </ThemeProvider>
     </QueryClientProvider>
   );
