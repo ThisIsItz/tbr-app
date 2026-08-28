@@ -66,7 +66,11 @@ export function FilterSheet({
         {Icon && <Icon size={16} color={isActive ? onAccentSoftColor : textColor} strokeWidth={2} />}
         <ThemedText
           numberOfLines={1}
-          style={[Typography.button, styles.triggerText, { color: isActive ? onAccentSoftColor : textColor }]}>
+          style={[
+            Typography.button,
+            compact ? styles.triggerTextCompact : styles.triggerText,
+            { color: isActive ? onAccentSoftColor : textColor },
+          ]}>
           {isActive ? (selectedLabel ?? label) : label}
         </ThemedText>
         <IconSymbol name="chevron.down" size={16} color={isActive ? onAccentSoftColor : textMutedColor} />
@@ -141,6 +145,9 @@ const styles = StyleSheet.create({
   },
   triggerText: {
     flexShrink: 1,
+  },
+  triggerTextCompact: {
+    flexShrink: 0,
   },
   backdrop: {
     flex: 1,
