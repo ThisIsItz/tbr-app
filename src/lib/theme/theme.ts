@@ -10,10 +10,10 @@ export const Colors = {
     shadow: 'rgba(36, 28, 23, 0.10)',
     danger: '#B83A32',
     onAccent: '#FFFFFF',
-    background: '#F1F2F3',
+    background: '#F2F2F2',
     surface: '#FFFFFF',
-    surfaceMuted: '#E5E7E9',
-    border: '#D7DADD'
+    surfaceMuted: '#E7E7E7',
+    border: '#DADADA'
   },
 
   dark: {
@@ -22,10 +22,10 @@ export const Colors = {
     shadow: 'rgba(0, 0, 0, 0.45)',
     danger: '#E26458',
     onAccent: '#1A1310',
-    background: '#131415',
-    surface: '#1D1F21',
-    surfaceMuted: '#26292C',
-    border: '#393D41'
+    background: '#141414',
+    surface: '#1F1F1F',
+    surfaceMuted: '#292929',
+    border: '#3D3D3D'
   }
 } as const
 
