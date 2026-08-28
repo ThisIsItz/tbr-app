@@ -100,7 +100,7 @@ export function BookCard({
               <View style={styles.resultFooterRow}>
                 <View style={[styles.tag, { backgroundColor: accentSoftColor }]}>
                   <ThemedText numberOfLines={1} style={[Typography.caption, { color: onAccentSoftColor }]}>
-                    {genres[0]}
+                    {capitalizeFirst(genres[0])}
                   </ThemedText>
                 </View>
               </View>
@@ -121,7 +121,7 @@ export function BookCard({
                 {genres.slice(0, 2).map((genre) => (
                   <View key={genre} style={[styles.tag, { backgroundColor: accentSoftColor }]}>
                     <ThemedText numberOfLines={1} style={[Typography.caption, { color: onAccentSoftColor }]}>
-                      {genre}
+                      {capitalizeFirst(genre)}
                     </ThemedText>
                   </View>
                 ))}

@@ -24,6 +24,7 @@ import { useAddBook, useBook, useUpdateBookDetails } from '@/hooks/useLibrary';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { useTranslatedGenres } from '@/hooks/useTranslatedGenres';
 import { useTranslation } from '@/hooks/useTranslation';
+import { capitalizeFirst } from '@/lib/capitalize';
 import { deleteLocalImage, persistLocalImage } from '@/lib/localImage';
 
 const NARROW_SCREEN_WIDTH = 360;
@@ -68,7 +69,7 @@ export default function AddManuallyScreen() {
   const [pageCountText, setPageCountText] = useState('');
   const [notes, setNotes] = useState('');
   const [isGenreModalVisible, setGenreModalVisible] = useState(false);
-  const genreTranslations = useTranslatedGenres(genres);
+  const { translations: genreTranslations } = useTranslatedGenres(genres);
 
   useEffect(() => {
     if (!isEditing || !existingBook || isPrefilled) return;
@@ -322,7 +323,7 @@ export default function AddManuallyScreen() {
                 {genres.map((genre) => (
                   <View key={genre} style={[styles.genreChip, { backgroundColor: accentSoftColor }]}>
                     <ThemedText style={[Typography.caption, { color: onAccentSoftColor }]}>
-                      {genreTranslations[genre] ?? genre}
+                      {capitalizeFirst(genreTranslations[genre] ?? genre)}
                     </ThemedText>
                   </View>
                 ))}

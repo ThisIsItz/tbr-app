@@ -6,6 +6,7 @@ import { ThemedText } from '@/components/ThemedText';
 import { IconSymbol } from '@/components/IconSymbol';
 import { getLanguageName } from '@/lib/languageNames';
 import { Typography } from '@/lib/theme/theme';
+import { capitalizeFirst } from '@/lib/capitalize';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { useTranslation } from '@/hooks/useTranslation';
 
@@ -160,7 +161,7 @@ export function LibraryFiltersSheet({
                     {genreOptions.map((genre) =>
                       renderRow({
                         key: genre,
-                        label: genreLabels?.[genre] ?? genre,
+                        label: capitalizeFirst(genreLabels?.[genre] ?? genre),
                         isSelected: selectedGenres.includes(genre),
                         checkbox: true,
                         onPress: () => toggleGenre(genre),

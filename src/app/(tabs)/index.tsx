@@ -18,6 +18,7 @@ import { useThemeColor } from '@/hooks/useThemeColor';
 import { useTranslatedGenres } from '@/hooks/useTranslatedGenres';
 import { useTranslation } from '@/hooks/useTranslation';
 import { BackupFileError } from '@/lib/backup';
+import { capitalizeFirst } from '@/lib/capitalize';
 import { normalizeGenres } from '@/lib/genres';
 import { getLanguageName } from '@/lib/languageNames';
 import { type Book } from '@/types/book';
@@ -85,7 +86,7 @@ export default function MyTbrScreen() {
       Array.from(new Set([...genresByBookId.values()].flat())).sort((a, b) => a.localeCompare(b)),
     [genresByBookId],
   );
-  const genreTranslations = useTranslatedGenres(allGenres);
+  const { translations: genreTranslations } = useTranslatedGenres(allGenres);
   const allAuthors = useMemo(
     () =>
       Array.from(new Set(books?.flatMap((book) => book.authors) ?? [])).sort((a, b) => a.localeCompare(b)),
@@ -136,7 +137,7 @@ export default function MyTbrScreen() {
   }, [books, debouncedSearchQuery, genreFilters, authorFilter, languageFilter, sortBy, genresByBookId]);
 
   const activeFilterLabels = [
-    ...genreFilters.map((genre) => genreTranslations[genre] ?? genre),
+    ...genreFilters.map((genre) => capitalizeFirst(genreTranslations[genre] ?? genre)),
     ...(authorFilter ? [authorFilter] : []),
     ...(languageFilter ? [getLanguageName(languageFilter, locale)] : []),
     ...(debouncedSearchQuery.trim() ? [`"${debouncedSearchQuery.trim()}"`] : []),

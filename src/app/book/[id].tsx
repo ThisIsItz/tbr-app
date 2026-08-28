@@ -22,6 +22,7 @@ import { useBook, useDeleteBook, useUpdateBookGenres, useUpdateBookNotes } from 
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { useTranslatedGenres } from '@/hooks/useTranslatedGenres';
 import { useTranslation } from '@/hooks/useTranslation';
+import { capitalizeFirst } from '@/lib/capitalize';
 import { confirmAsync } from '@/lib/confirm';
 import { normalizeGenres } from '@/lib/genres';
 import { toHttpsUrl } from '@/api/googleBooks';
@@ -55,7 +56,7 @@ export default function BookDetailScreen() {
   }, [book?.notes]);
 
   const genres = normalizeGenres(book?.genres ?? []);
-  const genreTranslations = useTranslatedGenres(genres);
+  const { translations: genreTranslations } = useTranslatedGenres(genres);
 
   function handleNotesBlur() {
     if (!book) return;
@@ -162,7 +163,7 @@ export default function BookDetailScreen() {
             {visibleGenres.map((genre) => (
               <View key={genre} style={[styles.genreChip, { backgroundColor: accentSoftColor }]}>
                 <ThemedText style={[Typography.caption, { color: onAccentSoftColor }]}>
-                  {genreTranslations[genre] ?? genre}
+                  {capitalizeFirst(genreTranslations[genre] ?? genre)}
                 </ThemedText>
               </View>
             ))}
