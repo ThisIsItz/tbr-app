@@ -4,10 +4,12 @@ import { corsPreflightResponse, jsonResponse } from './http';
 import { getActiveVisionProvider } from './providers';
 import { VisionProviderError } from './providers/types';
 import { checkGlobalBudget, checkPerTokenLimit } from './rate-limit';
+import { handleTranslateCategories } from './translate';
 import type { Env } from './types';
 
 const RECOGNIZE_PATH = '/v1/recognize-cover';
 const BOOKS_VOLUMES_PATH = '/v1/books/volumes';
+const TRANSLATE_PATH = '/v1/translate-categories';
 const ALLOWED_CONTENT_TYPE = 'image/jpeg';
 
 async function handleRecognizeCover(request: Request, env: Env): Promise<Response> {
@@ -101,6 +103,13 @@ export default {
         return jsonResponse({ error: 'not_found' }, 404);
       }
       return handleBookById(request, env, volumeId);
+    }
+
+    if (url.pathname === TRANSLATE_PATH) {
+      if (request.method !== 'POST') {
+        return jsonResponse({ error: 'method_not_allowed' }, 405);
+      }
+      return handleTranslateCategories(request, env);
     }
 
     return jsonResponse({ error: 'not_found' }, 404);

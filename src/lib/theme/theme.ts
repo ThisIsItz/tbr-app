@@ -163,8 +163,8 @@ export const Typography = {
   },
   bookTitle: {
     fontFamily: Fonts.sans,
-    fontSize: 17,
-    lineHeight: 22,
+    fontSize: 19,
+    lineHeight: 24,
     fontWeight: '700' as const
   },
   body: {

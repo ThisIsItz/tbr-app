@@ -15,6 +15,7 @@ import { Typography } from '@/lib/theme/theme';
 import { useBooks, useImportBackup } from '@/hooks/useLibrary';
 import { useDebouncedValue } from '@/hooks/useDebouncedValue';
 import { useThemeColor } from '@/hooks/useThemeColor';
+import { useTranslatedGenres } from '@/hooks/useTranslatedGenres';
 import { useTranslation } from '@/hooks/useTranslation';
 import { BackupFileError } from '@/lib/backup';
 import { normalizeGenres } from '@/lib/genres';
@@ -82,6 +83,7 @@ export default function MyTbrScreen() {
       Array.from(new Set([...genresByBookId.values()].flat())).sort((a, b) => a.localeCompare(b)),
     [genresByBookId],
   );
+  const genreTranslations = useTranslatedGenres(allGenres);
   const allAuthors = useMemo(
     () =>
       Array.from(new Set(books?.flatMap((book) => book.authors) ?? [])).sort((a, b) => a.localeCompare(b)),
@@ -307,7 +309,7 @@ export default function MyTbrScreen() {
             <BookCard
               title={item.title}
               author={item.authors.join(', ') || null}
-              genres={genresByBookId.get(item.id) ?? []}
+              genres={(genresByBookId.get(item.id) ?? []).map((genre) => genreTranslations[genre] ?? genre)}
               thumbnailUrl={item.thumbnailUrl}
               onPress={() => router.push(`/book/${item.id}`)}
             />

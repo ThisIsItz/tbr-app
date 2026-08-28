@@ -64,7 +64,7 @@ export function Paywall() {
                 <Icon size={21} color={accentColor} strokeWidth={1.75} />
               </View>
               <View style={styles.featureText}>
-                <ThemedText style={[Typography.bookTitle, { color: textColor }]}>{t(titleKey)}</ThemedText>
+                <ThemedText style={[styles.featureTitle, { color: textColor }]}>{t(titleKey)}</ThemedText>
                 <ThemedText style={[Typography.metadata, { color: textMutedColor }]}>{t(bodyKey)}</ThemedText>
               </View>
             </View>
@@ -161,6 +161,11 @@ const styles = StyleSheet.create({
   featureText: {
     flex: 1,
     gap: 2,
+  },
+  featureTitle: {
+    fontSize: 16,
+    lineHeight: 21,
+    fontWeight: '700',
   },
   footer: {
     paddingHorizontal: 24,
