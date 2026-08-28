@@ -82,16 +82,17 @@ export function BookCard({
         </View>
       )}
 
-      <View style={[styles.body, !isResult && styles.bodyLibrary]}>
-        <ThemedText numberOfLines={isResult ? 2 : 3} style={[Typography.bookTitle, { color: textColor }]}>
-          {title}
-        </ThemedText>
-
+      <View style={styles.body}>
         {isResult ? (
           <>
-            <ThemedText numberOfLines={1} style={[Typography.metadata, { color: textMutedColor }]}>
-              {author || t('bookCard.unknownAuthor')}
-            </ThemedText>
+            <View style={styles.resultTop}>
+              <ThemedText numberOfLines={2} style={[Typography.bookTitle, { color: textColor }]}>
+                {title}
+              </ThemedText>
+              <ThemedText numberOfLines={1} style={[Typography.metadata, { color: textMutedColor }]}>
+                {author || t('bookCard.unknownAuthor')}
+              </ThemedText>
+            </View>
             {!!genres[0] && (
               <View style={styles.resultFooterRow}>
                 <View style={[styles.tag, { backgroundColor: accentSoftColor }]}>
@@ -103,55 +104,62 @@ export function BookCard({
             )}
           </>
         ) : (
-          <View style={styles.libraryFooter}>
-            {!!author && (
-              <ThemedText numberOfLines={1} style={[Typography.metadata, { color: textMutedColor }]}>
-                {author}
-              </ThemedText>
-            )}
-            <View style={styles.tagRow}>
-              {genres.slice(0, 2).map((genre) => (
-                <View key={genre} style={[styles.tag, { backgroundColor: accentSoftColor }]}>
-                  <ThemedText numberOfLines={1} style={[Typography.caption, { color: onAccentSoftColor }]}>
-                    {genre}
-                  </ThemedText>
-                </View>
-              ))}
+          <>
+            <ThemedText numberOfLines={3} style={[Typography.bookTitle, { color: textColor }]}>
+              {title}
+            </ThemedText>
+            <View style={styles.libraryFooter}>
+              {!!author && (
+                <ThemedText numberOfLines={1} style={[Typography.metadata, { color: textMutedColor }]}>
+                  {author}
+                </ThemedText>
+              )}
+              <View style={styles.tagRow}>
+                {genres.slice(0, 2).map((genre) => (
+                  <View key={genre} style={[styles.tag, { backgroundColor: accentSoftColor }]}>
+                    <ThemedText numberOfLines={1} style={[Typography.caption, { color: onAccentSoftColor }]}>
+                      {genre}
+                    </ThemedText>
+                  </View>
+                ))}
+              </View>
             </View>
-          </View>
+          </>
         )}
       </View>
 
       {isResult ? (
-        <View style={styles.resultActions}>
-          <View style={[styles.chevronCircle, styles.chevronCircleResult, { backgroundColor: surfaceMutedColor }]}>
-            <IconSymbol name="chevron.right" size={16} color={textMutedColor} />
-          </View>
+        <>
           {action && (
-            <Pressable
-              onPress={action.onPress}
-              disabled={action.disabled}
-              hitSlop={10}
-              accessibilityRole="button"
-              accessibilityLabel={action.label}
-              style={[
-                styles.compactActionButton,
-                { backgroundColor: action.disabled ? surfaceMutedColor : accentColor },
-              ]}>
-              <ThemedText
+            <View style={styles.resultActions}>
+              <Pressable
+                onPress={action.onPress}
+                disabled={action.disabled}
+                hitSlop={10}
+                accessibilityRole="button"
+                accessibilityLabel={action.label}
                 style={[
-                  Typography.caption,
-                  styles.compactActionText,
-                  { color: action.disabled ? textMutedColor : onAccentColor },
+                  styles.compactActionButton,
+                  action.disabled
+                    ? styles.compactActionButtonDisabled
+                    : { backgroundColor: accentColor },
                 ]}>
-                {action.label}
-              </ThemedText>
-            </Pressable>
+                {action.disabled && <IconSymbol name="checkmark" size={14} color={accentColor} />}
+                <ThemedText
+                  style={[
+                    Typography.caption,
+                    styles.compactActionText,
+                    { color: action.disabled ? accentColor : onAccentColor },
+                  ]}>
+                  {action.label}
+                </ThemedText>
+              </Pressable>
+            </View>
           )}
-        </View>
+        </>
       ) : (
-        <View style={[styles.chevronCircle, styles.chevronCircleLibrary, { backgroundColor: surfaceMutedColor }]}>
-          <IconSymbol name="chevron.right" size={22} color={textMutedColor} />
+        <View style={[styles.chevronCircle, styles.chevronCircleLibrary, { backgroundColor: accentSoftColor }]}>
+          <IconSymbol name="chevron.right" size={22} color={onAccentSoftColor} />
         </View>
       )}
     </Pressable>
@@ -160,6 +168,7 @@ export function BookCard({
 
 const styles = StyleSheet.create({
   card: {
+    position: 'relative',
     flexDirection: 'row',
     borderRadius: 14,
     padding: 10,
@@ -190,10 +199,10 @@ const styles = StyleSheet.create({
     flex: 1,
     minWidth: 0,
     gap: 4,
-    justifyContent: 'flex-start',
-  },
-  bodyLibrary: {
     justifyContent: 'space-between',
+  },
+  resultTop: {
+    gap: 2,
   },
   libraryFooter: {
     gap: 4,
@@ -216,16 +225,24 @@ const styles = StyleSheet.create({
     marginTop: 6,
   },
   resultActions: {
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    justifyContent: 'flex-end',
+    alignItems: 'flex-end',
   },
   compactActionButton: {
+    flexDirection: 'row',
     borderRadius: 10,
     minHeight: 34,
     paddingHorizontal: 14,
     paddingVertical: 8,
     alignItems: 'center',
     justifyContent: 'center',
+    gap: 4,
+  },
+  compactActionButtonDisabled: {
+    backgroundColor: 'transparent',
+    minHeight: 'auto',
+    paddingHorizontal: 4,
+    paddingVertical: 2,
   },
   compactActionText: {
     fontSize: 13,
@@ -240,11 +257,5 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 16,
-  },
-  chevronCircleResult: {
-    width: 26,
-    height: 26,
-    borderRadius: 13,
-    marginTop: 8,
   },
 });
