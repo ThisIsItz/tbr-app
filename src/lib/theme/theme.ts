@@ -6,11 +6,11 @@ import { Platform } from 'react-native'
 export const Colors = {
   light: {
     text: '#241C17',
-    textMuted: '#74685E',
+    textMuted: '#6E6259',
     shadow: 'rgba(36, 28, 23, 0.10)',
     danger: '#B83A32',
     onAccent: '#FFFFFF',
-    background: '#F2F2F2',
+    background: '#F8F8F8',
     surface: '#FFFFFF',
     surfaceMuted: '#E7E7E7',
     border: '#DADADA'
@@ -70,7 +70,7 @@ export const AccentColors: Record<AccentName, { light: AccentPalette; dark: Acce
     },
     dark: {
       accent: '#4A8FE0',
-      accentSoft: '#1C2C3E',
+      accentSoft: '#162331',
       onAccentSoft: '#4A8FE0',
       icon: '#98A8BC',
       tabIconDefault: '#71829A'
@@ -102,7 +102,7 @@ export const AccentColors: Record<AccentName, { light: AccentPalette; dark: Acce
     },
     dark: {
       accent: '#EF5257',
-      accentSoft: '#3A1D1D',
+      accentSoft: '#2E1717',
       onAccentSoft: '#EF5257',
       icon: '#AF9998',
       tabIconDefault: '#897372'
