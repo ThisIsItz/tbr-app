@@ -11,6 +11,7 @@ import { useBooks } from '@/hooks/useLibrary';
 import { useQuickAddBook, useSearchBooks } from '@/hooks/useSearch';
 import { useDebouncedValue } from '@/hooks/useDebouncedValue';
 import { useThemeColor } from '@/hooks/useThemeColor';
+import { useTranslatedGenres } from '@/hooks/useTranslatedGenres';
 import { useTranslation } from '@/hooks/useTranslation';
 import { normalizeGenres } from '@/lib/genres';
 import { getErrorTranslationKey } from '@/api/googleBooks';
@@ -35,6 +36,15 @@ export default function AddBookScreen() {
     () => new Set(libraryBooks?.map((book) => book.googleBooksId).filter(Boolean)),
     [libraryBooks],
   );
+
+  const allResultGenres = useMemo(
+    () =>
+      Array.from(
+        new Set((results ?? []).flatMap((item) => normalizeGenres(item.volumeInfo.categories ?? []))),
+      ),
+    [results],
+  );
+  const { translations: genreTranslations, isLoading: genresTranslating } = useTranslatedGenres(allResultGenres);
 
   const hasSearched = debouncedQuery.trim().length > 0;
 
@@ -143,14 +153,20 @@ export default function AddBookScreen() {
           const alreadySaved = savedGoogleIds.has(item.id);
           const adding = isAdding(item.id);
           const { title, authors, categories, imageLinks } = item.volumeInfo;
+          const itemGenres = normalizeGenres(categories ?? []);
           return (
             <BookCard
               variant="result"
               title={title}
               author={authors?.join(', ') ?? null}
-              genres={normalizeGenres(categories ?? [])}
+              genres={genresTranslating ? [] : itemGenres.map((genre) => genreTranslations[genre] ?? genre)}
               thumbnailUrl={imageLinks?.thumbnail ?? null}
-              onPress={() => router.push(`/add/${item.id}`)}
+              onPress={() =>
+                router.push({
+                  pathname: '/add/[id]',
+                  params: { id: item.id, fallbackGenres: JSON.stringify(itemGenres) },
+                })
+              }
               action={{
                 label: alreadySaved ? t('search.added') : t('search.add'),
                 disabled: alreadySaved || adding,

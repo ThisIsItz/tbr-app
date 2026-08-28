@@ -16,7 +16,7 @@ import { GoogleBooksApiError, toHttpsUrl } from '@/api/googleBooks';
 import { sanitizeDescription } from '@/lib/sanitizeHtml';
 
 export default function AddBookScreen() {
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const { id, fallbackGenres } = useLocalSearchParams<{ id: string; fallbackGenres?: string }>();
   const { t } = useTranslation();
   const backgroundColor = useThemeColor({}, 'background');
   const textColor = useThemeColor({}, 'text');
@@ -28,10 +28,20 @@ export default function AddBookScreen() {
   const [genres, setGenres] = useState<string[]>([]);
 
   useEffect(() => {
-    if (volume) {
-      setGenres(normalizeGenres(volume.volumeInfo.categories ?? []));
+    if (!volume) return;
+    if (volume.volumeInfo.categories?.length) {
+      setGenres(normalizeGenres(volume.volumeInfo.categories));
+      return;
     }
-  }, [volume]);
+    // The detail-by-id endpoint sometimes omits categories that the search
+    // results did include; fall back to what the search list already had.
+    try {
+      const parsed = fallbackGenres ? JSON.parse(fallbackGenres) : [];
+      setGenres(normalizeGenres(Array.isArray(parsed) ? parsed : []));
+    } catch {
+      setGenres([]);
+    }
+  }, [volume, fallbackGenres]);
 
   if (isLoading) {
     return (
