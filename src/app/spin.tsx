@@ -23,6 +23,7 @@ import { useBooks } from '@/hooks/useLibrary';
 import { usePurchases } from '@/hooks/usePurchases';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { useTranslation } from '@/hooks/useTranslation';
+import { capitalizeFirst } from '@/lib/capitalize';
 import { toHttpsUrl } from '@/api/googleBooks';
 import type { Book } from '@/types/book';
 
@@ -190,11 +191,11 @@ export default function SpinScreen() {
             </View>
           )}
           <ThemedText numberOfLines={2} style={[Typography.bookTitle, styles.centeredText, { color: textColor }]}>
-            {landedBook.title}
+            {capitalizeFirst(landedBook.title)}
           </ThemedText>
           {landedBook.authors.length > 0 && (
             <ThemedText numberOfLines={1} style={[Typography.metadata, { color: textMutedColor }]}>
-              {landedBook.authors.join(', ')}
+              {capitalizeFirst(landedBook.authors.join(', '))}
             </ThemedText>
           )}
           <Pressable

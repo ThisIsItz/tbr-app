@@ -7,6 +7,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ThemedText } from '@/components/ThemedText';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { useTranslation } from '@/hooks/useTranslation';
+import { capitalizeFirst } from '@/lib/capitalize';
 import { getLanguageName } from '@/lib/languageNames';
 import { Typography } from '@/lib/theme/theme';
 
@@ -76,9 +77,11 @@ export function BookHero({
             </View>
           )}
           <View style={styles.bookText}>
-            <ThemedText style={[Typography.screenTitle, styles.heroTitle]}>{title}</ThemedText>
-            {subtitle && <ThemedText style={[styles.heroSubtitle]}>{subtitle}</ThemedText>}
-            {authors.length > 0 && <ThemedText style={[styles.heroAuthor]}>{authors.join(', ')}</ThemedText>}
+            <ThemedText style={[Typography.screenTitle, styles.heroTitle]}>{capitalizeFirst(title)}</ThemedText>
+            {subtitle && <ThemedText style={[styles.heroSubtitle]}>{capitalizeFirst(subtitle)}</ThemedText>}
+            {authors.length > 0 && (
+              <ThemedText style={[styles.heroAuthor]}>{capitalizeFirst(authors.join(', '))}</ThemedText>
+            )}
             {metadataParts.length > 0 && (
               <ThemedText style={[Typography.caption, styles.heroMetadata]}>
                 {metadataParts.join('  ·  ')}

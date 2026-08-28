@@ -4,6 +4,7 @@ import { Platform, Pressable, StyleSheet, View } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { IconSymbol } from '@/components/IconSymbol';
 import { Typography } from '@/lib/theme/theme';
+import { capitalizeFirst } from '@/lib/capitalize';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { useTranslation } from '@/hooks/useTranslation';
 import { toHttpsUrl } from '@/api/googleBooks';
@@ -50,12 +51,14 @@ export function BookCard({
 
   const coverUrl = toHttpsUrl(thumbnailUrl);
   const isResult = variant === 'result';
+  const displayTitle = capitalizeFirst(title);
+  const displayAuthor = author ? capitalizeFirst(author) : author;
 
   return (
     <Pressable
       onPress={onPress}
       accessibilityRole="button"
-      accessibilityLabel={author ? `${title}, ${author}` : title}
+      accessibilityLabel={displayAuthor ? `${displayTitle}, ${displayAuthor}` : displayTitle}
       style={[
         styles.card,
         { backgroundColor: surfaceColor, shadowColor },
@@ -87,10 +90,10 @@ export function BookCard({
           <>
             <View style={styles.resultTop}>
               <ThemedText numberOfLines={2} style={[Typography.bookTitle, { color: textColor }]}>
-                {title}
+                {displayTitle}
               </ThemedText>
               <ThemedText numberOfLines={1} style={[Typography.metadata, { color: textMutedColor }]}>
-                {author || t('bookCard.unknownAuthor')}
+                {displayAuthor || t('bookCard.unknownAuthor')}
               </ThemedText>
             </View>
             {!!genres[0] && (
@@ -106,12 +109,12 @@ export function BookCard({
         ) : (
           <>
             <ThemedText numberOfLines={3} style={[Typography.bookTitle, { color: textColor }]}>
-              {title}
+              {displayTitle}
             </ThemedText>
             <View style={styles.libraryFooter}>
-              {!!author && (
+              {!!displayAuthor && (
                 <ThemedText numberOfLines={1} style={[Typography.metadata, { color: textMutedColor }]}>
-                  {author}
+                  {displayAuthor}
                 </ThemedText>
               )}
               <View style={styles.tagRow}>
