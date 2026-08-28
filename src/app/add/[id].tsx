@@ -1,10 +1,12 @@
 import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, Alert, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { Alert, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 
 import { BookHero } from '@/components/BookHero';
+import { BookHeroSkeleton } from '@/components/BookHeroSkeleton';
 import { ExpandableDescription } from '@/components/ExpandableDescription';
 import { GenreEditor } from '@/components/GenreEditor';
+import { Skeleton } from '@/components/Skeleton';
 import { ThemedText } from '@/components/ThemedText';
 import { Typography } from '@/lib/theme/theme';
 import { useAddBook } from '@/hooks/useLibrary';
@@ -45,9 +47,24 @@ export default function AddBookScreen() {
 
   if (isLoading) {
     return (
-      <View style={[styles.centered, { backgroundColor }]}>
-        <ActivityIndicator color={accentColor} />
-      </View>
+      <ScrollView style={{ backgroundColor }} contentContainerStyle={styles.container}>
+        <Stack.Screen options={{ headerShown: false }} />
+        <BookHeroSkeleton onBack={() => router.back()} />
+        <View style={styles.content}>
+          <View style={styles.section}>
+            <Skeleton width="100%" height={14} />
+            <Skeleton width="90%" height={14} style={styles.gapTop} />
+            <Skeleton width="70%" height={14} style={styles.gapTop} />
+          </View>
+          <View style={styles.section}>
+            <Skeleton width={80} height={18} />
+            <View style={styles.skeletonChipRow}>
+              <Skeleton width={70} height={28} borderRadius={14} />
+              <Skeleton width={100} height={28} borderRadius={14} />
+            </View>
+          </View>
+        </View>
+      </ScrollView>
     );
   }
 
@@ -167,6 +184,14 @@ const styles = StyleSheet.create({
   },
   section: {
     gap: 4,
+  },
+  gapTop: {
+    marginTop: 6,
+  },
+  skeletonChipRow: {
+    flexDirection: 'row',
+    gap: 8,
+    marginTop: 8,
   },
   addPill: {
     backgroundColor: '#FFFFFF',
