@@ -1,14 +1,19 @@
 import { Platform } from 'react-native'
 
-// Tokens that don't carry any hue bias and stay the same across every accent.
+// Tokens that don't carry any hue bias and stay the same across every accent —
+// backgrounds, cards, and inputs read as neutral gray so they don't compete
+// with whichever accent is active; only buttons/icons/badges carry the hue.
 export const Colors = {
   light: {
     text: '#241C17',
     textMuted: '#74685E',
     shadow: 'rgba(36, 28, 23, 0.10)',
     danger: '#B83A32',
-    // Text/icon color for anything drawn on top of an accent-colored surface (buttons).
-    onAccent: '#FFFFFF'
+    onAccent: '#FFFFFF',
+    background: '#F1F2F3',
+    surface: '#FFFFFF',
+    surfaceMuted: '#E5E7E9',
+    border: '#D7DADD'
   },
 
   dark: {
@@ -16,16 +21,15 @@ export const Colors = {
     textMuted: '#AAA096',
     shadow: 'rgba(0, 0, 0, 0.45)',
     danger: '#E26458',
-    // Dark accents are bright, so white text on them fails contrast — use dark ink instead.
-    onAccent: '#1A1310'
+    onAccent: '#1A1310',
+    background: '#131415',
+    surface: '#1D1F21',
+    surfaceMuted: '#26292C',
+    border: '#393D41'
   }
 } as const
 
-// Accent hues sampled from the app icon's three book spines. Each accent also carries
-// its own tinted neutrals (background/surface/surfaceMuted/border/icon) so the warm or
-// cool undertone of the accent runs through the whole screen, cards included, not just
-// the buttons.
-export type AccentName = 'orange' | 'teal' | 'pink' | 'green' | 'red'
+export type AccentName = 'orange' | 'teal' | 'green' | 'red'
 
 interface AccentPalette {
   accent: string
@@ -35,10 +39,6 @@ interface AccentPalette {
   // making accentSoft pale enough for `accent` text to pass AA on it made it blend
   // into white, so the on-soft text goes darker/richer instead.
   onAccentSoft: string
-  background: string
-  surface: string
-  surfaceMuted: string
-  border: string
   icon: string
   tabIconDefault: string
 }
@@ -49,10 +49,6 @@ export const AccentColors: Record<AccentName, { light: AccentPalette; dark: Acce
       accent: '#AB551C',
       accentSoft: '#EACCB8',
       onAccentSoft: '#8A400F',
-      background: '#F8F2ED',
-      surface: '#FFFFFF',
-      surfaceMuted: '#EEE6DD',
-      border: '#E4D9CE',
       icon: '#73695E',
       tabIconDefault: '#8C8278'
     },
@@ -60,60 +56,24 @@ export const AccentColors: Record<AccentName, { light: AccentPalette; dark: Acce
       accent: '#EA762A',
       accentSoft: '#3B281C',
       onAccentSoft: '#EA762A',
-      background: '#15120F',
-      surface: '#211C18',
-      surfaceMuted: '#2C2621',
-      border: '#413830',
       icon: '#ABA196',
       tabIconDefault: '#847A71'
     }
   },
   teal: {
     light: {
-      accent: '#17798C',
-      accentSoft: '#B8E2EA',
-      onAccentSoft: '#0D6677',
-      background: '#EDF6F8',
-      surface: '#FFFFFF',
-      surfaceMuted: '#DDEBEE',
-      border: '#CEE0E4',
-      icon: '#5E7073',
-      tabIconDefault: '#78898C'
+      accent: '#1F3A5F',
+      accentSoft: '#C2D3E3',
+      onAccentSoft: '#16283F',
+      icon: '#5C697A',
+      tabIconDefault: '#77869A'
     },
     dark: {
-      accent: '#19C4E6',
-      accentSoft: '#1C353B',
-      onAccentSoft: '#19C4E6',
-      background: '#0F1415',
-      surface: '#181F21',
-      surfaceMuted: '#212A2C',
-      border: '#303E41',
-      icon: '#96A8AB',
-      tabIconDefault: '#718184'
-    }
-  },
-  pink: {
-    light: {
-      accent: '#C5204C',
-      accentSoft: '#EAB8C5',
-      onAccentSoft: '#9A1337',
-      background: '#F8EDEF',
-      surface: '#FFFFFF',
-      surfaceMuted: '#EEDDE0',
-      border: '#E4CED1',
-      icon: '#735E62',
-      tabIconDefault: '#8C787B'
-    },
-    dark: {
-      accent: '#EB5C82',
-      accentSoft: '#3B1C24',
-      onAccentSoft: '#EB5C82',
-      background: '#150F10',
-      surface: '#211819',
-      surfaceMuted: '#2C2122',
-      border: '#413032',
-      icon: '#AB969A',
-      tabIconDefault: '#847174'
+      accent: '#4A8FE0',
+      accentSoft: '#1C2C3E',
+      onAccentSoft: '#4A8FE0',
+      icon: '#98A8BC',
+      tabIconDefault: '#71829A'
     }
   },
   green: {
@@ -121,10 +81,6 @@ export const AccentColors: Record<AccentName, { light: AccentPalette; dark: Acce
       accent: '#2E5E3F',
       accentSoft: '#C6DFCA',
       onAccentSoft: '#1F4A2C',
-      background: '#EFF5EF',
-      surface: '#FFFFFF',
-      surfaceMuted: '#E3EDE4',
-      border: '#D5E4D6',
       icon: '#63756A',
       tabIconDefault: '#7F9184'
     },
@@ -132,36 +88,24 @@ export const AccentColors: Record<AccentName, { light: AccentPalette; dark: Acce
       accent: '#4CBB6C',
       accentSoft: '#1E3A28',
       onAccentSoft: '#4CBB6C',
-      background: '#0F1512',
-      surface: '#1A211D',
-      surfaceMuted: '#242E27',
-      border: '#37423A',
       icon: '#9AAB9E',
       tabIconDefault: '#7C8C80'
     }
   },
   red: {
     light: {
-      accent: '#7A2A34',
-      accentSoft: '#E6C3C7',
-      onAccentSoft: '#5C1F27',
-      background: '#F9F0F0',
-      surface: '#FFFFFF',
-      surfaceMuted: '#EFDEDF',
-      border: '#E5D0D1',
-      icon: '#7A6264',
-      tabIconDefault: '#8F797B'
+      accent: '#8B1E1E',
+      accentSoft: '#E8C7C7',
+      onAccentSoft: '#5C1414',
+      icon: '#7D6362',
+      tabIconDefault: '#927A79'
     },
     dark: {
-      accent: '#EE5A64',
-      accentSoft: '#3B1E20',
-      onAccentSoft: '#EE5A64',
-      background: '#160F0F',
-      surface: '#221819',
-      surfaceMuted: '#2D2122',
-      border: '#423031',
-      icon: '#AC9698',
-      tabIconDefault: '#857274'
+      accent: '#EF5257',
+      accentSoft: '#3A1D1D',
+      onAccentSoft: '#EF5257',
+      icon: '#AF9998',
+      tabIconDefault: '#897372'
     }
   }
 }

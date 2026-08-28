@@ -116,7 +116,7 @@ export default function SpinScreen() {
     return (
       <SafeAreaView style={[styles.container, { backgroundColor }]} edges={['bottom']}>
         <View style={styles.centered}>
-          <Dices size={64} color={textMutedColor} strokeWidth={1.5} />
+          <Dices size={64} color={accentColor} strokeWidth={1.5} />
           <ThemedText style={[Typography.sectionTitle, styles.centeredText, { color: textColor }]}>
             {t('spin.emptyTitle')}
           </ThemedText>

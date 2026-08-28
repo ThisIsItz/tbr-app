@@ -2,19 +2,12 @@ import { AccentColors, Colors } from '@/lib/theme/theme'
 import { useAppColorScheme } from '@/hooks/useAppColorScheme'
 
 type BaseColorName = keyof typeof Colors.light & keyof typeof Colors.dark
-type AccentPaletteName = 'background' | 'surface' | 'surfaceMuted' | 'border' | 'icon' | 'tabIconDefault'
+type AccentPaletteName = 'icon' | 'tabIconDefault'
 type AccentAliasName = 'accent' | 'tint' | 'tabIconSelected'
 export type ThemeColorName = BaseColorName | AccentPaletteName | AccentAliasName | 'accentSoft' | 'onAccentSoft'
 
 const ACCENT_ALIAS_KEYS = new Set<ThemeColorName>(['accent', 'tint', 'tabIconSelected'])
-const ACCENT_PALETTE_KEYS = new Set<ThemeColorName>([
-  'background',
-  'surface',
-  'surfaceMuted',
-  'border',
-  'icon',
-  'tabIconDefault',
-])
+const ACCENT_PALETTE_KEYS = new Set<ThemeColorName>(['icon', 'tabIconDefault'])
 
 export function useThemeColor(
   props: { light?: string; dark?: string },

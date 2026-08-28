@@ -54,7 +54,7 @@ function isThemePreference(value: string | null): value is ThemePreference {
 }
 
 function isAccentPreference(value: string | null): value is AccentPreference {
-  return value === 'orange' || value === 'teal' || value === 'pink' || value === 'green' || value === 'red';
+  return value === 'orange' || value === 'teal' || value === 'green' || value === 'red';
 }
 
 function RootLayout() {

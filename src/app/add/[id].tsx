@@ -111,7 +111,7 @@ export default function AddBookScreen() {
             disabled={addBook.isPending}
             accessibilityRole="button"
             accessibilityLabel={t('addConfirm.save')}>
-            <ThemedText style={[Typography.button, styles.addPillText]}>{t('search.add')}</ThemedText>
+            <ThemedText style={[Typography.button, { color: accentColor }]}>{t('search.add')}</ThemedText>
           </Pressable>
         }
       />
@@ -165,8 +165,5 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  addPillText: {
-    color: '#1A1310',
   },
 });

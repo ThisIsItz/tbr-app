@@ -30,6 +30,8 @@ export default function MyTbrScreen() {
   const textColor = useThemeColor({}, 'text');
   const textMutedColor = useThemeColor({}, 'textMuted');
   const accentColor = useThemeColor({}, 'accent');
+  const accentSoftColor = useThemeColor({}, 'accentSoft');
+  const onAccentSoftColor = useThemeColor({}, 'onAccentSoft');
   const onAccentColor = useThemeColor({}, 'onAccent');
   const surfaceMutedColor = useThemeColor({}, 'surfaceMuted');
 
@@ -194,16 +196,16 @@ export default function MyTbrScreen() {
             hitSlop={8}
             accessibilityRole="button"
             accessibilityLabel={t('spin.title')}
-            style={[styles.iconButton, { backgroundColor: surfaceMutedColor }]}>
-            <Dices size={20} color={textColor} strokeWidth={1.75} />
+            style={[styles.iconButton, { backgroundColor: accentSoftColor }]}>
+            <Dices size={20} color={onAccentSoftColor} strokeWidth={1.75} />
           </Pressable>
           <Pressable
             onPress={() => router.push('/settings')}
             hitSlop={8}
             accessibilityRole="button"
             accessibilityLabel={t('settings.title')}
-            style={[styles.iconButton, { backgroundColor: surfaceMutedColor }]}>
-            <Settings size={20} color={textColor} strokeWidth={1.75} />
+            style={[styles.iconButton, { backgroundColor: accentSoftColor }]}>
+            <Settings size={20} color={onAccentSoftColor} strokeWidth={1.75} />
           </Pressable>
         </View>
       </View>
@@ -262,7 +264,7 @@ export default function MyTbrScreen() {
 
       {isLibraryEmpty ? (
         <View style={styles.centered}>
-          <BookOpenText size={64} color={textMutedColor} strokeWidth={1.5} />
+          <BookOpenText size={64} color={accentColor} strokeWidth={1.5} />
           <ThemedText style={[Typography.sectionTitle, styles.centeredText, { color: textColor }]}>
             {t('library.emptyTitle')}
           </ThemedText>

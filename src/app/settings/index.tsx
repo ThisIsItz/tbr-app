@@ -19,16 +19,10 @@ import type { ThemePreference } from '@/lib/theme/AppThemeProvider';
 
 const ACCENT_OPTIONS: {
   value: AccentName;
-  labelKey:
-    | 'settings.accentOrange'
-    | 'settings.accentTeal'
-    | 'settings.accentPink'
-    | 'settings.accentGreen'
-    | 'settings.accentRed';
+  labelKey: 'settings.accentOrange' | 'settings.accentTeal' | 'settings.accentGreen' | 'settings.accentRed';
 }[] = [
   { value: 'orange', labelKey: 'settings.accentOrange' },
   { value: 'teal', labelKey: 'settings.accentTeal' },
-  { value: 'pink', labelKey: 'settings.accentPink' },
   { value: 'green', labelKey: 'settings.accentGreen' },
   { value: 'red', labelKey: 'settings.accentRed' },
 ];
@@ -111,7 +105,6 @@ function AppearanceCards({
   const surfaceColor = useThemeColor({}, 'surface');
   const shadowColor = useThemeColor({}, 'shadow');
   const textColor = useThemeColor({}, 'text');
-  const textMutedColor = useThemeColor({}, 'textMuted');
   const accentColor = useThemeColor({}, 'accent');
   const accentSoftColor = useThemeColor({}, 'accentSoft');
   const onAccentSoftColor = useThemeColor({}, 'onAccentSoft');
@@ -121,7 +114,7 @@ function AppearanceCards({
       {APPEARANCE_OPTIONS.map((option) => {
         const isActive = option.value === selected;
         const Icon = option.icon;
-        const iconColor = isActive ? onAccentSoftColor : textMutedColor;
+        const iconColor = isActive ? onAccentSoftColor : accentColor;
         const isFilled = option.value === 'light' || option.value === 'dark';
         return (
           <Pressable
@@ -169,8 +162,6 @@ function AccentCards({
 }) {
   const { colorScheme } = useAppColorScheme();
   const surfaceColor = useThemeColor({}, 'surface');
-  const shadowColor = useThemeColor({}, 'shadow');
-  const textColor = useThemeColor({}, 'text');
 
   return (
     <View style={styles.accentGrid}>
@@ -185,21 +176,10 @@ function AccentCards({
             accessibilityLabel={t(option.labelKey)}
             accessibilityState={{ selected: isActive }}
             style={[
-              styles.accentCard,
-              {
-                backgroundColor: isActive ? palette.accentSoft : surfaceColor,
-                borderColor: isActive ? palette.accent : 'transparent',
-                shadowColor,
-              },
+              styles.accentSwatchButton,
+              { borderColor: isActive ? palette.accent : 'transparent' },
             ]}>
-            <View style={[styles.accentSwatch, { backgroundColor: palette.accent }]} />
-            <ThemedText
-              style={[
-                Typography.metadata,
-                { color: isActive ? palette.onAccentSoft : textColor, fontWeight: isActive ? '700' : '500' },
-              ]}>
-              {t(option.labelKey)}
-            </ThemedText>
+            <View style={[styles.accentSwatch, { backgroundColor: palette.accent, borderColor: surfaceColor }]} />
           </Pressable>
         );
       })}
@@ -439,26 +419,21 @@ const styles = StyleSheet.create({
   },
   accentGrid: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
+    gap: 12,
   },
-  accentCard: {
-    width: '31%',
+  accentSwatchButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    borderWidth: 2,
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 6,
-    paddingVertical: 14,
-    borderRadius: 14,
-    borderWidth: 1.5,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 1,
-    shadowRadius: 6,
-    elevation: 2,
   },
   accentSwatch: {
-    width: 22,
-    height: 22,
-    borderRadius: 11,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    borderWidth: 2,
   },
   lockedSection: {
     position: 'relative',
