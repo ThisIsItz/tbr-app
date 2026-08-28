@@ -41,25 +41,8 @@ export default function SpinScreen() {
   const { data: books } = useBooks();
   const candidates = useMemo(() => (books ?? []).filter((book) => book.status === 'to_read'), [books]);
 
-  const coverUrls = useMemo(
-    () =>
-      Array.from(
-        new Set(candidates.map((book) => toHttpsUrl(book.thumbnailUrl)).filter((url): url is string => !!url)),
-      ),
-    [candidates],
-  );
-
   const [coversReady, setCoversReady] = useState(false);
-  const settledCountRef = useRef(0);
-  useEffect(() => {
-    settledCountRef.current = 0;
-    setCoversReady(coverUrls.length === 0);
-  }, [coverUrls]);
-
-  const handleCoverSettled = useCallback(() => {
-    settledCountRef.current += 1;
-    if (settledCountRef.current >= coverUrls.length) setCoversReady(true);
-  }, [coverUrls.length]);
+  const handleReelReady = useCallback(() => setCoversReady(true), []);
 
   const [spinToken, setSpinToken] = useState(0);
   const [isSpinning, setIsSpinning] = useState(false);
@@ -70,6 +53,7 @@ export default function SpinScreen() {
   const handleSpinPress = useCallback(() => {
     setLandedBook(null);
     setIsSpinning(true);
+    setShowConfetti(false);
     setSpinToken((token) => token + 1);
   }, []);
 
@@ -129,30 +113,22 @@ export default function SpinScreen() {
         <ThemedText style={[Typography.body, { color: textMutedColor }]}>{t('spin.subtitle')}</ThemedText>
       </View>
 
-      <View style={styles.hiddenPreload} pointerEvents="none">
-        {coverUrls.map((url) => (
-          <Image
-            key={url}
-            source={{ uri: url }}
-            style={styles.hiddenPreloadImage}
-            onLoad={handleCoverSettled}
-            onError={handleCoverSettled}
+      <View style={styles.reelContainer}>
+        <View style={{ opacity: coversReady ? 1 : 0 }}>
+          <SpinReel
+            candidates={candidates}
+            spinToken={spinToken}
+            excludeIdFromTarget={lastLandedId}
+            onLanded={handleLanded}
+            onReady={handleReelReady}
           />
-        ))}
-      </View>
-
-      {coversReady ? (
-        <SpinReel
-          candidates={candidates}
-          spinToken={spinToken}
-          excludeIdFromTarget={lastLandedId}
-          onLanded={handleLanded}
-        />
-      ) : (
-        <View style={styles.reelLoading}>
-          <ActivityIndicator color={accentColor} />
         </View>
-      )}
+        {!coversReady && (
+          <View style={styles.reelLoadingOverlay} pointerEvents="none">
+            <ActivityIndicator color={accentColor} />
+          </View>
+        )}
+      </View>
 
       <Animated.View style={spinButtonAnimatedStyle}>
         <Pressable
@@ -228,21 +204,17 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 16,
   },
-  reelLoading: {
-    height: 220,
+  reelContainer: {
+    position: 'relative',
+  },
+  reelLoadingOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  hiddenPreload: {
-    position: 'absolute',
-    width: 1,
-    height: 1,
-    opacity: 0,
-    overflow: 'hidden',
-  },
-  hiddenPreloadImage: {
-    width: 1,
-    height: 1,
   },
   centered: {
     flex: 1,

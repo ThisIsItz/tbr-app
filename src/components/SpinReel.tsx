@@ -38,9 +38,10 @@ interface SpinReelProps {
   spinToken: number;
   excludeIdFromTarget?: string | null;
   onLanded: (book: Book) => void;
+  onReady?: () => void;
 }
 
-export function SpinReel({ candidates, spinToken, excludeIdFromTarget, onLanded }: SpinReelProps) {
+export function SpinReel({ candidates, spinToken, excludeIdFromTarget, onLanded, onReady }: SpinReelProps) {
   const accentColor = useThemeColor({}, 'accent');
   const translateX = useSharedValue(0);
   const [items, setItems] = useState<Book[] | null>(null);
@@ -49,12 +50,31 @@ export function SpinReel({ candidates, spinToken, excludeIdFromTarget, onLanded 
   const { itemWidth, pitch, viewportHeight } = layout;
 
   const candidatesRef = useRef(candidates);
-  candidatesRef.current = candidates;
   const excludeIdRef = useRef(excludeIdFromTarget);
-  excludeIdRef.current = excludeIdFromTarget;
   const onLandedRef = useRef(onLanded);
-  onLandedRef.current = onLanded;
   const currentBookRef = useRef<Book | null>(null);
+  const centerIndexRef = useRef(0);
+  const onReadyRef = useRef(onReady);
+
+  useEffect(() => {
+    candidatesRef.current = candidates;
+    excludeIdRef.current = excludeIdFromTarget;
+    onLandedRef.current = onLanded;
+    onReadyRef.current = onReady;
+  });
+
+  const readyFiredRef = useRef(false);
+  const readyTotalRef = useRef(0);
+  const readySettledRef = useRef(0);
+
+  const handleItemSettled = useCallback(() => {
+    if (readyFiredRef.current) return;
+    readySettledRef.current += 1;
+    if (readySettledRef.current >= readyTotalRef.current) {
+      readyFiredRef.current = true;
+      onReadyRef.current?.();
+    }
+  }, []);
 
   const centerXForIndex = useCallback(
     (index: number) => -(index * pitch) + (viewportWidth / 2 - itemWidth / 2),
@@ -88,8 +108,12 @@ export function SpinReel({ candidates, spinToken, excludeIdFromTarget, onLanded 
     const trailing = buildFiller(pool);
 
     currentBookRef.current = pool[0];
+    centerIndexRef.current = leading.length;
     translateX.value = centerXForIndex(leading.length);
-    setItems([...leading, ...pool, ...trailing]);
+    const initialItems = [...leading, ...pool, ...trailing];
+    readyTotalRef.current = initialItems.length;
+    readySettledRef.current = 0;
+    setItems(initialItems);
   }, [items, spinToken, candidates.length, viewportWidth, translateX, buildFiller, centerXForIndex]);
 
   useEffect(() => {
@@ -111,27 +135,32 @@ export function SpinReel({ candidates, spinToken, excludeIdFromTarget, onLanded 
 
     const startBook = currentBookRef.current ?? pool[0];
     const rotatedPool = rotateToStart(pool, startBook);
-    const leading = buildFiller(pool);
-    const trailing = buildFiller(pool);
 
+    // index 0 of rotatedPool is startBook, which is already sitting at centerIndexRef.current,
+    // so the loop continues from index 1 instead of repeating it.
     const loops: Book[] = [];
-    for (let i = 0; i < REEL_LENGTH; i++) {
+    for (let i = 1; i < REEL_LENGTH; i++) {
       loops.push(rotatedPool[i % rotatedPool.length]);
     }
     loops.push(target);
 
-    const startIndex = leading.length;
-    const finalIndex = leading.length + loops.length - 1;
+    const trailing = buildFiller(pool);
+    const baseIndex = centerIndexRef.current;
+    const finalIndex = baseIndex + loops.length;
     const finalX = centerXForIndex(finalIndex);
 
-    setItems([...leading, ...loops, ...trailing]);
-    translateX.value = centerXForIndex(startIndex);
+    // Extend the existing row past the currently centered item instead of swapping in a
+    // whole new array — translateX keeps animating from wherever it already is, so there's
+    // no jump to a differently-shaped row and nothing to visually desync at the start.
+    setItems((prev) => [...(prev ?? []).slice(0, baseIndex + 1), ...loops, ...trailing]);
+
     translateX.value = withTiming(finalX, { duration: SPIN_DURATION, easing: SPIN_EASING }, (finished) => {
       if (finished) {
-        runOnJS((book: Book) => {
+        runOnJS((book: Book, landedIndex: number) => {
           currentBookRef.current = book;
+          centerIndexRef.current = landedIndex;
           onLandedRef.current(book);
-        })(target);
+        })(target, finalIndex);
       }
     });
   }, [spinToken, translateX, buildFiller, centerXForIndex, rotateToStart]);
@@ -157,6 +186,7 @@ export function SpinReel({ candidates, spinToken, excludeIdFromTarget, onLanded 
               translateX={translateX}
               viewportWidth={viewportWidth}
               layout={layout}
+              onSettled={handleItemSettled}
             />
           ))}
         </Animated.View>
@@ -185,9 +215,10 @@ interface ReelItemProps {
   translateX: SharedValue<number>;
   viewportWidth: number;
   layout: ReturnType<typeof getLayout>;
+  onSettled: () => void;
 }
 
-function ReelItem({ book, index, translateX, viewportWidth, layout }: ReelItemProps) {
+function ReelItem({ book, index, translateX, viewportWidth, layout, onSettled }: ReelItemProps) {
   const surfaceMutedColor = useThemeColor({}, 'surfaceMuted');
   const textMutedColor = useThemeColor({}, 'textMuted');
   const { t } = useTranslation();
@@ -195,34 +226,53 @@ function ReelItem({ book, index, translateX, viewportWidth, layout }: ReelItemPr
   const [failed, setFailed] = useState(false);
   const { itemWidth, itemGap, pitch, coverWidth, coverHeight } = layout;
 
+  const onSettledRef = useRef(onSettled);
+  useEffect(() => {
+    onSettledRef.current = onSettled;
+  });
+  const settledOnceRef = useRef(false);
+  const markSettled = useCallback(() => {
+    if (settledOnceRef.current) return;
+    settledOnceRef.current = true;
+    onSettledRef.current();
+  }, []);
+
+  useEffect(() => {
+    if (!coverUrl) markSettled();
+  }, [coverUrl, markSettled]);
+
   const itemCenterX = index * pitch + itemWidth / 2;
   const scaleStyle = useAnimatedStyle(() => {
     const distance = Math.abs(translateX.value + itemCenterX - viewportWidth / 2);
-    const scale = interpolate(distance, [0, pitch], [1, 0.85], Extrapolation.CLAMP);
+    const scale = interpolate(distance, [0, pitch], [1, 0.94], Extrapolation.CLAMP);
     return { transform: [{ scale }] };
   });
 
   return (
     <Animated.View style={[styles.item, { width: itemWidth, marginRight: itemGap }, scaleStyle]}>
-      {coverUrl && !failed ? (
-        <Image
-          source={{ uri: coverUrl }}
-          style={{ width: coverWidth, height: coverHeight, borderRadius: 8 }}
-          contentFit="cover"
-          onError={(e) => {
-            console.warn('[SpinReel] cover failed to load:', coverUrl, e.error);
-            setFailed(true);
-          }}
-        />
-      ) : (
-        <View
-          style={[
-            styles.coverPlaceholder,
-            { width: coverWidth, height: coverHeight, borderRadius: 8, backgroundColor: surfaceMutedColor },
-          ]}>
-          <ThemedText style={[Typography.caption, { color: textMutedColor }]}>{t('bookCard.noCover')}</ThemedText>
-        </View>
-      )}
+      {/* The placeholder is always mounted underneath so a freshly-mounted Image (every
+          re-spin appends new keys, even for repeat books) never leaves a blank frame
+          while it loads or fails — it just uncovers the placeholder that was already there. */}
+      <View
+        style={[
+          styles.coverPlaceholder,
+          { width: coverWidth, height: coverHeight, borderRadius: 8, backgroundColor: surfaceMutedColor },
+        ]}>
+        <ThemedText style={[Typography.caption, { color: textMutedColor }]}>{t('bookCard.noCover')}</ThemedText>
+        {coverUrl && !failed && (
+          <Image
+            source={{ uri: coverUrl }}
+            style={[StyleSheet.absoluteFillObject, { borderRadius: 8 }]}
+            contentFit="cover"
+            onLoad={markSettled}
+            onError={(e) => {
+              console.warn('[SpinReel] cover failed to load:', coverUrl, e.error);
+              setFailed(true);
+              markSettled();
+            }}
+          />
+        )}
+      </View>
     </Animated.View>
   );
 }
@@ -243,6 +293,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     padding: 4,
+    position: 'relative',
+    overflow: 'hidden',
   },
   indicator: {
     position: 'absolute',
