@@ -151,7 +151,7 @@ export function LibraryFiltersSheet({
 
             <ScrollView style={styles.scroll}>
               <View style={styles.section}>
-                <ThemedText style={[Typography.sectionTitle, { color: textColor }]}>
+                <ThemedText style={[Typography.caption, styles.groupLabel, { color: textMutedColor }]}>
                   {t('library.genre')}
                 </ThemedText>
                 {genreOptions.length === 0 ? (
@@ -172,7 +172,7 @@ export function LibraryFiltersSheet({
               </View>
 
               <View style={[styles.section, styles.sectionDivider, { borderTopColor: borderColor }]}>
-                <ThemedText style={[Typography.sectionTitle, { color: textColor }]}>
+                <ThemedText style={[Typography.caption, styles.groupLabel, { color: textMutedColor }]}>
                   {t('library.author')}
                 </ThemedText>
                 <View>
@@ -194,7 +194,7 @@ export function LibraryFiltersSheet({
               </View>
 
               <View style={[styles.section, styles.sectionDivider, { borderTopColor: borderColor }]}>
-                <ThemedText style={[Typography.sectionTitle, { color: textColor }]}>
+                <ThemedText style={[Typography.caption, styles.groupLabel, { color: textMutedColor }]}>
                   {t('library.language')}
                 </ThemedText>
                 <View>
@@ -277,6 +277,11 @@ const styles = StyleSheet.create({
   },
   section: {
     gap: 4,
+  },
+  groupLabel: {
+    fontWeight: '700',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
   },
   sectionDivider: {
     borderTopWidth: 1,
