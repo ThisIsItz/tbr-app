@@ -173,7 +173,9 @@
     "importInvalidFile": "Este archivo no parece ser una copia de seguridad válida de TBR.",
     "about": "Acerca de",
     "appIcon": "Icono de la app",
-    "iconAttribution": "Diseñado por Magnific, vía Flaticon"
+    "iconAttribution": "Diseñado por Magnific, vía Flaticon",
+    "contact": "Contacto",
+    "contactDescription": "¿Dudas o sugerencias? Escríbenos"
   },
   "errors": {
     "rateLimit": "Google Books está saturado ahora mismo. Espera un momento e inténtalo de nuevo.",

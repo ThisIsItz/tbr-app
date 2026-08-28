@@ -173,7 +173,9 @@
     "importInvalidFile": "This doesn't look like a valid TBR backup file.",
     "about": "About",
     "appIcon": "App icon",
-    "iconAttribution": "Designed by Magnific, via Flaticon"
+    "iconAttribution": "Designed by Magnific, via Flaticon",
+    "contact": "Contact",
+    "contactDescription": "Questions or suggestions? Get in touch"
   },
   "errors": {
     "rateLimit": "Google Books is busy right now. Wait a moment and try again.",

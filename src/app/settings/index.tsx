@@ -1,6 +1,6 @@
 import * as DocumentPicker from 'expo-document-picker';
 import { router } from 'expo-router';
-import { Download, Library, Lock, Moon, Sun, Upload } from 'lucide-react-native';
+import { Download, Library, Lock, Mail, Moon, Sun, Upload } from 'lucide-react-native';
 import type { ReactNode } from 'react';
 import { ActivityIndicator, Alert, Linking, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -341,11 +341,27 @@ export default function SettingsScreen() {
         <View style={[styles.optionsCard, { shadowColor }]}>
           <View style={[styles.optionsCardInner, { backgroundColor: surfaceColor }]}>
             <Pressable
+              onPress={() => Linking.openURL('mailto:itziarurbieta94@gmail.com')}
+              accessibilityRole="link"
+              accessibilityLabel={t('settings.contact')}
+              accessibilityHint={t('settings.contactDescription')}
+              style={styles.dataRow}>
+              <Mail size={20} color={textColor} strokeWidth={1.75} />
+              <View style={styles.dataRowText}>
+                <ThemedText style={[Typography.body, { color: textColor }]}>
+                  {t('settings.contact')}
+                </ThemedText>
+                <ThemedText style={[Typography.caption, { color: textMutedColor }]}>
+                  {t('settings.contactDescription')}
+                </ThemedText>
+              </View>
+            </Pressable>
+            <Pressable
               onPress={() => Linking.openURL('https://www.flaticon.com/free-icons/library')}
               accessibilityRole="link"
               accessibilityLabel={t('settings.appIcon')}
               accessibilityHint={t('settings.iconAttribution')}
-              style={styles.dataRow}>
+              style={[styles.dataRow, { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: borderColor }]}>
               <Library size={20} color={textColor} strokeWidth={1.75} />
               <View style={styles.dataRowText}>
                 <ThemedText style={[Typography.body, { color: textColor }]}>
