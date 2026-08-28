@@ -63,7 +63,7 @@ export default function MyTbrScreen() {
   const [genreFilters, setGenreFilters] = useState<string[]>([]);
   const [authorFilter, setAuthorFilter] = useState<string | null>(null);
   const [languageFilter, setLanguageFilter] = useState<string | null>(null);
-  const [sortBy, setSortBy] = useState<SortBy>('title-asc');
+  const [sortBy, setSortBy] = useState<SortBy>('recent');
 
   const sortOptions = [
     { value: 'recent', label: t('library.sortRecent'), shortLabel: t('library.sortRecentShort') },
@@ -167,7 +167,7 @@ export default function MyTbrScreen() {
     setGenreFilters([]);
     setAuthorFilter(null);
     setLanguageFilter(null);
-    setSortBy('title-asc');
+    setSortBy('recent');
   }, [isLibraryEmpty]);
 
   if (isLoading) {
@@ -240,7 +240,7 @@ export default function MyTbrScreen() {
               compact
               selected={sortBy}
               selectedLabel={sortOptions.find((option) => option.value === sortBy)?.shortLabel}
-              onSelect={(value) => setSortBy((value as SortBy) ?? 'title-asc')}
+              onSelect={(value) => setSortBy((value as SortBy) ?? 'recent')}
               options={sortOptions}
             />
           </View>
