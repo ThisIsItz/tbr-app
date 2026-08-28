@@ -136,7 +136,7 @@ export default function MyTbrScreen() {
   }, [books, debouncedSearchQuery, genreFilters, authorFilter, languageFilter, sortBy, genresByBookId]);
 
   const activeFilterLabels = [
-    ...genreFilters,
+    ...genreFilters.map((genre) => genreTranslations[genre] ?? genre),
     ...(authorFilter ? [authorFilter] : []),
     ...(languageFilter ? [getLanguageName(languageFilter, locale)] : []),
     ...(debouncedSearchQuery.trim() ? [`"${debouncedSearchQuery.trim()}"`] : []),
@@ -222,6 +222,7 @@ export default function MyTbrScreen() {
           <View style={styles.filterRow}>
             <LibraryFiltersSheet
               genreOptions={allGenres}
+              genreLabels={genreTranslations}
               selectedGenres={genreFilters}
               onGenresChange={setGenreFilters}
               authorOptions={allAuthors}

@@ -22,6 +22,7 @@ import { ThemedText } from '@/components/ThemedText';
 import { Typography } from '@/lib/theme/theme';
 import { useAddBook, useBook, useUpdateBookDetails } from '@/hooks/useLibrary';
 import { useThemeColor } from '@/hooks/useThemeColor';
+import { useTranslatedGenres } from '@/hooks/useTranslatedGenres';
 import { useTranslation } from '@/hooks/useTranslation';
 import { deleteLocalImage, persistLocalImage } from '@/lib/localImage';
 
@@ -67,6 +68,7 @@ export default function AddManuallyScreen() {
   const [pageCountText, setPageCountText] = useState('');
   const [notes, setNotes] = useState('');
   const [isGenreModalVisible, setGenreModalVisible] = useState(false);
+  const genreTranslations = useTranslatedGenres(genres);
 
   useEffect(() => {
     if (!isEditing || !existingBook || isPrefilled) return;
@@ -319,7 +321,9 @@ export default function AddManuallyScreen() {
                 accessibilityLabel={genres.length > 0 ? t('bookDetail.editGenres') : t('addManually.addGenres')}>
                 {genres.map((genre) => (
                   <View key={genre} style={[styles.genreChip, { backgroundColor: accentSoftColor }]}>
-                    <ThemedText style={[Typography.caption, { color: onAccentSoftColor }]}>{genre}</ThemedText>
+                    <ThemedText style={[Typography.caption, { color: onAccentSoftColor }]}>
+                      {genreTranslations[genre] ?? genre}
+                    </ThemedText>
                   </View>
                 ))}
                 <View style={[styles.genreChip, styles.addGenreChip, { borderColor: textMutedColor }]}>

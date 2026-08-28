@@ -11,6 +11,7 @@ import { useTranslation } from '@/hooks/useTranslation';
 
 interface LibraryFiltersSheetProps {
   genreOptions: string[];
+  genreLabels?: Record<string, string>;
   selectedGenres: string[];
   onGenresChange: (genres: string[]) => void;
   authorOptions: string[];
@@ -24,6 +25,7 @@ interface LibraryFiltersSheetProps {
 
 export function LibraryFiltersSheet({
   genreOptions,
+  genreLabels,
   selectedGenres,
   onGenresChange,
   authorOptions,
@@ -158,7 +160,7 @@ export function LibraryFiltersSheet({
                     {genreOptions.map((genre) =>
                       renderRow({
                         key: genre,
-                        label: genre,
+                        label: genreLabels?.[genre] ?? genre,
                         isSelected: selectedGenres.includes(genre),
                         checkbox: true,
                         onPress: () => toggleGenre(genre),

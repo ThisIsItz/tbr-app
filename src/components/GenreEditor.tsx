@@ -4,6 +4,7 @@ import { Pressable, StyleSheet, TextInput, View } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { Typography } from '@/lib/theme/theme';
 import { useThemeColor } from '@/hooks/useThemeColor';
+import { useTranslatedGenres } from '@/hooks/useTranslatedGenres';
 import { useTranslation } from '@/hooks/useTranslation';
 import { normalizeGenres } from '@/lib/genres';
 
@@ -14,6 +15,7 @@ interface GenreEditorProps {
 
 export function GenreEditor({ genres, onChange }: GenreEditorProps) {
   const { t } = useTranslation();
+  const genreTranslations = useTranslatedGenres(genres);
   const [draft, setDraft] = useState('');
 
   const textColor = useThemeColor({}, 'text');
@@ -44,7 +46,9 @@ export function GenreEditor({ genres, onChange }: GenreEditorProps) {
         )}
         {genres.map((genre) => (
           <View key={genre} style={[styles.chip, { backgroundColor: accentSoftColor }]}>
-            <ThemedText style={[Typography.caption, { color: onAccentSoftColor }]}>{genre}</ThemedText>
+            <ThemedText style={[Typography.caption, { color: onAccentSoftColor }]}>
+              {genreTranslations[genre] ?? genre}
+            </ThemedText>
             <Pressable
               onPress={() => handleRemove(genre)}
               hitSlop={8}

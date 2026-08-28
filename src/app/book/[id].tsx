@@ -20,6 +20,7 @@ import { ThemedText } from '@/components/ThemedText';
 import { Typography } from '@/lib/theme/theme';
 import { useBook, useDeleteBook, useUpdateBookGenres, useUpdateBookNotes } from '@/hooks/useLibrary';
 import { useThemeColor } from '@/hooks/useThemeColor';
+import { useTranslatedGenres } from '@/hooks/useTranslatedGenres';
 import { useTranslation } from '@/hooks/useTranslation';
 import { confirmAsync } from '@/lib/confirm';
 import { normalizeGenres } from '@/lib/genres';
@@ -52,6 +53,9 @@ export default function BookDetailScreen() {
   useEffect(() => {
     setNotes(book?.notes ?? '');
   }, [book?.notes]);
+
+  const genres = normalizeGenres(book?.genres ?? []);
+  const genreTranslations = useTranslatedGenres(genres);
 
   function handleNotesBlur() {
     if (!book) return;
@@ -99,7 +103,6 @@ export default function BookDetailScreen() {
   }
 
   const coverUrl = toHttpsUrl(book.thumbnailUrl);
-  const genres = normalizeGenres(book.genres);
   const visibleGenres = genres.slice(0, MAX_VISIBLE_GENRES);
   const extraGenreCount = genres.length - visibleGenres.length;
   const description = book.description ? sanitizeDescription(book.description) : null;
@@ -158,7 +161,9 @@ export default function BookDetailScreen() {
             )}
             {visibleGenres.map((genre) => (
               <View key={genre} style={[styles.genreChip, { backgroundColor: accentSoftColor }]}>
-                <ThemedText style={[Typography.caption, { color: onAccentSoftColor }]}>{genre}</ThemedText>
+                <ThemedText style={[Typography.caption, { color: onAccentSoftColor }]}>
+                  {genreTranslations[genre] ?? genre}
+                </ThemedText>
               </View>
             ))}
             {extraGenreCount > 0 && (
