@@ -57,7 +57,7 @@ export function FilterSheet({
         accessibilityLabel={isActive ? (selectedLabel ?? label) : label}
         style={[
           styles.trigger,
-          compact && styles.triggerCompact,
+          compact ? styles.triggerCompact : styles.triggerFill,
           {
             backgroundColor: isActive ? accentSoftColor : surfaceMutedColor,
             opacity: disabled ? 0.5 : 1,
@@ -128,7 +128,6 @@ export function FilterSheet({
 
 const styles = StyleSheet.create({
   trigger: {
-    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
@@ -137,10 +136,10 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     paddingHorizontal: 10,
   },
+  triggerFill: {
+    flex: 1,
+  },
   triggerCompact: {
-    flexGrow: 0,
-    flexShrink: 0,
-    flexBasis: 'auto',
     paddingHorizontal: 14,
   },
   triggerText: {
