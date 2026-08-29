@@ -18,6 +18,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { GenreEditor } from '@/components/GenreEditor';
+import { Skeleton } from '@/components/Skeleton';
 import { ThemedText } from '@/components/ThemedText';
 import { Typography } from '@/lib/theme/theme';
 import { useAddBook, useBook, useUpdateBookDetails } from '@/hooks/useLibrary';
@@ -69,7 +70,7 @@ export default function AddManuallyScreen() {
   const [pageCountText, setPageCountText] = useState('');
   const [notes, setNotes] = useState('');
   const [isGenreModalVisible, setGenreModalVisible] = useState(false);
-  const { translations: genreTranslations } = useTranslatedGenres(genres);
+  const { translations: genreTranslations, isLoading: genresTranslating } = useTranslatedGenres(genres);
 
   useEffect(() => {
     if (!isEditing || !existingBook || isPrefilled) return;
@@ -322,9 +323,17 @@ export default function AddManuallyScreen() {
                 accessibilityLabel={genres.length > 0 ? t('bookDetail.editGenres') : t('addManually.addGenres')}>
                 {genres.map((genre) => (
                   <View key={genre} style={[styles.genreChip, { backgroundColor: accentSoftColor }]}>
-                    <ThemedText style={[Typography.caption, { color: onAccentSoftColor }]}>
-                      {capitalizeFirst(genreTranslations[genre] ?? genre)}
-                    </ThemedText>
+                    {genresTranslating ? (
+                      <Skeleton
+                        width={Math.min(genre.length * 6, 90)}
+                        height={12}
+                        tint={onAccentSoftColor}
+                      />
+                    ) : (
+                      <ThemedText style={[Typography.caption, { color: onAccentSoftColor }]}>
+                        {capitalizeFirst(genreTranslations[genre] ?? genre)}
+                      </ThemedText>
+                    )}
                   </View>
                 ))}
                 <View style={[styles.genreChip, styles.addGenreChip, { borderColor: textMutedColor }]}>

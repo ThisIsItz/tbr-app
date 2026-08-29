@@ -16,6 +16,7 @@ import {
 import { BookHero, CircleButton } from '@/components/BookHero';
 import { ExpandableDescription } from '@/components/ExpandableDescription';
 import { GenreEditor } from '@/components/GenreEditor';
+import { Skeleton } from '@/components/Skeleton';
 import { ThemedText } from '@/components/ThemedText';
 import { Typography } from '@/lib/theme/theme';
 import { useBook, useDeleteBook, useUpdateBookGenres, useUpdateBookNotes } from '@/hooks/useLibrary';
@@ -56,7 +57,7 @@ export default function BookDetailScreen() {
   }, [book?.notes]);
 
   const genres = normalizeGenres(book?.genres ?? []);
-  const { translations: genreTranslations } = useTranslatedGenres(genres);
+  const { translations: genreTranslations, isLoading: genresTranslating } = useTranslatedGenres(genres);
 
   function handleNotesBlur() {
     if (!book) return;
@@ -162,9 +163,17 @@ export default function BookDetailScreen() {
             )}
             {visibleGenres.map((genre) => (
               <View key={genre} style={[styles.genreChip, { backgroundColor: accentSoftColor }]}>
-                <ThemedText style={[Typography.caption, { color: onAccentSoftColor }]}>
-                  {capitalizeFirst(genreTranslations[genre] ?? genre)}
-                </ThemedText>
+                {genresTranslating ? (
+                  <Skeleton
+                    width={Math.min(genre.length * 6, 90)}
+                    height={12}
+                    tint={onAccentSoftColor}
+                  />
+                ) : (
+                  <ThemedText style={[Typography.caption, { color: onAccentSoftColor }]}>
+                    {capitalizeFirst(genreTranslations[genre] ?? genre)}
+                  </ThemedText>
+                )}
               </View>
             ))}
             {extraGenreCount > 0 && (
