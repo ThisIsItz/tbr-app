@@ -14,6 +14,9 @@
   "library": {
     "title": "Mi TBR",
     "searchPlaceholder": "Buscar en tu TBR",
+    "listView": "Cambiar a vista de lista",
+    "gridView": "Cambiar a vista de cuadrícula",
+    "cardView": "Cambiar a vista de tarjetas",
     "bookCountOne": "{{count}} libro",
     "bookCountOther": "{{count}} libros",
     "bookCountFilteredOne": "{{count}} de {{total}} libro",

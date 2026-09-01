@@ -25,8 +25,11 @@ interface BookCardProps {
   /** 'library' (default): saved-book row with genre/status chips.
    *  'result': compact search-result row — plain-text genre, "Unknown
    *  author" fallback, and a small bottom-right action button instead of
-   *  a full-width one. */
-  variant?: 'library' | 'result';
+   *  a full-width one.
+   *  'list': flat single-line row (small cover, title + author, no
+   *  genres) for the library's compact list view.
+   *  'grid': 2-column shelf tile — large cover, title only, no author/genres. */
+  variant?: 'library' | 'result' | 'list' | 'grid';
 }
 
 export function BookCard({
@@ -51,8 +54,71 @@ export function BookCard({
 
   const coverUrl = toHttpsUrl(thumbnailUrl);
   const isResult = variant === 'result';
+  const isList = variant === 'list';
+  const isGrid = variant === 'grid';
   const displayTitle = capitalizeFirst(title);
   const displayAuthor = author ? capitalizeFirst(author) : author;
+
+  if (isGrid) {
+    return (
+      <Pressable onPress={onPress} accessibilityRole="button" accessibilityLabel={displayTitle} style={styles.gridTile}>
+        {coverUrl ? (
+          <Image
+            source={{ uri: coverUrl }}
+            style={[styles.coverGrid, { shadowColor }]}
+            contentFit="cover"
+            onError={(e) => console.warn('[BookCard] cover failed to load:', coverUrl, e.error)}
+          />
+        ) : (
+          <View
+            style={[
+              styles.coverGrid,
+              styles.coverPlaceholder,
+              { backgroundColor: surfaceMutedColor, shadowColor },
+            ]}>
+            <ThemedText style={[Typography.caption, styles.gridPlaceholderText, { color: textMutedColor }]}>
+              {t('bookCard.noCover')}
+            </ThemedText>
+          </View>
+        )}
+        <ThemedText numberOfLines={2} style={[Typography.metadata, styles.gridTitle, { color: textColor }]}>
+          {displayTitle}
+        </ThemedText>
+      </Pressable>
+    );
+  }
+
+  if (isList) {
+    return (
+      <Pressable
+        onPress={onPress}
+        accessibilityRole="button"
+        accessibilityLabel={displayAuthor ? `${displayTitle}, ${displayAuthor}` : displayTitle}
+        style={[styles.listRow, { borderBottomColor: surfaceMutedColor }]}>
+        {coverUrl ? (
+          <Image
+            source={{ uri: coverUrl }}
+            style={styles.coverList}
+            contentFit="cover"
+            onError={(e) => console.warn('[BookCard] cover failed to load:', coverUrl, e.error)}
+          />
+        ) : (
+          <View style={[styles.coverList, styles.coverPlaceholder, { backgroundColor: surfaceMutedColor }]} />
+        )}
+        <View style={styles.listBody}>
+          <ThemedText numberOfLines={1} style={[Typography.body, styles.listTitle, { color: textColor }]}>
+            {displayTitle}
+          </ThemedText>
+          {!!displayAuthor && (
+            <ThemedText numberOfLines={1} style={[Typography.caption, { color: textMutedColor }]}>
+              {displayAuthor}
+            </ThemedText>
+          )}
+        </View>
+        <IconSymbol name="chevron.right" size={18} color={textMutedColor} />
+      </Pressable>
+    );
+  }
 
   return (
     <Pressable
@@ -260,5 +326,45 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 16,
+  },
+  listRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    paddingVertical: 8,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+  },
+  coverList: {
+    width: 40,
+    height: 56,
+    borderRadius: 6,
+  },
+  listBody: {
+    flex: 1,
+    minWidth: 0,
+    gap: 2,
+  },
+  listTitle: {
+    fontWeight: '600',
+  },
+  gridTile: {
+    flex: 1,
+    gap: 6,
+  },
+  coverGrid: {
+    width: '100%',
+    aspectRatio: 2 / 3,
+    borderRadius: 8,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 1,
+    shadowRadius: 6,
+    elevation: 3,
+  },
+  gridPlaceholderText: {
+    textAlign: 'center',
+    paddingHorizontal: 8,
+  },
+  gridTitle: {
+    fontWeight: '600',
   },
 });

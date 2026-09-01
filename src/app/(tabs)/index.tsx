@@ -1,6 +1,6 @@
 import * as DocumentPicker from 'expo-document-picker';
 import { router } from 'expo-router';
-import { ArrowUpDown, BookOpenText, Dices, Settings } from 'lucide-react-native';
+import { ArrowUpDown, BookOpenText, Dices, LayoutGrid, LayoutList, List, Settings } from 'lucide-react-native';
 import { useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Alert, FlatList, Pressable, StyleSheet, View } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -17,11 +17,15 @@ import { useDebouncedValue } from '@/hooks/useDebouncedValue';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { useTranslatedGenres } from '@/hooks/useTranslatedGenres';
 import { useTranslation } from '@/hooks/useTranslation';
+import { getSetting, setSetting } from '@/api/repository/settingsRepository';
 import { BackupFileError } from '@/lib/backup';
 import { capitalizeFirst } from '@/lib/capitalize';
 import { normalizeGenres } from '@/lib/genres';
 import { getLanguageName } from '@/lib/languageNames';
 import { type Book } from '@/types/book';
+
+type ViewMode = 'card' | 'grid' | 'list';
+const VIEW_MODE_SETTING_KEY = 'libraryViewMode';
 
 type SortBy = 'title-asc' | 'title-desc' | 'author-asc' | 'author-desc' | 'recent';
 
@@ -64,6 +68,26 @@ export default function MyTbrScreen() {
   const [authorFilter, setAuthorFilter] = useState<string | null>(null);
   const [languageFilter, setLanguageFilter] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<SortBy>('recent');
+  const [viewMode, setViewMode] = useState<ViewMode>('card');
+
+  useEffect(() => {
+    getSetting(VIEW_MODE_SETTING_KEY).then((value) => {
+      if (value === 'card' || value === 'grid' || value === 'list') setViewMode(value);
+    });
+  }, []);
+
+  const VIEW_MODE_ORDER: ViewMode[] = ['card', 'grid', 'list'];
+  const nextViewMode = VIEW_MODE_ORDER[(VIEW_MODE_ORDER.indexOf(viewMode) + 1) % VIEW_MODE_ORDER.length];
+  const NEXT_VIEW_MODE_META: Record<ViewMode, { Icon: typeof List; labelKey: string }> = {
+    card: { Icon: LayoutList, labelKey: 'library.cardView' },
+    grid: { Icon: LayoutGrid, labelKey: 'library.gridView' },
+    list: { Icon: List, labelKey: 'library.listView' },
+  };
+
+  function toggleViewMode() {
+    setViewMode(nextViewMode);
+    void setSetting(VIEW_MODE_SETTING_KEY, nextViewMode);
+  }
 
   const sortOptions = [
     { value: 'recent', label: t('library.sortRecent'), shortLabel: t('library.sortRecentShort') },
@@ -243,6 +267,17 @@ export default function MyTbrScreen() {
               onSelect={(value) => setSortBy((value as SortBy) ?? 'recent')}
               options={sortOptions}
             />
+            <Pressable
+              onPress={toggleViewMode}
+              hitSlop={8}
+              accessibilityRole="button"
+              accessibilityLabel={t(NEXT_VIEW_MODE_META[nextViewMode].labelKey)}
+              style={[styles.viewModeButton, { backgroundColor: accentSoftColor }]}>
+              {(() => {
+                const { Icon } = NEXT_VIEW_MODE_META[nextViewMode];
+                return <Icon size={18} color={onAccentSoftColor} strokeWidth={2} />;
+              })()}
+            </Pressable>
           </View>
 
           {hasActiveFilters && (
@@ -306,11 +341,19 @@ export default function MyTbrScreen() {
         </View>
       ) : (
         <FlatList
+          key={viewMode === 'grid' ? 'grid' : 'single'}
           data={filteredBooks}
           keyExtractor={(item: Book) => item.id}
-          contentContainerStyle={styles.listContent}
+          numColumns={viewMode === 'grid' ? 2 : 1}
+          columnWrapperStyle={viewMode === 'grid' ? styles.gridRow : undefined}
+          contentContainerStyle={[
+            styles.listContent,
+            viewMode === 'list' && styles.listContentCompact,
+            viewMode === 'grid' && styles.gridContent,
+          ]}
           renderItem={({ item }) => (
             <BookCard
+              variant={viewMode === 'list' ? 'list' : viewMode === 'grid' ? 'grid' : 'library'}
               title={item.title}
               author={item.authors.join(', ') || null}
               genres={(genresByBookId.get(item.id) ?? []).map((genre) => genreTranslations[genre] ?? genre)}
@@ -384,6 +427,13 @@ const styles = StyleSheet.create({
     marginTop: 12,
     marginBottom: 14,
   },
+  viewModeButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   activeFiltersRow: {
     flexDirection: 'row',
     alignSelf: 'flex-start',
@@ -411,6 +461,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingTop: 10,
     paddingBottom: 88,
+  },
+  listContentCompact: {
+    gap: 0,
+  },
+  gridContent: {
+    gap: 16,
+  },
+  gridRow: {
+    gap: 16,
   },
   floatingAddWrapper: {
     position: 'absolute',
