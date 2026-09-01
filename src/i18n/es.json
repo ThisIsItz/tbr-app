@@ -5,6 +5,7 @@
     "edit": "Editar",
     "clear": "Borrar",
     "retry": "Reintentar",
+    "undo": "Deshacer",
     "remove": "Eliminar",
     "done": "Listo",
     "genericError": "Algo salió mal. Inténtalo de nuevo.",
@@ -91,6 +92,7 @@
   },
   "bookDetail": {
     "description": "Descripción",
+    "removedToast": "\"{{title}}\" eliminado",
     "genres": "Géneros",
     "editGenres": "Editar géneros",
     "noGenres": "Aún no hay géneros.",
@@ -176,8 +178,17 @@
     "about": "Acerca de",
     "appIcon": "Icono de la app",
     "iconAttribution": "Diseñado por Magnific, vía Flaticon",
+    "restorePurchases": "Restaurar compras",
+    "restorePurchasesDescription": "¿Ya desbloqueaste TBR Pro? Restáuralo aquí",
+    "restoreSuccessTitle": "Compras restauradas",
+    "restoreSuccessBody": "TBR Pro está desbloqueado en este dispositivo.",
+    "restoreErrorTitle": "Nada que restaurar",
+    "restoreErrorBody": "No encontramos ninguna compra previa para esta cuenta.",
+    "privacyPolicy": "Política de privacidad",
+    "privacyPolicyDescription": "Cómo trata TBR tus datos",
     "contact": "Contacto",
-    "contactDescription": "¿Dudas o sugerencias? Escríbenos"
+    "contactDescription": "¿Dudas o sugerencias? Escríbenos",
+    "version": "Versión {{version}}"
   },
   "errors": {
     "rateLimit": "Google Books está saturado ahora mismo. Espera un momento e inténtalo de nuevo.",

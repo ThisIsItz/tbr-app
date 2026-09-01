@@ -21,7 +21,7 @@ export interface PurchasesContextValue {
   justPurchased: boolean;
   dismissJustPurchased: () => void;
   purchase: () => Promise<void>;
-  restore: () => Promise<void>;
+  restore: () => Promise<boolean>;
 }
 
 export const PurchasesContext = createContext<PurchasesContextValue | null>(null);
@@ -99,10 +99,13 @@ export function PurchasesProvider({ children }: { children: ReactNode }) {
     setError(null);
     try {
       const customerInfo = await Purchases.restorePurchases();
-      setIsPro(hasProEntitlement(customerInfo));
+      const nowPro = hasProEntitlement(customerInfo);
+      setIsPro(nowPro);
+      return nowPro;
     } catch (err) {
       console.warn('[Purchases] restore failed:', err);
       setError('restore');
+      return false;
     }
   }, []);
 

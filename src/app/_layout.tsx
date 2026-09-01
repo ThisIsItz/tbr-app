@@ -9,6 +9,7 @@ import { useEffect, useState } from 'react';
 import 'react-native-reanimated';
 
 import { PurchaseCelebration } from '@/components/PurchaseCelebration';
+import { UndoToast } from '@/components/UndoToast';
 import { useScreenHeaderOptions } from '@/hooks/useScreenHeaderOptions';
 import { useAppColorScheme } from '@/hooks/useAppColorScheme';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -20,6 +21,7 @@ import { getSetting } from '@/api/repository/settingsRepository';
 import { AppThemeProvider, type AccentPreference, type ThemePreference } from '@/lib/theme/AppThemeProvider';
 import { DEFAULT_ACCENT } from '@/lib/theme/theme';
 import { PurchasesProvider } from '@/lib/purchases/PurchasesProvider';
+import { UndoProvider } from '@/lib/undo/UndoProvider';
 
 export const unstable_settings = {
   anchor: '(tabs)',
@@ -108,40 +110,43 @@ function RootLayoutNav() {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-        <Stack>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen
-            name="book/[id]"
-            options={{ title: t('screenTitles.bookDetails'), ...screenHeaderOptions }}
-          />
-          <Stack.Screen
-            name="add/book"
-            options={{ title: t('screenTitles.addBook'), ...screenHeaderOptions }}
-          />
-          <Stack.Screen
-            name="add/[id]"
-            options={{ title: t('screenTitles.addToTbr'), ...screenHeaderOptions }}
-          />
-          <Stack.Screen
-            name="add/manually"
-            options={{ title: t('screenTitles.addManually'), ...screenHeaderOptions }}
-          />
-          <Stack.Screen
-            name="add/scan-isbn"
-            options={{ title: t('screenTitles.scanIsbn'), ...screenHeaderOptions }}
-          />
-          <Stack.Screen
-            name="settings/index"
-            options={{ title: t('screenTitles.settings'), ...screenHeaderOptions }}
-          />
-          <Stack.Screen name="spin" options={{ title: t('screenTitles.spin'), ...screenHeaderOptions }} />
-          <Stack.Screen
-            name="paywall"
-            options={{ title: t('screenTitles.paywall'), ...screenHeaderOptions }}
-          />
-        </Stack>
-        <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
-        <PurchaseCelebration />
+        <UndoProvider>
+          <Stack>
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen
+              name="book/[id]"
+              options={{ title: t('screenTitles.bookDetails'), ...screenHeaderOptions }}
+            />
+            <Stack.Screen
+              name="add/book"
+              options={{ title: t('screenTitles.addBook'), ...screenHeaderOptions }}
+            />
+            <Stack.Screen
+              name="add/[id]"
+              options={{ title: t('screenTitles.addToTbr'), ...screenHeaderOptions }}
+            />
+            <Stack.Screen
+              name="add/manually"
+              options={{ title: t('screenTitles.addManually'), ...screenHeaderOptions }}
+            />
+            <Stack.Screen
+              name="add/scan-isbn"
+              options={{ title: t('screenTitles.scanIsbn'), ...screenHeaderOptions }}
+            />
+            <Stack.Screen
+              name="settings/index"
+              options={{ title: t('screenTitles.settings'), ...screenHeaderOptions }}
+            />
+            <Stack.Screen name="spin" options={{ title: t('screenTitles.spin'), ...screenHeaderOptions }} />
+            <Stack.Screen
+              name="paywall"
+              options={{ title: t('screenTitles.paywall'), ...screenHeaderOptions }}
+            />
+          </Stack>
+          <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
+          <PurchaseCelebration />
+          <UndoToast />
+        </UndoProvider>
       </ThemeProvider>
     </QueryClientProvider>
   );

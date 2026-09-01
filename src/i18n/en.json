@@ -5,6 +5,7 @@
     "edit": "Edit",
     "clear": "Clear",
     "retry": "Try again",
+    "undo": "Undo",
     "remove": "Remove",
     "done": "Done",
     "genericError": "Something went wrong. Try again.",
@@ -91,6 +92,7 @@
   },
   "bookDetail": {
     "description": "Description",
+    "removedToast": "\"{{title}}\" removed",
     "genres": "Genres",
     "editGenres": "Edit genres",
     "noGenres": "No genres yet.",
@@ -176,8 +178,17 @@
     "about": "About",
     "appIcon": "App icon",
     "iconAttribution": "Designed by Magnific, via Flaticon",
+    "restorePurchases": "Restore purchases",
+    "restorePurchasesDescription": "Already unlocked TBR Pro? Restore it here",
+    "restoreSuccessTitle": "Purchases restored",
+    "restoreSuccessBody": "TBR Pro is unlocked on this device.",
+    "restoreErrorTitle": "Nothing to restore",
+    "restoreErrorBody": "We couldn't find a previous purchase for this account.",
+    "privacyPolicy": "Privacy Policy",
+    "privacyPolicyDescription": "How TBR handles your data",
     "contact": "Contact",
-    "contactDescription": "Questions or suggestions? Get in touch"
+    "contactDescription": "Questions or suggestions? Get in touch",
+    "version": "Version {{version}}"
   },
   "errors": {
     "rateLimit": "Google Books is busy right now. Wait a moment and try again.",

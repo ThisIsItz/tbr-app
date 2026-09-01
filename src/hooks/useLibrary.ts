@@ -3,7 +3,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { exportAndShareBackup, importBackupFromUri } from '@/lib/backup';
 import { bookRepository } from '@/api/repository';
 import type { BookDetailsUpdate } from '@/api/repository/types';
-import type { NewBookInput } from '@/types/book';
+import type { Book, NewBookInput } from '@/types/book';
 
 export const booksQueryKey = ['books'] as const;
 
@@ -77,6 +77,16 @@ export function useDeleteBook() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (id: string) => bookRepository.remove(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: booksQueryKey });
+    },
+  });
+}
+
+export function useRestoreBook() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (book: Book) => bookRepository.importBooks([book]),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: booksQueryKey });
     },

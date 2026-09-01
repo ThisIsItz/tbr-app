@@ -1,7 +1,9 @@
+import Constants from 'expo-constants';
 import * as DocumentPicker from 'expo-document-picker';
 import { router } from 'expo-router';
-import { Download, Library, Lock, Mail, Moon, Sun, Upload } from 'lucide-react-native';
+import { Download, Library, Lock, Mail, Moon, RotateCcw, ShieldCheck, Sun, Upload } from 'lucide-react-native';
 import type { ReactNode } from 'react';
+import { useState } from 'react';
 import { ActivityIndicator, Alert, Linking, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -189,7 +191,8 @@ function AccentCards({
 
 export default function SettingsScreen() {
   const { themePreference, setThemePreference, accentPreference, setAccentPreference } = useAppColorScheme();
-  const { isPro } = usePurchases();
+  const { isPro, restore } = usePurchases();
+  const [isRestoring, setIsRestoring] = useState(false);
   const { t, locale, setLocale } = useTranslation();
   const backgroundColor = useThemeColor({}, 'background');
   const surfaceColor = useThemeColor({}, 'surface');
@@ -232,6 +235,16 @@ export default function SettingsScreen() {
   }
 
   const isBusy = exportBackup.isPending || importBackup.isPending;
+
+  async function handleRestore() {
+    setIsRestoring(true);
+    const restored = await restore();
+    setIsRestoring(false);
+    Alert.alert(
+      restored ? t('settings.restoreSuccessTitle') : t('settings.restoreErrorTitle'),
+      restored ? t('settings.restoreSuccessBody') : t('settings.restoreErrorBody'),
+    );
+  }
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor }]} edges={['bottom']}>
@@ -321,11 +334,29 @@ export default function SettingsScreen() {
         <View style={[styles.optionsCard, { shadowColor }]}>
           <View style={[styles.optionsCardInner, { backgroundColor: surfaceColor }]}>
             <Pressable
+              onPress={handleRestore}
+              disabled={isRestoring}
+              accessibilityRole="button"
+              accessibilityLabel={t('settings.restorePurchases')}
+              accessibilityHint={t('settings.restorePurchasesDescription')}
+              style={styles.dataRow}>
+              <RotateCcw size={20} color={textColor} strokeWidth={1.75} />
+              <View style={styles.dataRowText}>
+                <ThemedText style={[Typography.body, { color: textColor }]}>
+                  {t('settings.restorePurchases')}
+                </ThemedText>
+                <ThemedText style={[Typography.caption, { color: textMutedColor }]}>
+                  {t('settings.restorePurchasesDescription')}
+                </ThemedText>
+              </View>
+              {isRestoring && <ActivityIndicator size="small" color={accentColor} />}
+            </Pressable>
+            <Pressable
               onPress={() => Linking.openURL('mailto:itziarurbieta94@gmail.com')}
               accessibilityRole="link"
               accessibilityLabel={t('settings.contact')}
               accessibilityHint={t('settings.contactDescription')}
-              style={styles.dataRow}>
+              style={[styles.dataRow, { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: borderColor }]}>
               <Mail size={20} color={textColor} strokeWidth={1.75} />
               <View style={styles.dataRowText}>
                 <ThemedText style={[Typography.body, { color: textColor }]}>
@@ -333,6 +364,22 @@ export default function SettingsScreen() {
                 </ThemedText>
                 <ThemedText style={[Typography.caption, { color: textMutedColor }]}>
                   {t('settings.contactDescription')}
+                </ThemedText>
+              </View>
+            </Pressable>
+            <Pressable
+              onPress={() => Linking.openURL('https://itziarurbieta.notion.site/Privacy-Policy-TBR-3ce1096e5d548048a7f6e46044906eb8')}
+              accessibilityRole="link"
+              accessibilityLabel={t('settings.privacyPolicy')}
+              accessibilityHint={t('settings.privacyPolicyDescription')}
+              style={[styles.dataRow, { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: borderColor }]}>
+              <ShieldCheck size={20} color={textColor} strokeWidth={1.75} />
+              <View style={styles.dataRowText}>
+                <ThemedText style={[Typography.body, { color: textColor }]}>
+                  {t('settings.privacyPolicy')}
+                </ThemedText>
+                <ThemedText style={[Typography.caption, { color: textMutedColor }]}>
+                  {t('settings.privacyPolicyDescription')}
                 </ThemedText>
               </View>
             </Pressable>
@@ -354,6 +401,10 @@ export default function SettingsScreen() {
             </Pressable>
           </View>
         </View>
+
+        <ThemedText style={[Typography.caption, styles.versionText, { color: textMutedColor }]}>
+          {t('settings.version', { version: Constants.expoConfig?.version ?? '—' })}
+        </ThemedText>
       </ScrollView>
     </SafeAreaView>
   );
@@ -368,6 +419,10 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   sectionLabel: {
+    marginTop: 8,
+  },
+  versionText: {
+    textAlign: 'center',
     marginTop: 8,
   },
   optionsCard: {

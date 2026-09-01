@@ -26,6 +26,7 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { capitalizeFirst } from '@/lib/capitalize';
 import { confirmAsync } from '@/lib/confirm';
 import { normalizeGenres } from '@/lib/genres';
+import { useUndoContext } from '@/lib/undo/UndoProvider';
 import { toHttpsUrl } from '@/api/googleBooks';
 import { sanitizeDescription } from '@/lib/sanitizeHtml';
 
@@ -49,6 +50,7 @@ export default function BookDetailScreen() {
   const updateGenres = useUpdateBookGenres();
   const updateNotes = useUpdateBookNotes();
   const deleteBook = useDeleteBook();
+  const { notifyDeleted } = useUndoContext();
   const [isGenreModalVisible, setGenreModalVisible] = useState(false);
   const [notes, setNotes] = useState('');
 
@@ -101,6 +103,7 @@ export default function BookDetailScreen() {
     if (!confirmed) return;
 
     await deleteBook.mutateAsync(book!.id);
+    notifyDeleted(book!);
     router.back();
   }
 
