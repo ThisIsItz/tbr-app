@@ -76,7 +76,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    height: 60,
+    height: 32,
     flexDirection: 'column',
   },
   fadeBar: {
@@ -87,5 +87,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 2,
     alignSelf: 'flex-start',
+    marginTop: -6,
   },
 });
