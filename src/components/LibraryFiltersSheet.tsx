@@ -1,6 +1,13 @@
 import { SlidersHorizontal } from 'lucide-react-native';
 import { useState } from 'react';
-import { Modal, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { Modal, Pressable, StyleSheet, View } from 'react-native';
+import Animated, {
+  Extrapolation,
+  interpolate,
+  useAnimatedScrollHandler,
+  useAnimatedStyle,
+  useSharedValue,
+} from 'react-native-reanimated';
 
 import { ThemedText } from '@/components/ThemedText';
 import { IconSymbol } from '@/components/IconSymbol';
@@ -39,6 +46,9 @@ export function LibraryFiltersSheet({
 }: LibraryFiltersSheetProps) {
   const { t, locale } = useTranslation();
   const [visible, setVisible] = useState(false);
+  const [viewportHeight, setViewportHeight] = useState(0);
+  const [contentHeight, setContentHeight] = useState(0);
+  const scrollY = useSharedValue(0);
 
   const surfaceColor = useThemeColor({}, 'surface');
   const surfaceMutedColor = useThemeColor({}, 'surfaceMuted');
@@ -50,6 +60,21 @@ export function LibraryFiltersSheet({
   const onAccentSoftColor = useThemeColor({}, 'onAccentSoft');
   const onAccentColor = useThemeColor({}, 'onAccent');
   const dangerColor = useThemeColor({}, 'danger');
+
+  const canScroll = contentHeight > viewportHeight;
+  const thumbHeight = canScroll ? Math.max(24, (viewportHeight * viewportHeight) / contentHeight) : 0;
+  const maxThumbTravel = viewportHeight - thumbHeight;
+  const maxScroll = Math.max(contentHeight - viewportHeight, 1);
+
+  const scrollHandler = useAnimatedScrollHandler((event) => {
+    scrollY.value = event.contentOffset.y;
+  });
+
+  const thumbStyle = useAnimatedStyle(() => ({
+    transform: [
+      { translateY: interpolate(scrollY.value, [0, maxScroll], [0, maxThumbTravel], Extrapolation.CLAMP) },
+    ],
+  }));
 
   const activeCount = selectedGenres.length + (selectedAuthor ? 1 : 0) + (selectedLanguage ? 1 : 0);
   const isActive = activeCount > 0;
@@ -133,7 +158,6 @@ export function LibraryFiltersSheet({
         <Pressable
           style={styles.backdrop}
           onPress={() => setVisible(false)}
-          accessibilityRole="button"
           accessibilityLabel={t('common.done')}>
           <Pressable
             style={[styles.sheet, { backgroundColor: surfaceColor }]}
@@ -149,72 +173,87 @@ export function LibraryFiltersSheet({
               )}
             </View>
 
-            <ScrollView style={styles.scroll}>
-              <View style={styles.section}>
-                <ThemedText style={[Typography.caption, styles.groupLabel, { color: textMutedColor }]}>
-                  {t('library.genre')}
-                </ThemedText>
-                {genreOptions.length === 0 ? (
-                  <ThemedText style={[Typography.body, { color: textMutedColor }]}>—</ThemedText>
-                ) : (
+            <View style={styles.scrollWrap} onLayout={(e) => setViewportHeight(e.nativeEvent.layout.height)}>
+              <Animated.ScrollView
+                style={styles.scroll}
+                contentContainerStyle={styles.scrollContent}
+                onScroll={scrollHandler}
+                scrollEventThrottle={16}
+                showsVerticalScrollIndicator={false}
+                onContentSizeChange={(_w, h) => setContentHeight(h)}>
+                <View style={styles.section}>
+                  <ThemedText style={[Typography.caption, styles.groupLabel, { color: textMutedColor }]}>
+                    {t('library.genre')}
+                  </ThemedText>
+                  {genreOptions.length === 0 ? (
+                    <ThemedText style={[Typography.body, { color: textMutedColor }]}>—</ThemedText>
+                  ) : (
+                    <View>
+                      {genreOptions.map((genre) =>
+                        renderRow({
+                          key: genre,
+                          label: capitalizeFirst(genreLabels?.[genre] ?? genre),
+                          isSelected: selectedGenres.includes(genre),
+                          checkbox: true,
+                          onPress: () => toggleGenre(genre),
+                        }),
+                      )}
+                    </View>
+                  )}
+                </View>
+
+                <View style={[styles.section, styles.sectionDivider, { borderTopColor: borderColor }]}>
+                  <ThemedText style={[Typography.caption, styles.groupLabel, { color: textMutedColor }]}>
+                    {t('library.author')}
+                  </ThemedText>
                   <View>
-                    {genreOptions.map((genre) =>
+                    {renderRow({
+                      key: '__all_authors',
+                      label: t('library.allAuthors'),
+                      isSelected: !selectedAuthor,
+                      onPress: () => onAuthorChange(null),
+                    })}
+                    {authorOptions.map((author) =>
                       renderRow({
-                        key: genre,
-                        label: capitalizeFirst(genreLabels?.[genre] ?? genre),
-                        isSelected: selectedGenres.includes(genre),
-                        checkbox: true,
-                        onPress: () => toggleGenre(genre),
+                        key: author,
+                        label: author,
+                        isSelected: author === selectedAuthor,
+                        onPress: () => onAuthorChange(author),
                       }),
                     )}
                   </View>
-                )}
-              </View>
-
-              <View style={[styles.section, styles.sectionDivider, { borderTopColor: borderColor }]}>
-                <ThemedText style={[Typography.caption, styles.groupLabel, { color: textMutedColor }]}>
-                  {t('library.author')}
-                </ThemedText>
-                <View>
-                  {renderRow({
-                    key: '__all_authors',
-                    label: t('library.allAuthors'),
-                    isSelected: !selectedAuthor,
-                    onPress: () => onAuthorChange(null),
-                  })}
-                  {authorOptions.map((author) =>
-                    renderRow({
-                      key: author,
-                      label: author,
-                      isSelected: author === selectedAuthor,
-                      onPress: () => onAuthorChange(author),
-                    }),
-                  )}
                 </View>
-              </View>
 
-              <View style={[styles.section, styles.sectionDivider, { borderTopColor: borderColor }]}>
-                <ThemedText style={[Typography.caption, styles.groupLabel, { color: textMutedColor }]}>
-                  {t('library.language')}
-                </ThemedText>
-                <View>
-                  {renderRow({
-                    key: '__all_languages',
-                    label: t('library.allLanguages'),
-                    isSelected: !selectedLanguage,
-                    onPress: () => onLanguageChange(null),
-                  })}
-                  {languageOptions.map((language) =>
-                    renderRow({
-                      key: language,
-                      label: getLanguageName(language, locale),
-                      isSelected: language === selectedLanguage,
-                      onPress: () => onLanguageChange(language),
-                    }),
-                  )}
+                <View style={[styles.section, styles.sectionDivider, { borderTopColor: borderColor }]}>
+                  <ThemedText style={[Typography.caption, styles.groupLabel, { color: textMutedColor }]}>
+                    {t('library.language')}
+                  </ThemedText>
+                  <View>
+                    {renderRow({
+                      key: '__all_languages',
+                      label: t('library.allLanguages'),
+                      isSelected: !selectedLanguage,
+                      onPress: () => onLanguageChange(null),
+                    })}
+                    {languageOptions.map((language) =>
+                      renderRow({
+                        key: language,
+                        label: getLanguageName(language, locale),
+                        isSelected: language === selectedLanguage,
+                        onPress: () => onLanguageChange(language),
+                      }),
+                    )}
+                  </View>
                 </View>
-              </View>
-            </ScrollView>
+              </Animated.ScrollView>
+              {canScroll && (
+                <View style={[styles.scrollTrack, { backgroundColor: surfaceMutedColor }]} pointerEvents="none">
+                  <Animated.View
+                    style={[styles.scrollThumb, { height: thumbHeight, backgroundColor: textMutedColor }, thumbStyle]}
+                  />
+                </View>
+              )}
+            </View>
 
             <Pressable
               onPress={() => setVisible(false)}
@@ -272,8 +311,27 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
   },
+  scrollWrap: {
+    flexGrow: 0,
+    position: 'relative',
+  },
   scroll: {
     flexGrow: 0,
+  },
+  scrollContent: {
+    paddingRight: 12,
+  },
+  scrollTrack: {
+    position: 'absolute',
+    right: 0,
+    top: 0,
+    bottom: 0,
+    width: 3,
+    borderRadius: 1.5,
+  },
+  scrollThumb: {
+    width: 3,
+    borderRadius: 1.5,
   },
   section: {
     gap: 4,

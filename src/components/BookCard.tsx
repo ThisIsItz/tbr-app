@@ -120,40 +120,41 @@ export function BookCard({
     );
   }
 
-  return (
-    <Pressable
-      onPress={onPress}
-      accessibilityRole="button"
-      accessibilityLabel={displayAuthor ? `${displayTitle}, ${displayAuthor}` : displayTitle}
-      style={[
-        styles.card,
-        { backgroundColor: surfaceColor, shadowColor },
-        Platform.OS === 'web' && { boxShadow: `0px 3px 12px ${shadowColor}` },
-      ]}>
-      {coverUrl ? (
-        <Image
-          source={{ uri: coverUrl }}
-          style={[styles.cover, isResult ? styles.coverResult : styles.coverLibrary]}
-          contentFit="cover"
-          onError={(e) => console.warn('[BookCard] cover failed to load:', coverUrl, e.error)}
-        />
-      ) : (
-        <View
-          style={[
-            styles.cover,
-            isResult ? styles.coverResult : styles.coverLibrary,
-            styles.coverPlaceholder,
-            { backgroundColor: surfaceMutedColor },
-          ]}>
-          <ThemedText style={[Typography.caption, { color: textMutedColor }]}>
-            {t('bookCard.noCover')}
-          </ThemedText>
-        </View>
-      )}
+  if (isResult) {
+    return (
+      <View
+        style={[
+          styles.card,
+          { backgroundColor: surfaceColor, shadowColor },
+          Platform.OS === 'web' && { boxShadow: `0px 3px 12px ${shadowColor}` },
+        ]}>
+        <Pressable
+          onPress={onPress}
+          accessibilityRole="button"
+          accessibilityLabel={displayAuthor ? `${displayTitle}, ${displayAuthor}` : displayTitle}
+          style={styles.resultPressArea}>
+          {coverUrl ? (
+            <Image
+              source={{ uri: coverUrl }}
+              style={[styles.cover, styles.coverResult]}
+              contentFit="cover"
+              onError={(e) => console.warn('[BookCard] cover failed to load:', coverUrl, e.error)}
+            />
+          ) : (
+            <View
+              style={[
+                styles.cover,
+                styles.coverResult,
+                styles.coverPlaceholder,
+                { backgroundColor: surfaceMutedColor },
+              ]}>
+              <ThemedText style={[Typography.caption, { color: textMutedColor }]}>
+                {t('bookCard.noCover')}
+              </ThemedText>
+            </View>
+          )}
 
-      <View style={styles.body}>
-        {isResult ? (
-          <>
+          <View style={styles.body}>
             <View style={styles.resultTop}>
               <ThemedText numberOfLines={2} style={[Typography.bookTitle, { color: textColor }]}>
                 {displayTitle}
@@ -171,66 +172,93 @@ export function BookCard({
                 </View>
               </View>
             )}
-          </>
-        ) : (
-          <>
-            <ThemedText numberOfLines={3} style={[Typography.bookTitle, { color: textColor }]}>
-              {displayTitle}
-            </ThemedText>
-            <View style={styles.libraryFooter}>
-              {!!displayAuthor && (
-                <ThemedText numberOfLines={1} style={[Typography.metadata, { color: textMutedColor }]}>
-                  {displayAuthor}
-                </ThemedText>
-              )}
-              <View style={styles.tagRow}>
-                {genres.slice(0, 2).map((genre) => (
-                  <View key={genre} style={[styles.tag, { backgroundColor: accentSoftColor }]}>
-                    <ThemedText numberOfLines={1} style={[Typography.caption, { color: onAccentSoftColor }]}>
-                      {capitalizeFirst(genre)}
-                    </ThemedText>
-                  </View>
-                ))}
-              </View>
-            </View>
-          </>
+          </View>
+        </Pressable>
+
+        {action && (
+          <View style={styles.resultActions}>
+            <Pressable
+              onPress={action.onPress}
+              disabled={action.disabled}
+              hitSlop={10}
+              accessibilityRole="button"
+              accessibilityLabel={action.label}
+              style={[
+                styles.compactActionButton,
+                action.disabled ? styles.compactActionButtonDisabled : { backgroundColor: accentColor },
+              ]}>
+              {action.disabled && <IconSymbol name="checkmark" size={14} color={accentColor} />}
+              <ThemedText
+                style={[
+                  Typography.caption,
+                  styles.compactActionText,
+                  { color: action.disabled ? accentColor : onAccentColor },
+                ]}>
+                {action.label}
+              </ThemedText>
+            </Pressable>
+          </View>
         )}
       </View>
+    );
+  }
 
-      {isResult ? (
-        <>
-          {action && (
-            <View style={styles.resultActions}>
-              <Pressable
-                onPress={action.onPress}
-                disabled={action.disabled}
-                hitSlop={10}
-                accessibilityRole="button"
-                accessibilityLabel={action.label}
-                style={[
-                  styles.compactActionButton,
-                  action.disabled
-                    ? styles.compactActionButtonDisabled
-                    : { backgroundColor: accentColor },
-                ]}>
-                {action.disabled && <IconSymbol name="checkmark" size={14} color={accentColor} />}
-                <ThemedText
-                  style={[
-                    Typography.caption,
-                    styles.compactActionText,
-                    { color: action.disabled ? accentColor : onAccentColor },
-                  ]}>
-                  {action.label}
-                </ThemedText>
-              </Pressable>
-            </View>
-          )}
-        </>
+  return (
+    <Pressable
+      onPress={onPress}
+      accessibilityRole="button"
+      accessibilityLabel={displayAuthor ? `${displayTitle}, ${displayAuthor}` : displayTitle}
+      style={[
+        styles.card,
+        { backgroundColor: surfaceColor, shadowColor },
+        Platform.OS === 'web' && { boxShadow: `0px 3px 12px ${shadowColor}` },
+      ]}>
+      {coverUrl ? (
+        <Image
+          source={{ uri: coverUrl }}
+          style={[styles.cover, styles.coverLibrary]}
+          contentFit="cover"
+          onError={(e) => console.warn('[BookCard] cover failed to load:', coverUrl, e.error)}
+        />
       ) : (
-        <View style={[styles.chevronCircle, styles.chevronCircleLibrary, { backgroundColor: accentSoftColor }]}>
-          <IconSymbol name="chevron.right" size={22} color={onAccentSoftColor} />
+        <View
+          style={[
+            styles.cover,
+            styles.coverLibrary,
+            styles.coverPlaceholder,
+            { backgroundColor: surfaceMutedColor },
+          ]}>
+          <ThemedText style={[Typography.caption, { color: textMutedColor }]}>
+            {t('bookCard.noCover')}
+          </ThemedText>
         </View>
       )}
+
+      <View style={styles.body}>
+        <ThemedText numberOfLines={3} style={[Typography.bookTitle, { color: textColor }]}>
+          {displayTitle}
+        </ThemedText>
+        <View style={styles.libraryFooter}>
+          {!!displayAuthor && (
+            <ThemedText numberOfLines={1} style={[Typography.metadata, { color: textMutedColor }]}>
+              {displayAuthor}
+            </ThemedText>
+          )}
+          <View style={styles.tagRow}>
+            {genres.slice(0, 2).map((genre) => (
+              <View key={genre} style={[styles.tag, { backgroundColor: accentSoftColor }]}>
+                <ThemedText numberOfLines={1} style={[Typography.caption, { color: onAccentSoftColor }]}>
+                  {capitalizeFirst(genre)}
+                </ThemedText>
+              </View>
+            ))}
+          </View>
+        </View>
+      </View>
+
+      <View style={[styles.chevronCircle, styles.chevronCircleLibrary, { backgroundColor: accentSoftColor }]}>
+        <IconSymbol name="chevron.right" size={22} color={onAccentSoftColor} />
+      </View>
     </Pressable>
   );
 }
@@ -269,6 +297,12 @@ const styles = StyleSheet.create({
     minWidth: 0,
     gap: 4,
     justifyContent: 'space-between',
+  },
+  resultPressArea: {
+    flex: 1,
+    flexDirection: 'row',
+    gap: 12,
+    minWidth: 0,
   },
   resultTop: {
     gap: 2,

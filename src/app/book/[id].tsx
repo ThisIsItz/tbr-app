@@ -225,7 +225,6 @@ export default function BookDetailScreen() {
             <Pressable
               style={styles.backdrop}
               onPress={() => setGenreModalVisible(false)}
-              accessibilityRole="button"
               accessibilityLabel={t('common.done')}>
               <Pressable
                 style={[styles.sheet, { backgroundColor: surfaceColor }]}
