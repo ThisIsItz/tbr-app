@@ -78,7 +78,7 @@ export default function MyTbrScreen() {
 
   const VIEW_MODE_ORDER: ViewMode[] = ['card', 'grid', 'list'];
   const nextViewMode = VIEW_MODE_ORDER[(VIEW_MODE_ORDER.indexOf(viewMode) + 1) % VIEW_MODE_ORDER.length];
-  const NEXT_VIEW_MODE_META: Record<ViewMode, { Icon: typeof List; labelKey: string }> = {
+  const VIEW_MODE_META: Record<ViewMode, { Icon: typeof List; labelKey: string }> = {
     card: { Icon: LayoutList, labelKey: 'library.cardView' },
     grid: { Icon: LayoutGrid, labelKey: 'library.gridView' },
     list: { Icon: List, labelKey: 'library.listView' },
@@ -271,10 +271,10 @@ export default function MyTbrScreen() {
               onPress={toggleViewMode}
               hitSlop={8}
               accessibilityRole="button"
-              accessibilityLabel={t(NEXT_VIEW_MODE_META[nextViewMode].labelKey)}
+              accessibilityLabel={t(VIEW_MODE_META[nextViewMode].labelKey)}
               style={[styles.viewModeButton, { backgroundColor: accentSoftColor }]}>
               {(() => {
-                const { Icon } = NEXT_VIEW_MODE_META[nextViewMode];
+                const { Icon } = VIEW_MODE_META[viewMode];
                 return <Icon size={18} color={onAccentSoftColor} strokeWidth={2} />;
               })()}
             </Pressable>
