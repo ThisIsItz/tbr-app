@@ -1,6 +1,6 @@
 import { PartyPopper } from 'lucide-react-native';
 import { useEffect } from 'react';
-import { Platform, StyleSheet, useWindowDimensions, View } from 'react-native';
+import { StyleSheet, useWindowDimensions, View } from 'react-native';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import ConfettiCannon from 'react-native-confetti-cannon';
 
@@ -30,16 +30,12 @@ export function PurchaseCelebration() {
   if (!justPurchased) return null;
 
   return (
-    <View style={styles.overlay} pointerEvents="none">
+    <View style={[styles.overlay, styles.noPointerEvents]}>
       <ConfettiCannon count={140} origin={{ x: windowWidth / 2, y: 0 }} autoStart fadeOut />
       <Animated.View
         entering={FadeIn.duration(200)}
         exiting={FadeOut.duration(200)}
-        style={[
-          styles.toast,
-          { backgroundColor: surfaceColor, shadowColor },
-          Platform.OS === 'web' && { boxShadow: `0px 4px 16px ${shadowColor}` },
-        ]}>
+        style={[styles.toast, { backgroundColor: surfaceColor, boxShadow: `0px 4px 16px ${shadowColor}` }]}>
         <PartyPopper size={20} color={accentColor} strokeWidth={1.75} />
         <ThemedText style={[Typography.button, { color: textColor }]}>{t('paywall.purchaseSuccess')}</ThemedText>
       </Animated.View>
@@ -57,6 +53,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'flex-start',
   },
+  noPointerEvents: {
+    pointerEvents: 'none',
+  },
   toast: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -65,9 +64,5 @@ const styles = StyleSheet.create({
     paddingHorizontal: 18,
     paddingVertical: 12,
     borderRadius: 24,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 1,
-    shadowRadius: 16,
-    elevation: 6,
   },
 });

@@ -101,7 +101,7 @@ export default function ScanIsbnScreen() {
           </ThemedText>
 
           {isSearching && (
-            <View style={[styles.statusCard, { backgroundColor: surfaceColor, shadowColor }]}>
+            <View style={[styles.statusCard, { backgroundColor: surfaceColor, boxShadow: `0px 2px 6px ${shadowColor}` }]}>
               <ActivityIndicator color={accentColor} />
               <ThemedText style={[Typography.body, { color: textColor }]}>
                 {t('scanIsbn.searching')}
@@ -110,7 +110,7 @@ export default function ScanIsbnScreen() {
           )}
 
           {notFound && (
-            <View style={[styles.statusCard, { backgroundColor: surfaceColor, shadowColor }]}>
+            <View style={[styles.statusCard, { backgroundColor: surfaceColor, boxShadow: `0px 2px 6px ${shadowColor}` }]}>
               <ThemedText style={[Typography.bookTitle, styles.centeredText, { color: textColor }]}>
                 {t('scanIsbn.notFoundTitle')}
               </ThemedText>
@@ -180,10 +180,6 @@ const styles = StyleSheet.create({
     padding: 16,
     gap: 8,
     alignItems: 'center',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 1,
-    shadowRadius: 6,
-    elevation: 2,
   },
   primaryButton: {
     borderRadius: 10,

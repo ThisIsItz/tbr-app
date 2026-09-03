@@ -24,6 +24,14 @@ import { normalizeGenres } from '@/lib/genres';
 import { getLanguageName } from '@/lib/languageNames';
 import { type Book } from '@/types/book';
 
+function hexToRgba(hex: string, alpha: number): string {
+  const value = hex.replace('#', '');
+  const r = parseInt(value.slice(0, 2), 16);
+  const g = parseInt(value.slice(2, 4), 16);
+  const b = parseInt(value.slice(4, 6), 16);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
 type ViewMode = 'card' | 'grid' | 'list';
 const VIEW_MODE_SETTING_KEY = 'libraryViewMode';
 
@@ -364,12 +372,20 @@ export default function MyTbrScreen() {
         />
       )}
 
-      <View style={[styles.floatingAddWrapper, { bottom: insets.bottom + 28 }]} pointerEvents="box-none">
+      <View
+        style={[
+          styles.floatingAddWrapper,
+          styles.pointerEventsBoxNone,
+          { bottom: insets.bottom + 28 },
+        ]}>
         <Pressable
           onPress={() => router.push('/add/book')}
           accessibilityRole="button"
           accessibilityLabel={t('library.addBook')}
-          style={[styles.floatingAddButton, { backgroundColor: accentColor, shadowColor: textColor }]}>
+          style={[
+            styles.floatingAddButton,
+            { backgroundColor: accentColor, boxShadow: `0px 3px 8px ${hexToRgba(textColor, 0.25)}` },
+          ]}>
           <IconSymbol name="plus.circle.fill" size={28} color={onAccentColor} />
           <ThemedText style={[Typography.button, styles.floatingAddButtonText, { color: onAccentColor }]}>
             {t('library.addBook')}
@@ -477,6 +493,9 @@ const styles = StyleSheet.create({
     right: 0,
     alignItems: 'center',
   },
+  pointerEventsBoxNone: {
+    pointerEvents: 'box-none',
+  },
   floatingAddButton: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -484,10 +503,6 @@ const styles = StyleSheet.create({
     minHeight: 56,
     borderRadius: 28,
     paddingHorizontal: 28,
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.25,
-    shadowRadius: 8,
-    elevation: 4,
   },
   floatingAddButtonText: {
     fontSize: 18,

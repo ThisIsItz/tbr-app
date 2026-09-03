@@ -391,7 +391,7 @@ export default function AddManuallyScreen() {
             onPress={() => setGenreModalVisible(false)}
             accessibilityLabel={t('common.done')}>
             <Pressable
-              style={[styles.sheet, { backgroundColor: surfaceColor, shadowColor }]}
+              style={[styles.sheet, { backgroundColor: surfaceColor, boxShadow: `0px -2px 6px ${shadowColor}` }]}
               onPress={(e) => e.stopPropagation()}>
               <ThemedText style={[Typography.sectionTitle, { color: textColor }]}>
                 {t('addManually.genres')}
@@ -519,10 +519,6 @@ const styles = StyleSheet.create({
     paddingBottom: 32,
     gap: 16,
     maxHeight: '80%',
-    shadowOffset: { width: 0, height: -2 },
-    shadowOpacity: 1,
-    shadowRadius: 6,
-    elevation: 4,
   },
   doneButton: {
     borderRadius: 10,

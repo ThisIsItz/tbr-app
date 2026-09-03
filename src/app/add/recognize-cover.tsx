@@ -267,7 +267,7 @@ export default function RecognizeCoverScreen() {
                 </ThemedText>
               </Pressable>
               <Pressable
-                style={[styles.primaryButton, { backgroundColor: accentColor, shadowColor }]}
+                style={[styles.primaryButton, { backgroundColor: accentColor, boxShadow: `0px 2px 6px ${shadowColor}` }]}
                 onPress={goToAddManually}
                 accessibilityRole="button"
                 accessibilityLabel={t('search.addManually')}>
@@ -316,7 +316,7 @@ export default function RecognizeCoverScreen() {
                 </ThemedText>
               </Pressable>
               <Pressable
-                style={[styles.primaryButton, { backgroundColor: accentColor, shadowColor }]}
+                style={[styles.primaryButton, { backgroundColor: accentColor, boxShadow: `0px 2px 6px ${shadowColor}` }]}
                 onPress={goToAddManually}
                 accessibilityRole="button"
                 accessibilityLabel={t('search.addManually')}>
@@ -381,7 +381,7 @@ export default function RecognizeCoverScreen() {
               <Pressable
                 style={[
                   styles.primaryButton,
-                  { backgroundColor: !title.trim() ? surfaceMutedColor : accentColor, shadowColor },
+                  { backgroundColor: !title.trim() ? surfaceMutedColor : accentColor, boxShadow: `0px 2px 6px ${shadowColor}` },
                 ]}
                 onPress={handleSearch}
                 disabled={searchStatus === 'loading' || !title.trim()}
@@ -452,7 +452,7 @@ export default function RecognizeCoverScreen() {
                   {t('recognizeCover.noMatchesBody')}
                 </ThemedText>
                 <Pressable
-                  style={[styles.primaryButton, { backgroundColor: accentColor, shadowColor }]}
+                  style={[styles.primaryButton, { backgroundColor: accentColor, boxShadow: `0px 2px 6px ${shadowColor}` }]}
                   onPress={goToAddManually}
                   accessibilityRole="button"
                   accessibilityLabel={t('search.addManually')}>
@@ -519,10 +519,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingHorizontal: 16,
     paddingVertical: 14,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 1,
-    shadowRadius: 6,
-    elevation: 2,
   },
   secondaryButton: {
     minHeight: 44,

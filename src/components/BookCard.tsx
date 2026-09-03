@@ -1,5 +1,5 @@
 import { Image } from 'expo-image';
-import { Platform, Pressable, StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 
 import { ThemedText } from '@/components/ThemedText';
 import { IconSymbol } from '@/components/IconSymbol';
@@ -63,18 +63,22 @@ export function BookCard({
     return (
       <Pressable onPress={onPress} accessibilityRole="button" accessibilityLabel={displayTitle} style={styles.gridTile}>
         {coverUrl ? (
-          <Image
-            source={{ uri: coverUrl }}
-            style={[styles.coverGrid, { shadowColor }]}
-            contentFit="cover"
-            onError={(e) => console.warn('[BookCard] cover failed to load:', coverUrl, e.error)}
-          />
+          <View style={[styles.coverGrid, { boxShadow: `0px 3px 6px ${shadowColor}` }]}>
+            <View style={styles.coverGridClip}>
+              <Image
+                source={{ uri: coverUrl }}
+                style={styles.coverGridImage}
+                contentFit="cover"
+                onError={(e) => console.warn('[BookCard] cover failed to load:', coverUrl, e.error)}
+              />
+            </View>
+          </View>
         ) : (
           <View
             style={[
               styles.coverGrid,
               styles.coverPlaceholder,
-              { backgroundColor: surfaceMutedColor, shadowColor },
+              { backgroundColor: surfaceMutedColor, boxShadow: `0px 3px 6px ${shadowColor}` },
             ]}>
             <ThemedText style={[Typography.caption, styles.gridPlaceholderText, { color: textMutedColor }]}>
               {t('bookCard.noCover')}
@@ -125,8 +129,7 @@ export function BookCard({
       <View
         style={[
           styles.card,
-          { backgroundColor: surfaceColor, shadowColor },
-          Platform.OS === 'web' && { boxShadow: `0px 3px 12px ${shadowColor}` },
+          { backgroundColor: surfaceColor, boxShadow: `0px 4px 10px ${shadowColor}` },
         ]}>
         <Pressable
           onPress={onPress}
@@ -210,8 +213,7 @@ export function BookCard({
       accessibilityLabel={displayAuthor ? `${displayTitle}, ${displayAuthor}` : displayTitle}
       style={[
         styles.card,
-        { backgroundColor: surfaceColor, shadowColor },
-        Platform.OS === 'web' && { boxShadow: `0px 3px 12px ${shadowColor}` },
+        { backgroundColor: surfaceColor, boxShadow: `0px 4px 10px ${shadowColor}` },
       ]}>
       {coverUrl ? (
         <Image
@@ -271,10 +273,6 @@ const styles = StyleSheet.create({
     padding: 10,
     gap: 12,
     width: '100%',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 1,
-    shadowRadius: 10,
-    elevation: 4,
   },
   cover: {
     borderRadius: 8,
@@ -389,10 +387,15 @@ const styles = StyleSheet.create({
     width: '100%',
     aspectRatio: 2 / 3,
     borderRadius: 8,
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 1,
-    shadowRadius: 6,
-    elevation: 3,
+  },
+  coverGridClip: {
+    flex: 1,
+    borderRadius: 8,
+    overflow: 'hidden',
+  },
+  coverGridImage: {
+    width: '100%',
+    height: '100%',
   },
   gridPlaceholderText: {
     textAlign: 'center',

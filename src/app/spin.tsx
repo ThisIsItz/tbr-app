@@ -2,7 +2,7 @@ import { router } from 'expo-router';
 import { Dices } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Image } from 'expo-image';
-import { ActivityIndicator, Platform, Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
+import { ActivityIndicator, Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
 import Animated, {
   Easing,
   FadeInUp,
@@ -146,7 +146,7 @@ export default function SpinScreen() {
           />
         </View>
         {!coversReady && (
-          <View style={styles.reelLoadingOverlay} pointerEvents="none">
+          <View style={styles.reelLoadingOverlay}>
             <ActivityIndicator color={accentColor} />
           </View>
         )}
@@ -175,8 +175,7 @@ export default function SpinScreen() {
           entering={FadeInUp.duration(420)}
           style={[
             styles.reveal,
-            { backgroundColor: surfaceColor, shadowColor },
-            Platform.OS === 'web' && { boxShadow: `0px 3px 12px ${shadowColor}` },
+            { backgroundColor: surfaceColor, boxShadow: `0px 4px 10px ${shadowColor}` },
           ]}
           accessible
           accessibilityLabel={t('spin.landedAccessibilityLabel', {
@@ -238,6 +237,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
+    pointerEvents: 'none',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -274,10 +274,6 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     paddingVertical: 24,
     paddingHorizontal: 20,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 1,
-    shadowRadius: 10,
-    elevation: 4,
   },
   revealCover: {
     width: 160,

@@ -40,7 +40,7 @@ export function ExpandableDescription({ description }: ExpandableDescriptionProp
           {description}
         </ThemedText>
         {!isExpanded && hasMore && (
-          <View style={styles.fade} pointerEvents="none">
+          <View style={styles.fade}>
             {Array.from({ length: FADE_BARS }).map((_, i) => (
               <View
                 key={i}
@@ -77,6 +77,7 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     height: 32,
+    pointerEvents: 'none',
     flexDirection: 'column',
   },
   fadeBar: {

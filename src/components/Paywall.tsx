@@ -1,5 +1,5 @@
 import { BookMarked, Camera, Dices, ImageUp, Palette } from 'lucide-react-native';
-import { Platform, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 
 import { ThemedText } from '@/components/ThemedText';
 import { Typography } from '@/lib/theme/theme';
@@ -50,8 +50,7 @@ export function Paywall() {
         <View
           style={[
             styles.featuresCard,
-            { backgroundColor: surfaceColor, shadowColor },
-            Platform.OS === 'web' && { boxShadow: `0px 3px 12px ${shadowColor}` },
+            { backgroundColor: surfaceColor, boxShadow: `0px 3px 10px ${shadowColor}` },
           ]}>
           {FEATURES.map(({ icon: Icon, titleKey, bodyKey }, index) => (
             <View
@@ -86,7 +85,10 @@ export function Paywall() {
           accessibilityLabel={t('paywall.unlockButton')}
           style={[
             styles.primaryButton,
-            { backgroundColor: isLoading || !offering ? surfaceMutedColor : accentColor, shadowColor },
+            {
+              backgroundColor: isLoading || !offering ? surfaceMutedColor : accentColor,
+              boxShadow: `0px 2px 6px ${shadowColor}`,
+            },
           ]}>
           <ThemedText
             style={[Typography.button, { color: isLoading || !offering ? textMutedColor : onAccentColor }]}>
@@ -140,10 +142,6 @@ const styles = StyleSheet.create({
   featuresCard: {
     width: '100%',
     borderRadius: 16,
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 1,
-    shadowRadius: 10,
-    elevation: 3,
   },
   featureRow: {
     flexDirection: 'row',
@@ -180,10 +178,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 24,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 1,
-    shadowRadius: 6,
-    elevation: 2,
   },
   restoreButton: {
     minHeight: 44,

@@ -193,7 +193,6 @@ export function SpinReel({ candidates, spinToken, excludeIdFromTarget, onLanded,
       )}
       {viewportWidth > 0 && (
         <View
-          pointerEvents="none"
           style={[
             styles.indicator,
             {
@@ -201,6 +200,7 @@ export function SpinReel({ candidates, spinToken, excludeIdFromTarget, onLanded,
               width: itemWidth + 8,
               height: viewportHeight - 12,
               borderColor: accentColor,
+              pointerEvents: 'none',
             },
           ]}
         />

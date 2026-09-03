@@ -31,9 +31,9 @@ export function UndoToast() {
     <Animated.View
       entering={FadeInDown.duration(200)}
       exiting={FadeOutDown.duration(200)}
-      pointerEvents="box-none"
-      style={[styles.wrapper, { bottom: insets.bottom + 16 }]}>
-      <Animated.View style={[styles.toast, { backgroundColor: toastBackground, shadowColor }]}>
+      style={[styles.wrapper, styles.boxNone, { bottom: insets.bottom + 16 }]}>
+      <Animated.View
+        style={[styles.toast, { backgroundColor: toastBackground, boxShadow: `0px 4px 10px ${shadowColor}` }]}>
         <ThemedText numberOfLines={1} style={[Typography.body, styles.message, { color: toastText }]}>
           {t('bookDetail.removedToast', { title: capitalizeFirst(deletedBook.title) })}
         </ThemedText>
@@ -58,6 +58,9 @@ const styles = StyleSheet.create({
     right: 16,
     alignItems: 'center',
   },
+  boxNone: {
+    pointerEvents: 'box-none',
+  },
   toast: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -66,10 +69,6 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     paddingVertical: 12,
     paddingHorizontal: 16,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 1,
-    shadowRadius: 10,
-    elevation: 6,
   },
   message: {
     flex: 1,

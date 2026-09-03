@@ -64,7 +64,7 @@ function OptionsCard<T extends string>({ options, selected, onSelect, t }: Optio
   const onAccentSoftColor = useThemeColor({}, 'onAccentSoft');
 
   return (
-    <View style={[styles.optionsCard, { shadowColor }]}>
+    <View style={[styles.optionsCard, { boxShadow: `0px 2px 6px ${shadowColor}` }]}>
       <View style={[styles.optionsCardInner, { backgroundColor: surfaceColor }]}>
         {options.map((option, index) => {
           const isActive = option.value === selected;
@@ -130,7 +130,7 @@ function AppearanceCards({
               {
                 backgroundColor: isActive ? accentSoftColor : surfaceColor,
                 borderColor: isActive ? accentColor : 'transparent',
-                shadowColor,
+                boxShadow: `0px 2px 6px ${shadowColor}`,
               },
             ]}>
             <Icon
@@ -270,11 +270,11 @@ export default function SettingsScreen() {
             accessibilityRole="button"
             accessibilityLabel={t('paywall.unlockButton')}
             style={styles.lockedSection}>
-            <View pointerEvents="none" style={styles.lockedPreview}>
+            <View style={[styles.lockedPreview, styles.noPointerEvents]}>
               <AccentCards selected={accentPreference} onSelect={() => {}} t={t} />
             </View>
-            <View style={styles.lockBadge} pointerEvents="none">
-              <View style={[styles.lockPill, { backgroundColor: surfaceColor, shadowColor }]}>
+            <View style={[styles.lockBadge, styles.noPointerEvents]}>
+              <View style={[styles.lockPill, { backgroundColor: surfaceColor, boxShadow: `0px 2px 6px ${shadowColor}` }]}>
                 <Lock size={16} color={textColor} strokeWidth={1.75} />
                 <ThemedText style={[Typography.button, { color: textColor }]}>
                   {t('paywall.unlockButton')}
@@ -287,7 +287,7 @@ export default function SettingsScreen() {
         <ThemedText style={[Typography.sectionTitle, styles.sectionLabel, { color: textColor }]}>
           {t('settings.data')}
         </ThemedText>
-        <View style={[styles.optionsCard, { shadowColor }]}>
+        <View style={[styles.optionsCard, { boxShadow: `0px 2px 6px ${shadowColor}` }]}>
           <View style={[styles.optionsCardInner, { backgroundColor: surfaceColor }]}>
             <Pressable
               onPress={handleExport}
@@ -331,7 +331,7 @@ export default function SettingsScreen() {
         <ThemedText style={[Typography.sectionTitle, styles.sectionLabel, { color: textColor }]}>
           {t('settings.about')}
         </ThemedText>
-        <View style={[styles.optionsCard, { shadowColor }]}>
+        <View style={[styles.optionsCard, { boxShadow: `0px 2px 6px ${shadowColor}` }]}>
           <View style={[styles.optionsCardInner, { backgroundColor: surfaceColor }]}>
             <Pressable
               onPress={handleRestore}
@@ -427,10 +427,9 @@ const styles = StyleSheet.create({
   },
   optionsCard: {
     borderRadius: 14,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 1,
-    shadowRadius: 6,
-    elevation: 2,
+  },
+  noPointerEvents: {
+    pointerEvents: 'none',
   },
   optionsCardInner: {
     borderRadius: 14,
@@ -467,10 +466,6 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     borderRadius: 14,
     borderWidth: 1.5,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 1,
-    shadowRadius: 6,
-    elevation: 2,
   },
   accentGrid: {
     flexDirection: 'row',
@@ -512,9 +507,5 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 10,
     borderRadius: 20,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 1,
-    shadowRadius: 6,
-    elevation: 3,
   },
 });

@@ -247,7 +247,7 @@ export function LibraryFiltersSheet({
                 </View>
               </Animated.ScrollView>
               {canScroll && (
-                <View style={[styles.scrollTrack, { backgroundColor: surfaceMutedColor }]} pointerEvents="none">
+                <View style={[styles.scrollTrack, { backgroundColor: surfaceMutedColor }]}>
                   <Animated.View
                     style={[styles.scrollThumb, { height: thumbHeight, backgroundColor: textMutedColor }, thumbStyle]}
                   />
@@ -328,6 +328,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     width: 3,
     borderRadius: 1.5,
+    pointerEvents: 'none',
   },
   scrollThumb: {
     width: 3,
