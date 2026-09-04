@@ -361,20 +361,20 @@ export default function AddManuallyScreen() {
               textAlignVertical="top"
             />
           </View>
-
-          <Pressable
-            style={[styles.saveButton, { backgroundColor: accentColor }]}
-            onPress={handleSave}
-            disabled={isSaving}
-            accessibilityRole="button"
-            accessibilityLabel={t(isEditing ? 'addManually.saveChanges' : 'addManually.save')}>
-            <ThemedText style={[Typography.button, { color: onAccentColor }]}>
-              {isSaving
-                ? t(isEditing ? 'addManually.savingChanges' : 'addManually.saving')
-                : t(isEditing ? 'addManually.saveChanges' : 'addManually.save')}
-            </ThemedText>
-          </Pressable>
         </ScrollView>
+
+        <Pressable
+          style={[styles.saveButton, styles.saveButtonFooter, { backgroundColor: accentColor }]}
+          onPress={handleSave}
+          disabled={isSaving}
+          accessibilityRole="button"
+          accessibilityLabel={t(isEditing ? 'addManually.saveChanges' : 'addManually.save')}>
+          <ThemedText style={[Typography.button, { color: onAccentColor }]}>
+            {isSaving
+              ? t(isEditing ? 'addManually.savingChanges' : 'addManually.saving')
+              : t(isEditing ? 'addManually.saveChanges' : 'addManually.save')}
+          </ThemedText>
+        </Pressable>
       </SafeAreaView>
 
       <Modal
@@ -512,7 +512,10 @@ const styles = StyleSheet.create({
     minHeight: 44,
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 8,
+  },
+  saveButtonFooter: {
+    marginHorizontal: 16,
+    marginBottom: 12,
   },
   backdrop: {
     flex: 1,

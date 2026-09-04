@@ -3,6 +3,7 @@ import { router } from 'expo-router';
 import { ArrowUpDown, BookOpenText, Dices, LayoutGrid, LayoutList, List, Settings } from 'lucide-react-native';
 import { useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Alert, FlatList, Pressable, StyleSheet, View } from 'react-native';
+import Animated, { useAnimatedKeyboard, useAnimatedStyle } from 'react-native-reanimated';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { BookCard } from '@/components/BookCard';
@@ -49,6 +50,10 @@ export default function MyTbrScreen() {
   const surfaceMutedColor = useThemeColor({}, 'surfaceMuted');
 
   const insets = useSafeAreaInsets();
+  const keyboard = useAnimatedKeyboard();
+  const floatingAddWrapperStyle = useAnimatedStyle(() => ({
+    bottom: keyboard.height.value > 0 ? keyboard.height.value + 12 : insets.bottom + 28,
+  }));
   const { data: books, isLoading } = useBooks();
   const importBackup = useImportBackup();
 
@@ -385,12 +390,8 @@ export default function MyTbrScreen() {
         />
       )}
 
-      <View
-        style={[
-          styles.floatingAddWrapper,
-          styles.pointerEventsBoxNone,
-          { bottom: insets.bottom + 28 },
-        ]}>
+      <Animated.View
+        style={[styles.floatingAddWrapper, styles.pointerEventsBoxNone, floatingAddWrapperStyle]}>
         <Pressable
           onPress={() => router.push('/add/book')}
           accessibilityRole="button"
@@ -404,7 +405,7 @@ export default function MyTbrScreen() {
             {t('library.addBook')}
           </ThemedText>
         </Pressable>
-      </View>
+      </Animated.View>
     </SafeAreaView>
   );
 }
