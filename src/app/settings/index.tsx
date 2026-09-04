@@ -4,7 +4,7 @@ import { router } from 'expo-router';
 import { Download, Library, Lock, Mail, Moon, RotateCcw, ShieldCheck, Sun, Upload } from 'lucide-react-native';
 import type { ReactNode } from 'react';
 import { useState } from 'react';
-import { ActivityIndicator, Alert, Linking, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Linking, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedText } from '@/components/ThemedText';
@@ -16,6 +16,7 @@ import { usePurchases } from '@/hooks/usePurchases';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { useTranslation } from '@/hooks/useTranslation';
 import { BackupFileError } from '@/lib/backup';
+import { showAlert } from '@/lib/dialog';
 import type { Locale } from '@/i18n/translations';
 import type { ThemePreference } from '@/lib/theme/AppThemeProvider';
 
@@ -212,7 +213,7 @@ export default function SettingsScreen() {
     try {
       await exportBackup.mutateAsync();
     } catch {
-      Alert.alert(t('settings.exportError'));
+      showAlert(t('settings.exportError'), undefined, t('common.ok'));
     }
   }
 
@@ -225,14 +226,16 @@ export default function SettingsScreen() {
 
     try {
       const { imported, skipped } = await importBackup.mutateAsync(uri);
-      Alert.alert(
+      showAlert(
         t('settings.importSuccessTitle'),
         t('settings.importSuccessBody', { imported, skipped }),
+        t('common.ok'),
       );
     } catch (error) {
-      Alert.alert(
+      showAlert(
         t('settings.importErrorTitle'),
         error instanceof BackupFileError ? t('settings.importInvalidFile') : t('common.genericError'),
+        t('common.ok'),
       );
     }
   }
@@ -243,9 +246,10 @@ export default function SettingsScreen() {
     setIsRestoring(true);
     const restored = await restore();
     setIsRestoring(false);
-    Alert.alert(
+    showAlert(
       restored ? t('settings.restoreSuccessTitle') : t('settings.restoreErrorTitle'),
       restored ? t('settings.restoreSuccessBody') : t('settings.restoreErrorBody'),
+      t('common.ok'),
     );
   }
 

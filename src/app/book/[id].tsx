@@ -26,7 +26,7 @@ import { useThemeColor } from '@/hooks/useThemeColor';
 import { useTranslatedGenres } from '@/hooks/useTranslatedGenres';
 import { useTranslation } from '@/hooks/useTranslation';
 import { capitalizeFirst } from '@/lib/capitalize';
-import { confirmAsync } from '@/lib/confirm';
+import { confirmAsync } from '@/lib/dialog';
 import { estimateGenreSkeletonWidth, normalizeGenres } from '@/lib/genres';
 import { useUndoContext } from '@/lib/undo/UndoProvider';
 import { toHighResUrl } from '@/api/googleBooks';

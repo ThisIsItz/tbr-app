@@ -3,7 +3,6 @@ import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
-  Alert,
   Image,
   KeyboardAvoidingView,
   Modal,
@@ -26,6 +25,7 @@ import { useThemeColor } from '@/hooks/useThemeColor';
 import { useTranslatedGenres } from '@/hooks/useTranslatedGenres';
 import { useTranslation } from '@/hooks/useTranslation';
 import { capitalizeFirst } from '@/lib/capitalize';
+import { showAlert } from '@/lib/dialog';
 import { estimateGenreSkeletonWidth } from '@/lib/genres';
 import { deleteLocalImage, persistLocalImage } from '@/lib/localImage';
 
@@ -110,14 +110,14 @@ export default function AddManuallyScreen() {
       if (uri) setCoverUri(uri);
     } catch (error) {
       console.warn('[AddManually] cover pick failed:', error);
-      Alert.alert(t('common.genericError'));
+      showAlert(t('common.genericError'), undefined, t('common.ok'));
     }
   }
 
   async function handleSave() {
     const trimmedTitle = title.trim();
     if (!trimmedTitle) {
-      Alert.alert(t('addManually.titleRequiredError'));
+      showAlert(t('addManually.titleRequiredError'), undefined, t('common.ok'));
       return;
     }
 
@@ -171,7 +171,7 @@ export default function AddManuallyScreen() {
         router.dismissTo('/');
       }
     } catch {
-      Alert.alert(t('common.genericError'));
+      showAlert(t('common.genericError'), undefined, t('common.ok'));
     }
   }
 

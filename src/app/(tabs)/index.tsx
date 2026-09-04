@@ -2,7 +2,7 @@ import * as DocumentPicker from 'expo-document-picker';
 import { router } from 'expo-router';
 import { ArrowUpDown, BookOpenText, Dices, LayoutGrid, LayoutList, List, Settings } from 'lucide-react-native';
 import { useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, Alert, FlatList, Pressable, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, FlatList, Pressable, StyleSheet, View } from 'react-native';
 import Animated, { useAnimatedKeyboard, useAnimatedStyle } from 'react-native-reanimated';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -21,6 +21,7 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { getSetting, setSetting } from '@/api/repository/settingsRepository';
 import { BackupFileError } from '@/lib/backup';
 import { capitalizeFirst } from '@/lib/capitalize';
+import { showAlert } from '@/lib/dialog';
 import { normalizeGenres } from '@/lib/genres';
 import { getLanguageName } from '@/lib/languageNames';
 import { type Book } from '@/types/book';
@@ -66,11 +67,16 @@ export default function MyTbrScreen() {
 
     try {
       const { imported, skipped } = await importBackup.mutateAsync(uri);
-      Alert.alert(t('settings.importSuccessTitle'), t('settings.importSuccessBody', { imported, skipped }));
+      showAlert(
+        t('settings.importSuccessTitle'),
+        t('settings.importSuccessBody', { imported, skipped }),
+        t('common.ok'),
+      );
     } catch (error) {
-      Alert.alert(
+      showAlert(
         t('settings.importErrorTitle'),
         error instanceof BackupFileError ? t('settings.importInvalidFile') : t('common.genericError'),
+        t('common.ok'),
       );
     }
   }

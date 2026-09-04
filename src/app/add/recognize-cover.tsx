@@ -3,7 +3,6 @@ import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
-  Alert,
   Image,
   KeyboardAvoidingView,
   Linking,
@@ -25,6 +24,7 @@ import { usePurchases } from '@/hooks/usePurchases';
 import { useQuickAddBook } from '@/hooks/useSearch';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { useTranslation } from '@/hooks/useTranslation';
+import { showDialog, showAlert } from '@/lib/dialog';
 import { scoreVolume } from '@/api/bookRelevance';
 import { searchGoogleBooks } from '@/api/googleBooks';
 import { bookCoverRecognitionService, type RecognitionConfidence } from '@/api/recognition';
@@ -68,7 +68,7 @@ export default function RecognizeCoverScreen() {
       await quickAdd(item);
       router.dismissTo('/');
     } catch {
-      Alert.alert(t('common.genericError'));
+      showAlert(t('common.genericError'), undefined, t('common.ok'));
     }
   }
 
@@ -96,7 +96,7 @@ export default function RecognizeCoverScreen() {
       await recognizeCover(uri);
     } catch (error) {
       console.warn('[RecognizeCover] image pick failed:', error);
-      Alert.alert(t('common.genericError'));
+      showAlert(t('common.genericError'), undefined, t('common.ok'));
     }
   }
 
@@ -115,14 +115,10 @@ export default function RecognizeCoverScreen() {
     const requested = current.canAskAgain ? await ImagePicker.requestCameraPermissionsAsync() : current;
     if (requested.granted) return true;
 
-    Alert.alert(
-      t('recognizeCover.cameraPermissionTitle'),
-      t('recognizeCover.cameraPermissionBody'),
-      [
-        { text: t('common.cancel'), style: 'cancel' },
-        { text: t('scanIsbn.openSettings'), onPress: () => Linking.openSettings() },
-      ],
-    );
+    showDialog(t('recognizeCover.cameraPermissionTitle'), t('recognizeCover.cameraPermissionBody'), [
+      { text: t('common.cancel'), style: 'cancel' },
+      { text: t('scanIsbn.openSettings'), style: 'default', onPress: () => Linking.openSettings() },
+    ]);
     return false;
   }
 

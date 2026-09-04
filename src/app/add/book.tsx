@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
 import { useMemo, useState } from 'react';
-import { ActivityIndicator, Alert, FlatList, Pressable, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, FlatList, Pressable, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { BookCard } from '@/components/BookCard';
@@ -13,6 +13,7 @@ import { useDebouncedValue } from '@/hooks/useDebouncedValue';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { useTranslatedGenres } from '@/hooks/useTranslatedGenres';
 import { useTranslation } from '@/hooks/useTranslation';
+import { showAlert } from '@/lib/dialog';
 import { normalizeGenres } from '@/lib/genres';
 import { getErrorTranslationKey } from '@/api/googleBooks';
 import type { GoogleBooksVolume } from '@/types/google-books';
@@ -52,7 +53,7 @@ export default function AddBookScreen() {
     try {
       await quickAdd(item);
     } catch {
-      Alert.alert(t('common.genericError'));
+      showAlert(t('common.genericError'), undefined, t('common.ok'));
     }
   }
 
