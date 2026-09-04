@@ -1,12 +1,5 @@
-import type { BookGuess } from '../../shared/recognition';
-
 export type { BookGuess } from '../../shared/recognition';
 export type { GoogleBooksSearchResponse, GoogleBooksVolume } from '../../shared/google-books';
-
-export interface RecognizeCoverResponse {
-  books: BookGuess[];
-  requestId: string;
-}
 
 export interface Env {
   RECOGNITION_KV: KVNamespace;

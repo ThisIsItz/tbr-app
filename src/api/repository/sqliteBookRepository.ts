@@ -62,15 +62,6 @@ export const sqliteBookRepository: BookRepository = {
 
   getById,
 
-  async existsByGoogleBooksId(googleBooksId: string) {
-    const db = await getDb();
-    const row = await db.getFirstAsync<{ id: string }>(
-      'SELECT id FROM books WHERE google_books_id = ?',
-      [googleBooksId],
-    );
-    return row !== null;
-  },
-
   async add(input: NewBookInput) {
     const db = await getDb();
     const id = randomUUID();

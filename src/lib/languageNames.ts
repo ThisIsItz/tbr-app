@@ -1,3 +1,5 @@
+import { capitalizeFirst } from '@/lib/capitalize';
+
 // Primary source of language names — Intl.DisplayNames support (esp. its CLDR data on
 // Android/Hermes) is inconsistent across devices, so known codes are hardcoded instead.
 // ISO 639-1 codes as returned by Google Books' volumeInfo.language.
@@ -37,10 +39,6 @@ const LANGUAGE_NAMES: Record<string, { en: string; es: string }> = {
   la: { en: 'Latin', es: 'Latín' },
 };
 
-function capitalize(name: string): string {
-  return name.charAt(0).toUpperCase() + name.slice(1);
-}
-
 export function getLanguageName(code: string, locale: string): string {
   const normalized = code.toLowerCase();
   const known = LANGUAGE_NAMES[normalized];
@@ -49,7 +47,7 @@ export function getLanguageName(code: string, locale: string): string {
   try {
     const displayNames = new Intl.DisplayNames([locale], { type: 'language' });
     const name = displayNames.of(normalized);
-    if (name && name !== normalized) return capitalize(name);
+    if (name && name !== normalized) return capitalizeFirst(name);
   } catch {
     // Intl.DisplayNames unsupported — fall through to the raw code.
   }

@@ -23,14 +23,6 @@ export function useBook(id: string | undefined) {
   });
 }
 
-export function useBookExistsByGoogleId(googleBooksId: string | undefined) {
-  return useQuery({
-    queryKey: [...booksQueryKey, 'exists', googleBooksId],
-    queryFn: () => bookRepository.existsByGoogleBooksId(googleBooksId as string),
-    enabled: !!googleBooksId,
-  });
-}
-
 export function useAddBook() {
   const queryClient = useQueryClient();
   return useMutation({

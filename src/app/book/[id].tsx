@@ -26,7 +26,7 @@ import { useTranslatedGenres } from '@/hooks/useTranslatedGenres';
 import { useTranslation } from '@/hooks/useTranslation';
 import { capitalizeFirst } from '@/lib/capitalize';
 import { confirmAsync } from '@/lib/confirm';
-import { normalizeGenres } from '@/lib/genres';
+import { estimateGenreSkeletonWidth, normalizeGenres } from '@/lib/genres';
 import { useUndoContext } from '@/lib/undo/UndoProvider';
 import { toHttpsUrl } from '@/api/googleBooks';
 import { sanitizeDescription } from '@/lib/sanitizeHtml';
@@ -174,7 +174,7 @@ export default function BookDetailScreen() {
               <View key={genre} style={[styles.genreChip, { backgroundColor: accentSoftColor }]}>
                 {genresTranslating && !genreTranslations[genre] && !manualGenres.includes(genre) ? (
                   <Skeleton
-                    width={Math.min(genre.length * 6, 90)}
+                    width={estimateGenreSkeletonWidth(genre)}
                     height={12}
                     tint={onAccentSoftColor}
                   />

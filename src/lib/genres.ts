@@ -24,3 +24,7 @@ export function normalizeGenres(raw: string[]): string[] {
 
   return [...seen.values()];
 }
+
+export function estimateGenreSkeletonWidth(genre: string): number {
+  return Math.min(genre.length * 6, 90);
+}

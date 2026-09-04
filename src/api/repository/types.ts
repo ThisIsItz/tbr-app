@@ -20,7 +20,6 @@ export interface BookDetailsUpdate {
 export interface BookRepository {
   getAll(): Promise<Book[]>;
   getById(id: string): Promise<Book | null>;
-  existsByGoogleBooksId(googleBooksId: string): Promise<boolean>;
   add(input: NewBookInput): Promise<Book>;
   updateGenres(id: string, genres: string[], manualGenres: string[]): Promise<Book>;
   /** Title/author/description/cover/etc — only meant to be called for

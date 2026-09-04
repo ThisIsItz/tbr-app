@@ -26,6 +26,7 @@ import { useThemeColor } from '@/hooks/useThemeColor';
 import { useTranslatedGenres } from '@/hooks/useTranslatedGenres';
 import { useTranslation } from '@/hooks/useTranslation';
 import { capitalizeFirst } from '@/lib/capitalize';
+import { estimateGenreSkeletonWidth } from '@/lib/genres';
 import { deleteLocalImage, persistLocalImage } from '@/lib/localImage';
 
 const NARROW_SCREEN_WIDTH = 360;
@@ -324,7 +325,7 @@ export default function AddManuallyScreen() {
                   <View key={genre} style={[styles.genreChip, { backgroundColor: accentSoftColor }]}>
                     {genresTranslating && !genreTranslations[genre] && !manualGenres.includes(genre) ? (
                       <Skeleton
-                        width={Math.min(genre.length * 6, 90)}
+                        width={estimateGenreSkeletonWidth(genre)}
                         height={12}
                         tint={onAccentSoftColor}
                       />

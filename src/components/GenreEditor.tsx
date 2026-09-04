@@ -7,7 +7,7 @@ import { capitalizeFirst } from '@/lib/capitalize';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { useTranslatedGenres } from '@/hooks/useTranslatedGenres';
 import { useTranslation } from '@/hooks/useTranslation';
-import { normalizeGenres } from '@/lib/genres';
+import { estimateGenreSkeletonWidth, normalizeGenres } from '@/lib/genres';
 
 interface GenreEditorProps {
   genres: string[];
@@ -60,7 +60,7 @@ export function GenreEditor({ genres, manualGenres, onChange }: GenreEditorProps
               <View
                 style={[
                   styles.chipSkeleton,
-                  { backgroundColor: onAccentSoftColor, width: Math.min(genre.length * 6, 90) },
+                  { backgroundColor: onAccentSoftColor, width: estimateGenreSkeletonWidth(genre) },
                 ]}
               />
             ) : (

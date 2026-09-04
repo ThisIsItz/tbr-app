@@ -158,7 +158,6 @@ export default function MyTbrScreen() {
       );
     }
     if (genreFilters.length > 0) {
-      // A book matches if it has any of the selected genres.
       list = list.filter((book) => genresByBookId.get(book.id)?.some((g) => genreFilters.includes(g)));
     }
     if (authorFilter) list = list.filter((book) => book.authors.includes(authorFilter));
