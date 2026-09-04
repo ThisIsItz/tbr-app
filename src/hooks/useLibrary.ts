@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { randomUUID } from 'expo-crypto';
 
 import { exportAndShareBackup, importBackupFromUri } from '@/lib/backup';
 import { bookRepository } from '@/api/repository';
@@ -34,7 +35,23 @@ export function useAddBook() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (input: NewBookInput) => bookRepository.add(input),
-    onSuccess: () => {
+    onMutate: async (input) => {
+      await queryClient.cancelQueries({ queryKey: booksQueryKey });
+
+      const previousBooks = queryClient.getQueryData<Book[]>(booksQueryKey);
+      const now = new Date().toISOString();
+      const optimisticBook: Book = { ...input, id: randomUUID(), status: 'to_read', createdAt: now, updatedAt: now };
+
+      queryClient.setQueryData<Book[]>(booksQueryKey, (books) =>
+        books ? [optimisticBook, ...books] : [optimisticBook],
+      );
+
+      return { previousBooks };
+    },
+    onError: (_error, _input, context) => {
+      if (context?.previousBooks) queryClient.setQueryData(booksQueryKey, context.previousBooks);
+    },
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: booksQueryKey });
     },
   });
@@ -45,7 +62,24 @@ export function useUpdateBookGenres() {
   return useMutation({
     mutationFn: ({ id, genres }: { id: string; genres: string[] }) =>
       bookRepository.updateGenres(id, genres),
-    onSuccess: () => {
+    onMutate: async ({ id, genres }) => {
+      await queryClient.cancelQueries({ queryKey: booksQueryKey });
+
+      const previousBooks = queryClient.getQueryData<Book[]>(booksQueryKey);
+      const previousBook = queryClient.getQueryData<Book>([...booksQueryKey, id]);
+
+      queryClient.setQueryData<Book[]>(booksQueryKey, (books) =>
+        books?.map((book) => (book.id === id ? { ...book, genres } : book)),
+      );
+      queryClient.setQueryData<Book>([...booksQueryKey, id], (book) => (book ? { ...book, genres } : book));
+
+      return { previousBooks, previousBook };
+    },
+    onError: (_error, { id }, context) => {
+      if (context?.previousBooks) queryClient.setQueryData(booksQueryKey, context.previousBooks);
+      if (context?.previousBook) queryClient.setQueryData([...booksQueryKey, id], context.previousBook);
+    },
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: booksQueryKey });
     },
   });
@@ -56,7 +90,24 @@ export function useUpdateBookDetails() {
   return useMutation({
     mutationFn: ({ id, updates }: { id: string; updates: BookDetailsUpdate }) =>
       bookRepository.updateDetails(id, updates),
-    onSuccess: () => {
+    onMutate: async ({ id, updates }) => {
+      await queryClient.cancelQueries({ queryKey: booksQueryKey });
+
+      const previousBooks = queryClient.getQueryData<Book[]>(booksQueryKey);
+      const previousBook = queryClient.getQueryData<Book>([...booksQueryKey, id]);
+
+      queryClient.setQueryData<Book[]>(booksQueryKey, (books) =>
+        books?.map((book) => (book.id === id ? { ...book, ...updates } : book)),
+      );
+      queryClient.setQueryData<Book>([...booksQueryKey, id], (book) => (book ? { ...book, ...updates } : book));
+
+      return { previousBooks, previousBook };
+    },
+    onError: (_error, { id }, context) => {
+      if (context?.previousBooks) queryClient.setQueryData(booksQueryKey, context.previousBooks);
+      if (context?.previousBook) queryClient.setQueryData([...booksQueryKey, id], context.previousBook);
+    },
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: booksQueryKey });
     },
   });
@@ -77,7 +128,18 @@ export function useDeleteBook() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (id: string) => bookRepository.remove(id),
-    onSuccess: () => {
+    onMutate: async (id) => {
+      await queryClient.cancelQueries({ queryKey: booksQueryKey });
+
+      const previousBooks = queryClient.getQueryData<Book[]>(booksQueryKey);
+      queryClient.setQueryData<Book[]>(booksQueryKey, (books) => books?.filter((book) => book.id !== id));
+
+      return { previousBooks };
+    },
+    onError: (_error, _id, context) => {
+      if (context?.previousBooks) queryClient.setQueryData(booksQueryKey, context.previousBooks);
+    },
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: booksQueryKey });
     },
   });

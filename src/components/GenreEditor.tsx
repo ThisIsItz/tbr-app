@@ -47,7 +47,7 @@ export function GenreEditor({ genres, onChange }: GenreEditorProps) {
         )}
         {genres.map((genre) => (
           <View key={genre} style={[styles.chip, { backgroundColor: accentSoftColor }]}>
-            {genresTranslating ? (
+            {genresTranslating && !genreTranslations[genre] ? (
               <View
                 style={[
                   styles.chipSkeleton,
@@ -71,12 +71,13 @@ export function GenreEditor({ genres, onChange }: GenreEditorProps) {
           </View>
         ))}
       </View>
+      <ThemedText style={[Typography.metadata, styles.hint, { color: textColor }]}>
+        {t('genreEditor.hint')}
+      </ThemedText>
       <View style={styles.inputRow}>
         <TextInput
           value={draft}
           onChangeText={setDraft}
-          placeholder={t('genreEditor.placeholder')}
-          placeholderTextColor={textMutedColor}
           style={[
             Typography.body,
             styles.input,
@@ -90,9 +91,7 @@ export function GenreEditor({ genres, onChange }: GenreEditorProps) {
           accessibilityRole="button"
           accessibilityLabel={t('genreEditor.add')}
           style={[styles.addButton, { backgroundColor: accentColor }]}>
-          <ThemedText style={[Typography.button, { color: onAccentColor }]}>
-            {t('genreEditor.add')}
-          </ThemedText>
+          <ThemedText style={[Typography.button, { color: onAccentColor }]}>+</ThemedText>
         </Pressable>
       </View>
     </View>
@@ -102,6 +101,9 @@ export function GenreEditor({ genres, onChange }: GenreEditorProps) {
 const styles = StyleSheet.create({
   container: {
     gap: 12,
+  },
+  hint: {
+    fontWeight: '500',
   },
   chipRow: {
     flexDirection: 'row',

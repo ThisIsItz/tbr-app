@@ -1,6 +1,6 @@
 import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Alert, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 
 import { BookHero } from '@/components/BookHero';
 import { BookHeroSkeleton } from '@/components/BookHeroSkeleton';
@@ -94,29 +94,22 @@ export default function AddBookScreen() {
   const coverUrl = toHttpsUrl(imageLinks?.thumbnail);
   const sanitizedDescription = description ? sanitizeDescription(description) : null;
 
-  async function handleSave() {
-    try {
-      await addBook.mutateAsync({
-        googleBooksId: volume!.id,
-        title,
-        subtitle: subtitle ?? null,
-        authors: authors ?? [],
-        genres,
-        thumbnailUrl: coverUrl,
-        description: sanitizedDescription,
-        publishedDate: publishedDate ?? null,
-        pageCount: pageCount ?? null,
-        publisher: publisher ?? null,
-        language: language ?? null,
-        notes: null,
-      });
-      // Collapse back to the main TBR screen regardless of how deep this
-      // screen was reached (search, scan, or cover recognition), rather than
-      // just popping one step back into an intermediate modal.
-      router.dismissTo('/');
-    } catch {
-      Alert.alert(t('common.genericError'));
-    }
+  function handleSave() {
+    addBook.mutate({
+      googleBooksId: volume!.id,
+      title,
+      subtitle: subtitle ?? null,
+      authors: authors ?? [],
+      genres,
+      thumbnailUrl: coverUrl,
+      description: sanitizedDescription,
+      publishedDate: publishedDate ?? null,
+      pageCount: pageCount ?? null,
+      publisher: publisher ?? null,
+      language: language ?? null,
+      notes: null,
+    });
+    router.dismissTo('/');
   }
 
   return (

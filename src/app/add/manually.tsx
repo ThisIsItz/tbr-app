@@ -124,7 +124,7 @@ export default function AddManuallyScreen() {
       const thumbnailUrl = coverChanged && coverUri ? persistLocalImage(coverUri) : coverUri;
 
       if (isEditing && id) {
-        await updateBookDetails.mutateAsync({
+        updateBookDetails.mutate({
           id,
           updates: {
             title: trimmedTitle,
@@ -143,7 +143,7 @@ export default function AddManuallyScreen() {
         }
         router.back();
       } else {
-        await addBook.mutateAsync({
+        addBook.mutate({
           googleBooksId: null,
           title: trimmedTitle,
           subtitle: null,
@@ -225,8 +225,6 @@ export default function AddManuallyScreen() {
                 <TextInput
                   value={title}
                   onChangeText={setTitle}
-                  placeholder={t('addManually.titlePlaceholder')}
-                  placeholderTextColor={textMutedColor}
                   style={[
                     Typography.body,
                     styles.input,
@@ -246,8 +244,6 @@ export default function AddManuallyScreen() {
                 <TextInput
                   value={authorsText}
                   onChangeText={setAuthorsText}
-                  placeholder={t('addManually.authorPlaceholder')}
-                  placeholderTextColor={textMutedColor}
                   style={[
                     Typography.body,
                     styles.input,
@@ -265,8 +261,6 @@ export default function AddManuallyScreen() {
             <TextInput
               value={description}
               onChangeText={setDescription}
-              placeholder={t('addManually.descriptionPlaceholder')}
-              placeholderTextColor={textMutedColor}
               style={[
                 Typography.body,
                 styles.input,
@@ -286,8 +280,6 @@ export default function AddManuallyScreen() {
               <TextInput
                 value={pageCountText}
                 onChangeText={setPageCountText}
-                placeholder={t('addManually.pageCountPlaceholder')}
-                placeholderTextColor={textMutedColor}
                 keyboardType="number-pad"
                 style={[
                   Typography.body,
@@ -303,8 +295,6 @@ export default function AddManuallyScreen() {
               <TextInput
                 value={publishedDate}
                 onChangeText={setPublishedDate}
-                placeholder={t('addManually.publishedDatePlaceholder')}
-                placeholderTextColor={textMutedColor}
                 style={[
                   Typography.body,
                   styles.input,
@@ -326,7 +316,7 @@ export default function AddManuallyScreen() {
                 accessibilityLabel={genres.length > 0 ? t('bookDetail.editGenres') : t('addManually.addGenres')}>
                 {genres.map((genre) => (
                   <View key={genre} style={[styles.genreChip, { backgroundColor: accentSoftColor }]}>
-                    {genresTranslating ? (
+                    {genresTranslating && !genreTranslations[genre] ? (
                       <Skeleton
                         width={Math.min(genre.length * 6, 90)}
                         height={12}
@@ -355,8 +345,6 @@ export default function AddManuallyScreen() {
             <TextInput
               value={notes}
               onChangeText={setNotes}
-              placeholder={t('addManually.notesPlaceholder')}
-              placeholderTextColor={textMutedColor}
               style={[
                 Typography.body,
                 styles.input,

@@ -71,20 +71,15 @@
     "addCoverHint": "Toca para añadir una portada",
     "removeCover": "Quitar foto",
     "titleLabel": "Título",
-    "titlePlaceholder": "Cien años de soledad",
     "titleRequiredError": "Introduce un título.",
     "authorLabel": "Autor(es)",
     "authorPlaceholder": "Separa varios autores con comas",
     "genres": "Géneros",
     "addGenres": "+ Añadir géneros",
     "descriptionLabel": "Descripción",
-    "descriptionPlaceholder": "Escribe una breve descripción…",
     "publishedDateLabel": "Fecha de publicación",
-    "publishedDatePlaceholder": "2020",
     "pageCountLabel": "Número de páginas",
-    "pageCountPlaceholder": "320",
     "notesLabel": "Notas",
-    "notesPlaceholder": "Añade tus propias notas sobre este libro…",
     "save": "Añadir a mi TBR",
     "saving": "Añadiendo…",
     "saveChanges": "Guardar cambios",
@@ -147,8 +142,8 @@
     "unsupportedBody": "Este dispositivo no admite reconocimiento de texto en el propio dispositivo. Aun así puedes buscar o añadir el libro manualmente."
   },
   "genreEditor": {
-    "empty": "Aún no hay géneros — añade uno abajo.",
-    "placeholder": "Añadir un género",
+    "empty": "Aún no hay géneros. Añade uno abajo.",
+    "hint": "Añadir género",
     "add": "Añadir"
   },
   "settings": {

@@ -102,7 +102,7 @@ export default function BookDetailScreen() {
     );
     if (!confirmed) return;
 
-    await deleteBook.mutateAsync(book!.id);
+    deleteBook.mutate(book!.id);
     notifyDeleted(book!);
     router.back();
   }
@@ -166,7 +166,7 @@ export default function BookDetailScreen() {
             )}
             {visibleGenres.map((genre) => (
               <View key={genre} style={[styles.genreChip, { backgroundColor: accentSoftColor }]}>
-                {genresTranslating ? (
+                {genresTranslating && !genreTranslations[genre] ? (
                   <Skeleton
                     width={Math.min(genre.length * 6, 90)}
                     height={12}
