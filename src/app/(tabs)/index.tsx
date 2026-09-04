@@ -168,6 +168,11 @@ export default function MyTbrScreen() {
     return direction === 'desc' ? sorted.reverse() : sorted;
   }, [books, debouncedSearchQuery, genreFilters, authorFilter, languageFilter, sortBy, genresByBookId]);
 
+  const gridBooks: (Book | null)[] = useMemo(() => {
+    if (viewMode !== 'grid' || filteredBooks.length % 2 === 0) return filteredBooks;
+    return [...filteredBooks, null];
+  }, [filteredBooks, viewMode]);
+
   const activeFilterLabels = [
     ...genreFilters.map((genre) => capitalizeFirst(genreTranslations[genre] ?? genre)),
     ...(authorFilter ? [authorFilter] : []),
@@ -350,8 +355,8 @@ export default function MyTbrScreen() {
       ) : (
         <FlatList
           key={viewMode === 'grid' ? 'grid' : 'single'}
-          data={filteredBooks}
-          keyExtractor={(item: Book) => item.id}
+          data={viewMode === 'grid' ? gridBooks : filteredBooks}
+          keyExtractor={(item: Book | null, index) => item?.id ?? `__filler-${index}`}
           numColumns={viewMode === 'grid' ? 2 : 1}
           columnWrapperStyle={viewMode === 'grid' ? styles.gridRow : undefined}
           contentContainerStyle={[
@@ -359,16 +364,20 @@ export default function MyTbrScreen() {
             viewMode === 'list' && styles.listContentCompact,
             viewMode === 'grid' && styles.gridContent,
           ]}
-          renderItem={({ item }) => (
-            <BookCard
-              variant={viewMode === 'list' ? 'list' : viewMode === 'grid' ? 'grid' : 'library'}
-              title={item.title}
-              author={item.authors.join(', ') || null}
-              genres={(genresByBookId.get(item.id) ?? []).map((genre) => genreTranslations[genre] ?? genre)}
-              thumbnailUrl={item.thumbnailUrl}
-              onPress={() => router.push(`/book/${item.id}`)}
-            />
-          )}
+          renderItem={({ item }) =>
+            item === null ? (
+              <View style={styles.gridFiller} />
+            ) : (
+              <BookCard
+                variant={viewMode === 'list' ? 'list' : viewMode === 'grid' ? 'grid' : 'library'}
+                title={item.title}
+                author={item.authors.join(', ') || null}
+                genres={(genresByBookId.get(item.id) ?? []).map((genre) => genreTranslations[genre] ?? genre)}
+                thumbnailUrl={item.thumbnailUrl}
+                onPress={() => router.push(`/book/${item.id}`)}
+              />
+            )
+          }
         />
       )}
 
@@ -486,6 +495,9 @@ const styles = StyleSheet.create({
   },
   gridRow: {
     gap: 16,
+  },
+  gridFiller: {
+    flex: 1,
   },
   floatingAddWrapper: {
     position: 'absolute',
