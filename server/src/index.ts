@@ -36,6 +36,16 @@ async function handleRecognizeCover(request: Request, env: Env): Promise<Respons
     return jsonResponse({ error: 'empty_body' }, 400);
   }
 
+  const requestId = crypto.randomUUID();
+  const imageHash = await hashImageBytes(imageBytes);
+
+  const cached = await getCachedResult(env, imageHash);
+  if (cached) {
+    return jsonResponse({ books: cached, requestId }, 200);
+  }
+
+  // Rate limits only guard the paid vision call, so they run after the cache
+  // check — a repeat photo costs zero KV writes.
   const withinGlobalBudget = await checkGlobalBudget(env.RECOGNITION_KV, 'recognize', env.DAILY_BUDGET_LIMIT);
   if (!withinGlobalBudget) {
     return jsonResponse({ error: 'daily_budget_exceeded' }, 503);
@@ -49,14 +59,6 @@ async function handleRecognizeCover(request: Request, env: Env): Promise<Respons
   );
   if (!withinTokenLimit) {
     return jsonResponse({ error: 'rate_limited' }, 429);
-  }
-
-  const requestId = crypto.randomUUID();
-  const imageHash = await hashImageBytes(imageBytes);
-
-  const cached = await getCachedResult(env, imageHash);
-  if (cached) {
-    return jsonResponse({ books: cached, requestId }, 200);
   }
 
   try {

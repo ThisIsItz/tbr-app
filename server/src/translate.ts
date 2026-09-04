@@ -48,16 +48,6 @@ export async function handleTranslateCategories(request: Request, env: Env): Pro
     return jsonResponse({ error: 'missing_client_token' }, 400);
   }
 
-  const withinTokenLimit = await checkPerTokenLimit(
-    env.RECOGNITION_KV,
-    FEATURE,
-    clientToken,
-    env.TRANSLATE_PER_TOKEN_DAILY_LIMIT,
-  );
-  if (!withinTokenLimit) {
-    return jsonResponse({ error: 'rate_limited' }, 429);
-  }
-
   let body: unknown;
   try {
     body = await request.json();
@@ -81,9 +71,32 @@ export async function handleTranslateCategories(request: Request, env: Env): Pro
   }
 
   const uniqueCategories = [...new Set(categories as string[])];
-  const entries = await Promise.all(
-    uniqueCategories.map(async (category) => [category, await translateOne(env, category, targetLang)] as const),
+
+  // Rate limits only guard the paid AI call, so check cache first — a fully
+  // cached request (the common case once genres warm up) costs zero KV writes.
+  const cacheChecks = await Promise.all(
+    uniqueCategories.map(
+      async (category) => [category, await env.RECOGNITION_KV.get(cacheKeyFor(category, targetLang))] as const,
+    ),
+  );
+  const cached = new Map(cacheChecks.filter((entry): entry is [string, string] => entry[1] !== null));
+  const missing = uniqueCategories.filter((category) => !cached.has(category));
+
+  if (missing.length > 0) {
+    const withinTokenLimit = await checkPerTokenLimit(
+      env.RECOGNITION_KV,
+      FEATURE,
+      clientToken,
+      env.TRANSLATE_PER_TOKEN_DAILY_LIMIT,
+    );
+    if (!withinTokenLimit) {
+      return jsonResponse({ error: 'rate_limited' }, 429);
+    }
+  }
+
+  const missingEntries = await Promise.all(
+    missing.map(async (category) => [category, await translateOne(env, category, targetLang)] as const),
   );
 
-  return jsonResponse({ translations: Object.fromEntries(entries) }, 200);
+  return jsonResponse({ translations: Object.fromEntries([...cached, ...missingEntries]) }, 200);
 }
