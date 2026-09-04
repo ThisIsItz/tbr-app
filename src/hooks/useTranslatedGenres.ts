@@ -3,6 +3,7 @@ import { useEffect, useRef } from 'react';
 
 import { translateCategories } from '@/api/translate';
 import { useTranslation } from '@/hooks/useTranslation';
+import { getStaticGenreTranslation } from '@/lib/genreTranslations';
 
 interface TranslatedGenres {
   translations: Record<string, string>;
@@ -21,7 +22,15 @@ export function useTranslatedGenres(genres: string[], manualGenres: string[] = [
     cacheRef.current = { locale, translations: {} };
   }
 
-  const missingGenres = sortedGenres.filter((genre) => !(genre in cacheRef.current.translations));
+  const staticTranslations: Record<string, string> = {};
+  for (const genre of sortedGenres) {
+    const staticMatch = getStaticGenreTranslation(genre);
+    if (staticMatch) staticTranslations[genre] = staticMatch;
+  }
+
+  const missingGenres = sortedGenres.filter(
+    (genre) => !(genre in staticTranslations) && !(genre in cacheRef.current.translations),
+  );
 
   const { data } = useQuery({
     queryKey: ['translatedGenres', locale, missingGenres],
@@ -36,7 +45,7 @@ export function useTranslatedGenres(genres: string[], manualGenres: string[] = [
   }, [data]);
 
   return {
-    translations: data ? { ...cacheRef.current.translations, ...data } : cacheRef.current.translations,
+    translations: { ...cacheRef.current.translations, ...data, ...staticTranslations },
     isLoading: locale !== 'en' && missingGenres.length > 0 && !data,
   };
 }
