@@ -9,12 +9,12 @@ import {
   Modal,
   Platform,
   Pressable,
-  ScrollView,
   StyleSheet,
   TextInput,
   useWindowDimensions,
   View,
 } from 'react-native';
+import Animated, { useAnimatedKeyboard, useAnimatedStyle } from 'react-native-reanimated';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { GenreEditor } from '@/components/GenreEditor';
@@ -41,6 +41,10 @@ export default function AddManuallyScreen() {
   const isEditing = !!id;
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
+  const keyboard = useAnimatedKeyboard();
+  const scrollContentAnimatedStyle = useAnimatedStyle(() => ({
+    paddingBottom: 56 + keyboard.height.value,
+  }));
   const { width } = useWindowDimensions();
   const isNarrowScreen = width < NARROW_SCREEN_WIDTH;
 
@@ -180,13 +184,11 @@ export default function AddManuallyScreen() {
   }
 
   return (
-    <KeyboardAvoidingView
-      style={styles.flex}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+    <>
       <SafeAreaView style={[styles.flex, { backgroundColor }]} edges={['bottom']}>
-        <ScrollView
+        <Animated.ScrollView
           style={{ backgroundColor }}
-          contentContainerStyle={styles.container}
+          contentContainerStyle={[styles.container, scrollContentAnimatedStyle]}
           keyboardShouldPersistTaps="handled">
           <Stack.Screen
             options={{ title: isEditing ? t('screenTitles.editBook') : t('screenTitles.addManually') }}
@@ -375,7 +377,7 @@ export default function AddManuallyScreen() {
                 : t(isEditing ? 'addManually.saveChanges' : 'addManually.save')}
             </ThemedText>
           </Pressable>
-        </ScrollView>
+        </Animated.ScrollView>
       </SafeAreaView>
 
       <Modal
@@ -418,7 +420,7 @@ export default function AddManuallyScreen() {
           </Pressable>
         </KeyboardAvoidingView>
       </Modal>
-    </KeyboardAvoidingView>
+    </>
   );
 }
 
@@ -429,7 +431,6 @@ const styles = StyleSheet.create({
   container: {
     padding: 16,
     gap: 12,
-    paddingBottom: 56,
   },
   centered: {
     flex: 1,
