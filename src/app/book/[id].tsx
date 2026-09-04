@@ -7,11 +7,11 @@ import {
   Modal,
   Platform,
   Pressable,
-  ScrollView,
   StyleSheet,
   TextInput,
   View,
 } from 'react-native';
+import Animated, { useAnimatedKeyboard, useAnimatedStyle } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { BookHero, CircleButton } from '@/components/BookHero';
@@ -38,6 +38,10 @@ export default function BookDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
+  const keyboard = useAnimatedKeyboard();
+  const scrollContentAnimatedStyle = useAnimatedStyle(() => ({
+    paddingBottom: keyboard.height.value,
+  }));
   const backgroundColor = useThemeColor({}, 'background');
   const surfaceColor = useThemeColor({}, 'surface');
   const surfaceMutedColor = useThemeColor({}, 'surfaceMuted');
@@ -121,154 +125,154 @@ export default function BookDetailScreen() {
   const description = book.description ? sanitizeDescription(book.description) : null;
 
   return (
-    <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-      <ScrollView style={[styles.scrollView, { backgroundColor }]} contentContainerStyle={styles.container}>
-        <Stack.Screen options={{ headerShown: false }} />
-        <BookHero
-          title={book.title}
-          subtitle={book.subtitle}
-          authors={book.authors}
-          coverUrl={coverUrl}
-          pageCount={book.pageCount}
-          language={book.language}
-          publishedDate={book.publishedDate}
-          onBack={() => router.back()}
-          onCoverPress={coverUrl ? () => setCoverViewerVisible(true) : undefined}
-          topRight={
-            <>
-              <CircleButton
-                onPress={() => router.push({ pathname: '/add/manually', params: { id: book.id } })}
-                accessibilityLabel={t('common.edit')}>
-                <Pencil size={18} color="#1A1310" strokeWidth={2} />
-              </CircleButton>
-              <CircleButton
-                onPress={handleDelete}
-                accessibilityLabel={t('bookDetail.remove')}
-                tint="rgba(255, 227, 227, 0.9)">
-                <Trash2 size={18} color={dangerColor} strokeWidth={2} />
-              </CircleButton>
-            </>
-          }
-        />
-        <View style={styles.content}>
-        {description && <ExpandableDescription description={description} />}
+    <Animated.ScrollView
+      style={[styles.scrollView, { backgroundColor }]}
+      contentContainerStyle={[styles.container, scrollContentAnimatedStyle]}>
+      <Stack.Screen options={{ headerShown: false }} />
+      <BookHero
+        title={book.title}
+        subtitle={book.subtitle}
+        authors={book.authors}
+        coverUrl={coverUrl}
+        pageCount={book.pageCount}
+        language={book.language}
+        publishedDate={book.publishedDate}
+        onBack={() => router.back()}
+        onCoverPress={coverUrl ? () => setCoverViewerVisible(true) : undefined}
+        topRight={
+          <>
+            <CircleButton
+              onPress={() => router.push({ pathname: '/add/manually', params: { id: book.id } })}
+              accessibilityLabel={t('common.edit')}>
+              <Pencil size={18} color="#1A1310" strokeWidth={2} />
+            </CircleButton>
+            <CircleButton
+              onPress={handleDelete}
+              accessibilityLabel={t('bookDetail.remove')}
+              tint="rgba(255, 227, 227, 0.9)">
+              <Trash2 size={18} color={dangerColor} strokeWidth={2} />
+            </CircleButton>
+          </>
+        }
+      />
+      <View style={styles.content}>
+      {description && <ExpandableDescription description={description} />}
 
-        <View style={styles.section}>
-          <View style={styles.sectionHeaderRow}>
-            <ThemedText style={[Typography.sectionTitle, { color: textColor }]}>
-              {t('bookDetail.genres')}
+      <View style={styles.section}>
+        <View style={styles.sectionHeaderRow}>
+          <ThemedText style={[Typography.sectionTitle, { color: textColor }]}>
+            {t('bookDetail.genres')}
+          </ThemedText>
+          <Pressable
+            onPress={() => setGenreModalVisible(true)}
+            hitSlop={8}
+            accessibilityRole="button"
+            accessibilityLabel={t('bookDetail.editGenres')}>
+            <Pencil size={18} color={accentColor} strokeWidth={1.75} />
+          </Pressable>
+        </View>
+
+        <View style={styles.genreChipRow}>
+          {genres.length === 0 && (
+            <ThemedText style={[Typography.body, { color: textMutedColor }]}>
+              {t('bookDetail.noGenres')}
             </ThemedText>
+          )}
+          {visibleGenres.map((genre) => (
+            <View key={genre} style={[styles.genreChip, { backgroundColor: accentSoftColor }]}>
+              {genresTranslating && !genreTranslations[genre] && !manualGenres.includes(genre) ? (
+                <Skeleton
+                  width={estimateGenreSkeletonWidth(genre)}
+                  height={12}
+                  tint={onAccentSoftColor}
+                />
+              ) : (
+                <ThemedText style={[Typography.caption, { color: onAccentSoftColor }]}>
+                  {capitalizeFirst(genreTranslations[genre] ?? genre)}
+                </ThemedText>
+              )}
+            </View>
+          ))}
+          {extraGenreCount > 0 && (
             <Pressable
               onPress={() => setGenreModalVisible(true)}
-              hitSlop={8}
               accessibilityRole="button"
-              accessibilityLabel={t('bookDetail.editGenres')}>
-              <Pencil size={18} color={accentColor} strokeWidth={1.75} />
-            </Pressable>
-          </View>
-
-          <View style={styles.genreChipRow}>
-            {genres.length === 0 && (
-              <ThemedText style={[Typography.body, { color: textMutedColor }]}>
-                {t('bookDetail.noGenres')}
+              accessibilityLabel={t('bookDetail.moreGenres', { count: extraGenreCount })}
+              style={[styles.genreChip, { backgroundColor: surfaceMutedColor }]}>
+              <ThemedText style={[Typography.caption, { color: textMutedColor }]}>
+                {t('bookDetail.moreGenres', { count: extraGenreCount })}
               </ThemedText>
-            )}
-            {visibleGenres.map((genre) => (
-              <View key={genre} style={[styles.genreChip, { backgroundColor: accentSoftColor }]}>
-                {genresTranslating && !genreTranslations[genre] && !manualGenres.includes(genre) ? (
-                  <Skeleton
-                    width={estimateGenreSkeletonWidth(genre)}
-                    height={12}
-                    tint={onAccentSoftColor}
-                  />
-                ) : (
-                  <ThemedText style={[Typography.caption, { color: onAccentSoftColor }]}>
-                    {capitalizeFirst(genreTranslations[genre] ?? genre)}
-                  </ThemedText>
-                )}
-              </View>
-            ))}
-            {extraGenreCount > 0 && (
-              <Pressable
-                onPress={() => setGenreModalVisible(true)}
-                accessibilityRole="button"
-                accessibilityLabel={t('bookDetail.moreGenres', { count: extraGenreCount })}
-                style={[styles.genreChip, { backgroundColor: surfaceMutedColor }]}>
-                <ThemedText style={[Typography.caption, { color: textMutedColor }]}>
-                  {t('bookDetail.moreGenres', { count: extraGenreCount })}
-                </ThemedText>
-              </Pressable>
-            )}
-          </View>
+            </Pressable>
+          )}
         </View>
+      </View>
 
-        <View style={styles.section}>
-          <ThemedText style={[Typography.sectionTitle, { color: textColor }]}>
-            {t('bookDetail.notes')}
-          </ThemedText>
-          <TextInput
-            value={notes}
-            onChangeText={setNotes}
-            onBlur={handleNotesBlur}
-            placeholder={t('bookDetail.notesPlaceholder')}
-            placeholderTextColor={textMutedColor}
-            style={[
-              Typography.body,
-              styles.notesInput,
-              { color: textColor, backgroundColor: surfaceColor },
-            ]}
-            multiline
-            textAlignVertical="top"
-          />
-        </View>
-        </View>
+      <View style={styles.section}>
+        <ThemedText style={[Typography.sectionTitle, { color: textColor }]}>
+          {t('bookDetail.notes')}
+        </ThemedText>
+        <TextInput
+          value={notes}
+          onChangeText={setNotes}
+          onBlur={handleNotesBlur}
+          placeholder={t('bookDetail.notesPlaceholder')}
+          placeholderTextColor={textMutedColor}
+          style={[
+            Typography.body,
+            styles.notesInput,
+            { color: textColor, backgroundColor: surfaceColor },
+          ]}
+          multiline
+          textAlignVertical="top"
+        />
+      </View>
+      </View>
 
-        <Modal
-          visible={isGenreModalVisible}
-          transparent
-          animationType="fade"
-          onRequestClose={() => setGenreModalVisible(false)}>
-          <KeyboardAvoidingView
-            style={styles.flex}
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+      <Modal
+        visible={isGenreModalVisible}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setGenreModalVisible(false)}>
+        <KeyboardAvoidingView
+          style={styles.flex}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+          <Pressable
+            style={styles.backdrop}
+            onPress={() => setGenreModalVisible(false)}
+            accessibilityLabel={t('common.done')}>
             <Pressable
-              style={styles.backdrop}
-              onPress={() => setGenreModalVisible(false)}
-              accessibilityLabel={t('common.done')}>
+              style={[styles.sheet, { backgroundColor: surfaceColor, paddingBottom: 32 + insets.bottom }]}
+              onPress={(e) => e.stopPropagation()}>
+              <ThemedText style={[Typography.sectionTitle, { color: textColor }]}>
+                {t('bookDetail.genres')}
+              </ThemedText>
+              <GenreEditor
+                genres={genres}
+                manualGenres={manualGenres}
+                onChange={(updatedGenres, updatedManualGenres) =>
+                  updateGenres.mutate({ id: book.id, genres: updatedGenres, manualGenres: updatedManualGenres })
+                }
+              />
               <Pressable
-                style={[styles.sheet, { backgroundColor: surfaceColor, paddingBottom: 32 + insets.bottom }]}
-                onPress={(e) => e.stopPropagation()}>
-                <ThemedText style={[Typography.sectionTitle, { color: textColor }]}>
-                  {t('bookDetail.genres')}
+                onPress={() => setGenreModalVisible(false)}
+                accessibilityRole="button"
+                accessibilityLabel={t('common.done')}
+                style={[styles.doneButton, { backgroundColor: accentColor }]}>
+                <ThemedText style={[Typography.button, { color: onAccentColor }]}>
+                  {t('common.done')}
                 </ThemedText>
-                <GenreEditor
-                  genres={genres}
-                  manualGenres={manualGenres}
-                  onChange={(updatedGenres, updatedManualGenres) =>
-                    updateGenres.mutate({ id: book.id, genres: updatedGenres, manualGenres: updatedManualGenres })
-                  }
-                />
-                <Pressable
-                  onPress={() => setGenreModalVisible(false)}
-                  accessibilityRole="button"
-                  accessibilityLabel={t('common.done')}
-                  style={[styles.doneButton, { backgroundColor: accentColor }]}>
-                  <ThemedText style={[Typography.button, { color: onAccentColor }]}>
-                    {t('common.done')}
-                  </ThemedText>
-                </Pressable>
               </Pressable>
             </Pressable>
-          </KeyboardAvoidingView>
-        </Modal>
+          </Pressable>
+        </KeyboardAvoidingView>
+      </Modal>
 
-        <CoverViewerModal
-          visible={isCoverViewerVisible}
-          coverUrl={coverUrl}
-          onClose={() => setCoverViewerVisible(false)}
-        />
-      </ScrollView>
-    </KeyboardAvoidingView>
+      <CoverViewerModal
+        visible={isCoverViewerVisible}
+        coverUrl={coverUrl}
+        onClose={() => setCoverViewerVisible(false)}
+      />
+    </Animated.ScrollView>
   );
 }
 
