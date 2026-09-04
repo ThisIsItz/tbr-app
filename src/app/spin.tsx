@@ -24,7 +24,7 @@ import { usePurchases } from '@/hooks/usePurchases';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { useTranslation } from '@/hooks/useTranslation';
 import { capitalizeFirst } from '@/lib/capitalize';
-import { toHttpsUrl } from '@/api/googleBooks';
+import { toHighResUrl } from '@/api/googleBooks';
 import type { Book } from '@/types/book';
 
 export default function SpinScreen() {
@@ -69,7 +69,7 @@ export default function SpinScreen() {
     confettiRef.current?.start();
   }, []);
 
-  const coverUrl = toHttpsUrl(landedBook?.thumbnailUrl);
+  const coverUrl = toHighResUrl(landedBook?.thumbnailUrl);
   const spinButtonLabelKey = isSpinning
     ? 'spin.spinningButton'
     : landedBook

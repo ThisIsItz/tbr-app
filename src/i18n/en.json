@@ -1,6 +1,7 @@
 {
   "common": {
     "cancel": "Cancel",
+    "close": "Close",
     "back": "Back",
     "edit": "Edit",
     "clear": "Clear",
@@ -87,6 +88,7 @@
   },
   "bookDetail": {
     "description": "Description",
+    "viewCover": "View cover",
     "removedToast": "\"{{title}}\" removed",
     "genres": "Genres",
     "editGenres": "Edit genres",

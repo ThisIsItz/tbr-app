@@ -25,6 +25,7 @@ interface BookHeroProps {
   language?: string | null;
   publishedDate?: string | null;
   onBack: () => void;
+  onCoverPress?: () => void;
   topRight?: ReactNode;
   bottomRight?: ReactNode;
 }
@@ -38,6 +39,7 @@ export function BookHero({
   language,
   publishedDate,
   onBack,
+  onCoverPress,
   topRight,
   bottomRight,
 }: BookHeroProps) {
@@ -70,7 +72,13 @@ export function BookHero({
 
         <View style={styles.bookRow}>
           {coverUrl ? (
-            <Image source={{ uri: coverUrl }} style={styles.thumbnail} contentFit="cover" />
+            <Pressable
+              onPress={onCoverPress}
+              disabled={!onCoverPress}
+              accessibilityRole={onCoverPress ? 'button' : undefined}
+              accessibilityLabel={onCoverPress ? t('bookDetail.viewCover') : undefined}>
+              <Image source={{ uri: coverUrl }} style={styles.thumbnail} contentFit="cover" />
+            </Pressable>
           ) : (
             <View style={[styles.thumbnail, styles.thumbnailPlaceholder, { backgroundColor: surfaceMutedColor }]}>
               <ThemedText style={[Typography.caption, styles.heroTextMuted]}>{t('bookCard.noCover')}</ThemedText>

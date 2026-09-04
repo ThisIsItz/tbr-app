@@ -34,6 +34,15 @@ export function toHttpsUrl(url: string | null | undefined): string | null {
   return url.replace(/^http:\/\//, 'https://')
 }
 
+// Google Books' `thumbnail` field is a small (~128px) image, but the same
+// content server serves much larger versions of the same cover via `zoom` —
+// bumping it gets a sharper image without a second request or re-fetch.
+export function toHighResUrl(url: string | null | undefined): string | null {
+  const httpsUrl = toHttpsUrl(url)
+  if (!httpsUrl) return null
+  return httpsUrl.replace(/([?&])zoom=\d+/, '$1zoom=3').replace(/&edge=curl/g, '')
+}
+
 function booksApiUrl(): string {
   const apiUrl = process.env.EXPO_PUBLIC_BOOKS_API_URL
   if (!apiUrl) {

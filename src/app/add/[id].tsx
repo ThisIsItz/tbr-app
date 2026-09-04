@@ -14,7 +14,7 @@ import { useGoogleBookDetails } from '@/hooks/useSearch';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { useTranslation } from '@/hooks/useTranslation';
 import { normalizeGenres } from '@/lib/genres';
-import { GoogleBooksApiError, toHttpsUrl } from '@/api/googleBooks';
+import { GoogleBooksApiError, toHighResUrl, toHttpsUrl } from '@/api/googleBooks';
 import { sanitizeDescription } from '@/lib/sanitizeHtml';
 
 export default function AddBookScreen() {
@@ -93,6 +93,7 @@ export default function AddBookScreen() {
   const { title, subtitle, authors, description, publishedDate, pageCount, publisher, language, imageLinks } =
     volume.volumeInfo;
   const coverUrl = toHttpsUrl(imageLinks?.thumbnail);
+  const previewCoverUrl = toHighResUrl(imageLinks?.thumbnail);
   const sanitizedDescription = description ? sanitizeDescription(description) : null;
 
   function handleSave() {
@@ -121,7 +122,7 @@ export default function AddBookScreen() {
         title={title}
         subtitle={subtitle}
         authors={authors ?? []}
-        coverUrl={coverUrl}
+        coverUrl={previewCoverUrl}
         pageCount={pageCount}
         language={language}
         publishedDate={publishedDate}

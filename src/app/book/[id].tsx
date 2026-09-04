@@ -15,6 +15,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { BookHero, CircleButton } from '@/components/BookHero';
+import { CoverViewerModal } from '@/components/CoverViewerModal';
 import { ExpandableDescription } from '@/components/ExpandableDescription';
 import { GenreEditor } from '@/components/GenreEditor';
 import { Skeleton } from '@/components/Skeleton';
@@ -28,7 +29,7 @@ import { capitalizeFirst } from '@/lib/capitalize';
 import { confirmAsync } from '@/lib/confirm';
 import { estimateGenreSkeletonWidth, normalizeGenres } from '@/lib/genres';
 import { useUndoContext } from '@/lib/undo/UndoProvider';
-import { toHttpsUrl } from '@/api/googleBooks';
+import { toHighResUrl } from '@/api/googleBooks';
 import { sanitizeDescription } from '@/lib/sanitizeHtml';
 
 const MAX_VISIBLE_GENRES = 3;
@@ -54,6 +55,7 @@ export default function BookDetailScreen() {
   const deleteBook = useDeleteBook();
   const { notifyDeleted } = useUndoContext();
   const [isGenreModalVisible, setGenreModalVisible] = useState(false);
+  const [isCoverViewerVisible, setCoverViewerVisible] = useState(false);
   const [notes, setNotes] = useState('');
 
   useEffect(() => {
@@ -113,7 +115,7 @@ export default function BookDetailScreen() {
     router.back();
   }
 
-  const coverUrl = toHttpsUrl(book.thumbnailUrl);
+  const coverUrl = toHighResUrl(book.thumbnailUrl);
   const visibleGenres = genres.slice(0, MAX_VISIBLE_GENRES);
   const extraGenreCount = genres.length - visibleGenres.length;
   const description = book.description ? sanitizeDescription(book.description) : null;
@@ -131,6 +133,7 @@ export default function BookDetailScreen() {
           language={book.language}
           publishedDate={book.publishedDate}
           onBack={() => router.back()}
+          onCoverPress={coverUrl ? () => setCoverViewerVisible(true) : undefined}
           topRight={
             <>
               <CircleButton
@@ -258,6 +261,12 @@ export default function BookDetailScreen() {
             </Pressable>
           </KeyboardAvoidingView>
         </Modal>
+
+        <CoverViewerModal
+          visible={isCoverViewerVisible}
+          coverUrl={coverUrl}
+          onClose={() => setCoverViewerVisible(false)}
+        />
       </ScrollView>
     </KeyboardAvoidingView>
   );

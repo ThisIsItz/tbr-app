@@ -7,7 +7,7 @@ import { Typography } from '@/lib/theme/theme';
 import { capitalizeFirst } from '@/lib/capitalize';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { useTranslation } from '@/hooks/useTranslation';
-import { toHttpsUrl } from '@/api/googleBooks';
+import { toHighResUrl } from '@/api/googleBooks';
 
 interface BookCardAction {
   label: string;
@@ -52,7 +52,7 @@ export function BookCard({
   const onAccentSoftColor = useThemeColor({}, 'onAccentSoft');
   const accentSoftColor = useThemeColor({}, 'accentSoft');
 
-  const coverUrl = toHttpsUrl(thumbnailUrl);
+  const coverUrl = toHighResUrl(thumbnailUrl);
   const isResult = variant === 'result';
   const isList = variant === 'list';
   const isGrid = variant === 'grid';

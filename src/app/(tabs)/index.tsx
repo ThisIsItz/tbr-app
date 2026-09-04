@@ -369,6 +369,7 @@ export default function MyTbrScreen() {
           columnWrapperStyle={viewMode === 'grid' ? styles.gridRow : undefined}
           contentContainerStyle={[
             styles.listContent,
+            { paddingBottom: 88 + insets.bottom },
             viewMode === 'list' && styles.listContentCompact,
             viewMode === 'grid' && styles.gridContent,
           ]}
@@ -489,7 +490,6 @@ const styles = StyleSheet.create({
     gap: 10,
     paddingHorizontal: 10,
     paddingTop: 10,
-    paddingBottom: 88,
   },
   listContentCompact: {
     gap: 0,
