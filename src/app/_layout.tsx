@@ -8,6 +8,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
 import 'react-native-reanimated';
 
+import { ConfirmDialog } from '@/components/ConfirmDialog';
 import { PurchaseCelebration } from '@/components/PurchaseCelebration';
 import { UndoToast } from '@/components/UndoToast';
 import { useScreenHeaderOptions } from '@/hooks/useScreenHeaderOptions';
@@ -146,6 +147,7 @@ function RootLayoutNav() {
           <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
           <PurchaseCelebration />
           <UndoToast />
+          <ConfirmDialog />
         </UndoProvider>
       </ThemeProvider>
     </QueryClientProvider>
