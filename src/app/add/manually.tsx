@@ -181,7 +181,7 @@ export default function AddManuallyScreen() {
   return (
     <KeyboardAvoidingView
       style={styles.flex}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
       <SafeAreaView style={[styles.flex, { backgroundColor }]} edges={['bottom']}>
         <ScrollView
           style={{ backgroundColor }}
