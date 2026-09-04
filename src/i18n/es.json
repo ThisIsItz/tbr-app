@@ -168,6 +168,7 @@
     "data": "Datos",
     "exportBackup": "Exportar copia de seguridad",
     "exportBackupDescription": "Guarda tu biblioteca en un archivo que puedes conservar o compartir.",
+    "exportBackupEmptyHint": "Aún no hay nada que exportar. Añade un libro primero.",
     "importBackup": "Importar copia de seguridad",
     "importBackupDescription": "Restaura libros desde un archivo exportado previamente.",
     "exportError": "No se pudo exportar tu copia de seguridad. Inténtalo de nuevo.",

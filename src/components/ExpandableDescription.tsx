@@ -1,3 +1,4 @@
+import { LinearGradient } from 'expo-linear-gradient';
 import { useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
@@ -8,7 +9,6 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { Typography } from '@/lib/theme/theme';
 
 const COLLAPSED_LINES = 6;
-const FADE_BARS = 6;
 
 interface ExpandableDescriptionProps {
   description: string;
@@ -40,14 +40,7 @@ export function ExpandableDescription({ description }: ExpandableDescriptionProp
           {description}
         </ThemedText>
         {!isExpanded && hasMore && (
-          <View style={styles.fade}>
-            {Array.from({ length: FADE_BARS }).map((_, i) => (
-              <View
-                key={i}
-                style={[styles.fadeBar, { backgroundColor, opacity: (i + 1) / FADE_BARS }]}
-              />
-            ))}
-          </View>
+          <LinearGradient colors={['transparent', backgroundColor]} style={styles.fade} />
         )}
       </View>
       {hasMore && (
@@ -78,10 +71,6 @@ const styles = StyleSheet.create({
     bottom: 0,
     height: 32,
     pointerEvents: 'none',
-    flexDirection: 'column',
-  },
-  fadeBar: {
-    flex: 1,
   },
   expandButton: {
     flexDirection: 'row',

@@ -10,7 +10,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { ThemedText } from '@/components/ThemedText';
 import { IconSymbol } from '@/components/IconSymbol';
 import { AccentColors, Typography, type AccentName } from '@/lib/theme/theme';
-import { useExportBackup, useImportBackup } from '@/hooks/useLibrary';
+import { useBooks, useExportBackup, useImportBackup } from '@/hooks/useLibrary';
 import { useAppColorScheme } from '@/hooks/useAppColorScheme';
 import { usePurchases } from '@/hooks/usePurchases';
 import { useThemeColor } from '@/hooks/useThemeColor';
@@ -202,6 +202,9 @@ export default function SettingsScreen() {
   const borderColor = useThemeColor({}, 'border');
   const accentColor = useThemeColor({}, 'accent');
 
+  const { data: books } = useBooks();
+  const hasBooks = (books?.length ?? 0) > 0;
+
   const exportBackup = useExportBackup();
   const importBackup = useImportBackup();
 
@@ -214,7 +217,7 @@ export default function SettingsScreen() {
   }
 
   async function handleImport() {
-    const result = await DocumentPicker.getDocumentAsync();
+    const result = await DocumentPicker.getDocumentAsync({ type: 'application/json' });
     if (result.canceled) return;
 
     const uri = result.assets[0]?.uri;
@@ -291,18 +294,20 @@ export default function SettingsScreen() {
           <View style={[styles.optionsCardInner, { backgroundColor: surfaceColor }]}>
             <Pressable
               onPress={handleExport}
-              disabled={isBusy}
+              disabled={isBusy || !hasBooks}
               accessibilityRole="button"
               accessibilityLabel={t('settings.exportBackup')}
-              accessibilityHint={t('settings.exportBackupDescription')}
-              style={styles.dataRow}>
+              accessibilityHint={
+                hasBooks ? t('settings.exportBackupDescription') : t('settings.exportBackupEmptyHint')
+              }
+              style={[styles.dataRow, !hasBooks && styles.dataRowDisabled]}>
               <Upload size={20} color={textColor} strokeWidth={1.75} />
               <View style={styles.dataRowText}>
                 <ThemedText style={[Typography.body, { color: textColor }]}>
                   {t('settings.exportBackup')}
                 </ThemedText>
                 <ThemedText style={[Typography.caption, { color: textMutedColor }]}>
-                  {t('settings.exportBackupDescription')}
+                  {hasBooks ? t('settings.exportBackupDescription') : t('settings.exportBackupEmptyHint')}
                 </ThemedText>
               </View>
               {exportBackup.isPending && <ActivityIndicator size="small" color={accentColor} />}
@@ -449,6 +454,9 @@ const styles = StyleSheet.create({
     minHeight: 56,
     paddingHorizontal: 16,
     paddingVertical: 10,
+  },
+  dataRowDisabled: {
+    opacity: 0.5,
   },
   dataRowText: {
     flex: 1,

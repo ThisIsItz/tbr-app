@@ -240,6 +240,9 @@ export default function AddManuallyScreen() {
                 <ThemedText style={[Typography.metadata, styles.labelPrimary, { color: textColor }]}>
                   {t('addManually.authorLabel')}
                 </ThemedText>
+                <ThemedText style={[Typography.caption, { color: textMutedColor }]}>
+                  {t('addManually.authorPlaceholder')}
+                </ThemedText>
                 <TextInput
                   value={authorsText}
                   onChangeText={setAuthorsText}
