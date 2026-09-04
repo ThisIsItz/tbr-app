@@ -15,7 +15,7 @@ import {
   useWindowDimensions,
   View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { GenreEditor } from '@/components/GenreEditor';
 import { Skeleton } from '@/components/Skeleton';
@@ -39,6 +39,7 @@ export default function AddManuallyScreen() {
   }>();
   const isEditing = !!id;
   const { t } = useTranslation();
+  const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
   const isNarrowScreen = width < NARROW_SCREEN_WIDTH;
 
@@ -65,12 +66,16 @@ export default function AddManuallyScreen() {
   const [title, setTitle] = useState(prefillTitle ?? '');
   const [authorsText, setAuthorsText] = useState(prefillAuthor ?? '');
   const [genres, setGenres] = useState<string[]>([]);
+  const [manualGenres, setManualGenres] = useState<string[]>([]);
   const [description, setDescription] = useState('');
   const [publishedDate, setPublishedDate] = useState('');
   const [pageCountText, setPageCountText] = useState('');
   const [notes, setNotes] = useState('');
   const [isGenreModalVisible, setGenreModalVisible] = useState(false);
-  const { translations: genreTranslations, isLoading: genresTranslating } = useTranslatedGenres(genres);
+  const { translations: genreTranslations, isLoading: genresTranslating } = useTranslatedGenres(
+    genres,
+    manualGenres,
+  );
 
   useEffect(() => {
     if (!isEditing || !existingBook || isPrefilled) return;
@@ -149,6 +154,7 @@ export default function AddManuallyScreen() {
           subtitle: null,
           authors,
           genres,
+          manualGenres,
           thumbnailUrl,
           description: description.trim() || null,
           publishedDate: publishedDate.trim() || null,
@@ -316,7 +322,7 @@ export default function AddManuallyScreen() {
                 accessibilityLabel={genres.length > 0 ? t('bookDetail.editGenres') : t('addManually.addGenres')}>
                 {genres.map((genre) => (
                   <View key={genre} style={[styles.genreChip, { backgroundColor: accentSoftColor }]}>
-                    {genresTranslating && !genreTranslations[genre] ? (
+                    {genresTranslating && !genreTranslations[genre] && !manualGenres.includes(genre) ? (
                       <Skeleton
                         width={Math.min(genre.length * 6, 90)}
                         height={12}
@@ -382,12 +388,22 @@ export default function AddManuallyScreen() {
             onPress={() => setGenreModalVisible(false)}
             accessibilityLabel={t('common.done')}>
             <Pressable
-              style={[styles.sheet, { backgroundColor: surfaceColor, boxShadow: `0px -2px 6px ${shadowColor}` }]}
+              style={[
+                styles.sheet,
+                { backgroundColor: surfaceColor, boxShadow: `0px -2px 6px ${shadowColor}`, paddingBottom: 32 + insets.bottom },
+              ]}
               onPress={(e) => e.stopPropagation()}>
               <ThemedText style={[Typography.sectionTitle, { color: textColor }]}>
                 {t('addManually.genres')}
               </ThemedText>
-              <GenreEditor genres={genres} onChange={setGenres} />
+              <GenreEditor
+                genres={genres}
+                manualGenres={manualGenres}
+                onChange={(updatedGenres, updatedManualGenres) => {
+                  setGenres(updatedGenres);
+                  setManualGenres(updatedManualGenres);
+                }}
+              />
               <Pressable
                 onPress={() => setGenreModalVisible(false)}
                 accessibilityRole="button"
@@ -507,7 +523,6 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     padding: 16,
-    paddingBottom: 32,
     gap: 16,
     maxHeight: '80%',
   },

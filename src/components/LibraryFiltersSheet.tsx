@@ -1,6 +1,7 @@
 import { SlidersHorizontal } from 'lucide-react-native';
 import { useState } from 'react';
 import { Modal, Pressable, StyleSheet, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, {
   Extrapolation,
   interpolate,
@@ -45,6 +46,7 @@ export function LibraryFiltersSheet({
   disabled,
 }: LibraryFiltersSheetProps) {
   const { t, locale } = useTranslation();
+  const insets = useSafeAreaInsets();
   const [visible, setVisible] = useState(false);
   const [viewportHeight, setViewportHeight] = useState(0);
   const [contentHeight, setContentHeight] = useState(0);
@@ -160,7 +162,7 @@ export function LibraryFiltersSheet({
           onPress={() => setVisible(false)}
           accessibilityLabel={t('common.done')}>
           <Pressable
-            style={[styles.sheet, { backgroundColor: surfaceColor }]}
+            style={[styles.sheet, { backgroundColor: surfaceColor, paddingBottom: 32 + insets.bottom }]}
             onPress={(e) => e.stopPropagation()}>
             <View style={styles.sheetHeader}>
               <ThemedText style={[Typography.sectionTitle, { color: textColor }]}>
@@ -302,7 +304,6 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 20,
     paddingTop: 12,
     paddingHorizontal: 16,
-    paddingBottom: 32,
     gap: 12,
     maxHeight: '80%',
   },

@@ -11,12 +11,16 @@ import { normalizeGenres } from '@/lib/genres';
 
 interface GenreEditorProps {
   genres: string[];
-  onChange: (genres: string[]) => void;
+  manualGenres: string[];
+  onChange: (genres: string[], manualGenres: string[]) => void;
 }
 
-export function GenreEditor({ genres, onChange }: GenreEditorProps) {
+export function GenreEditor({ genres, manualGenres, onChange }: GenreEditorProps) {
   const { t } = useTranslation();
-  const { translations: genreTranslations, isLoading: genresTranslating } = useTranslatedGenres(genres);
+  const { translations: genreTranslations, isLoading: genresTranslating } = useTranslatedGenres(
+    genres,
+    manualGenres,
+  );
   const [draft, setDraft] = useState('');
 
   const textColor = useThemeColor({}, 'text');
@@ -29,12 +33,17 @@ export function GenreEditor({ genres, onChange }: GenreEditorProps) {
 
   function handleAdd() {
     if (!draft.trim()) return;
-    onChange(normalizeGenres([...genres, draft]));
+    const updatedGenres = normalizeGenres([...genres, draft]);
+    const added = updatedGenres.filter((genre) => !genres.includes(genre));
+    onChange(updatedGenres, [...manualGenres, ...added]);
     setDraft('');
   }
 
   function handleRemove(genre: string) {
-    onChange(genres.filter((g) => g !== genre));
+    onChange(
+      genres.filter((g) => g !== genre),
+      manualGenres.filter((g) => g !== genre),
+    );
   }
 
   return (
@@ -47,7 +56,7 @@ export function GenreEditor({ genres, onChange }: GenreEditorProps) {
         )}
         {genres.map((genre) => (
           <View key={genre} style={[styles.chip, { backgroundColor: accentSoftColor }]}>
-            {genresTranslating && !genreTranslations[genre] ? (
+            {genresTranslating && !genreTranslations[genre] && !manualGenres.includes(genre) ? (
               <View
                 style={[
                   styles.chipSkeleton,

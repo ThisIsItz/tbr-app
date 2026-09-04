@@ -9,6 +9,7 @@ export interface Book {
   subtitle: string | null;
   authors: string[];
   genres: string[];
+  manualGenres: string[];
   thumbnailUrl: string | null;
   description: string | null;
   publishedDate: string | null;
@@ -27,6 +28,7 @@ export interface NewBookInput {
   subtitle: string | null;
   authors: string[];
   genres: string[];
+  manualGenres: string[];
   thumbnailUrl: string | null;
   description: string | null;
   publishedDate: string | null;

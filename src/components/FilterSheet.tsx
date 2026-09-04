@@ -1,6 +1,7 @@
 import type { LucideIcon } from 'lucide-react-native';
 import { useState } from 'react';
 import { FlatList, Modal, Pressable, StyleSheet } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { ThemedText } from '@/components/ThemedText';
 import { IconSymbol } from '@/components/IconSymbol';
@@ -37,6 +38,7 @@ export function FilterSheet({
   compact,
 }: FilterSheetProps) {
   const { t } = useTranslation();
+  const insets = useSafeAreaInsets();
   const [visible, setVisible] = useState(false);
   const isActive = selected !== null && selected !== undefined;
 
@@ -83,7 +85,7 @@ export function FilterSheet({
           accessibilityRole="button"
           accessibilityLabel={t('common.done')}>
           <Pressable
-            style={[styles.sheet, { backgroundColor: surfaceColor }]}
+            style={[styles.sheet, { backgroundColor: surfaceColor, paddingBottom: 32 + insets.bottom }]}
             onPress={(e) => e.stopPropagation()}>
             <ThemedText style={[Typography.sectionTitle, styles.sheetTitle, { color: textColor }]}>
               {label}
@@ -158,7 +160,6 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 20,
     paddingTop: 12,
     paddingHorizontal: 16,
-    paddingBottom: 32,
     maxHeight: '70%',
   },
   sheetTitle: {

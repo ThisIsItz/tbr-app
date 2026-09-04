@@ -52,6 +52,7 @@ export function useQuickAddBook() {
       subtitle: subtitle ?? null,
       authors: authors ?? [],
       genres: normalizeGenres(categories ?? []),
+      manualGenres: [],
       thumbnailUrl: toHttpsUrl(imageLinks?.thumbnail),
       description: description ? sanitizeDescription(description) : null,
       publishedDate: publishedDate ?? null,

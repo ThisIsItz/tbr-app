@@ -12,6 +12,7 @@ import {
   TextInput,
   View,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { BookHero, CircleButton } from '@/components/BookHero';
 import { ExpandableDescription } from '@/components/ExpandableDescription';
@@ -35,6 +36,7 @@ const MAX_VISIBLE_GENRES = 3;
 export default function BookDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { t } = useTranslation();
+  const insets = useSafeAreaInsets();
   const backgroundColor = useThemeColor({}, 'background');
   const surfaceColor = useThemeColor({}, 'surface');
   const surfaceMutedColor = useThemeColor({}, 'surfaceMuted');
@@ -59,7 +61,11 @@ export default function BookDetailScreen() {
   }, [book?.notes]);
 
   const genres = normalizeGenres(book?.genres ?? []);
-  const { translations: genreTranslations, isLoading: genresTranslating } = useTranslatedGenres(genres);
+  const manualGenres = book?.manualGenres ?? [];
+  const { translations: genreTranslations, isLoading: genresTranslating } = useTranslatedGenres(
+    genres,
+    manualGenres,
+  );
 
   function handleNotesBlur() {
     if (!book) return;
@@ -166,7 +172,7 @@ export default function BookDetailScreen() {
             )}
             {visibleGenres.map((genre) => (
               <View key={genre} style={[styles.genreChip, { backgroundColor: accentSoftColor }]}>
-                {genresTranslating && !genreTranslations[genre] ? (
+                {genresTranslating && !genreTranslations[genre] && !manualGenres.includes(genre) ? (
                   <Skeleton
                     width={Math.min(genre.length * 6, 90)}
                     height={12}
@@ -227,14 +233,17 @@ export default function BookDetailScreen() {
               onPress={() => setGenreModalVisible(false)}
               accessibilityLabel={t('common.done')}>
               <Pressable
-                style={[styles.sheet, { backgroundColor: surfaceColor }]}
+                style={[styles.sheet, { backgroundColor: surfaceColor, paddingBottom: 32 + insets.bottom }]}
                 onPress={(e) => e.stopPropagation()}>
                 <ThemedText style={[Typography.sectionTitle, { color: textColor }]}>
                   {t('bookDetail.genres')}
                 </ThemedText>
                 <GenreEditor
                   genres={genres}
-                  onChange={(updated) => updateGenres.mutate({ id: book.id, genres: updated })}
+                  manualGenres={manualGenres}
+                  onChange={(updatedGenres, updatedManualGenres) =>
+                    updateGenres.mutate({ id: book.id, genres: updatedGenres, manualGenres: updatedManualGenres })
+                  }
                 />
                 <Pressable
                   onPress={() => setGenreModalVisible(false)}
@@ -326,7 +335,6 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     padding: 16,
-    paddingBottom: 32,
     gap: 16,
     maxHeight: '80%',
   },

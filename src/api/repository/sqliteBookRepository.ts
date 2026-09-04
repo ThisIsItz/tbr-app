@@ -12,6 +12,7 @@ interface BookRow {
   subtitle: string | null;
   authors: string;
   genres: string;
+  manual_genres: string;
   thumbnail_url: string | null;
   description: string | null;
   published_date: string | null;
@@ -32,6 +33,7 @@ function rowToBook(row: BookRow): Book {
     subtitle: row.subtitle,
     authors: JSON.parse(row.authors) as string[],
     genres: JSON.parse(row.genres) as string[],
+    manualGenres: JSON.parse(row.manual_genres) as string[],
     thumbnailUrl: row.thumbnail_url,
     description: row.description,
     publishedDate: row.published_date,
@@ -76,10 +78,10 @@ export const sqliteBookRepository: BookRepository = {
 
     await db.runAsync(
       `INSERT INTO books (
-        id, google_books_id, title, subtitle, authors, genres, thumbnail_url,
+        id, google_books_id, title, subtitle, authors, genres, manual_genres, thumbnail_url,
         description, published_date, page_count, publisher, language, notes,
         status, created_at, updated_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'to_read', ?, ?)`,
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'to_read', ?, ?)`,
       [
         id,
         input.googleBooksId,
@@ -87,6 +89,7 @@ export const sqliteBookRepository: BookRepository = {
         input.subtitle,
         JSON.stringify(input.authors),
         JSON.stringify(input.genres),
+        JSON.stringify(input.manualGenres),
         input.thumbnailUrl,
         input.description,
         input.publishedDate,
@@ -104,11 +107,12 @@ export const sqliteBookRepository: BookRepository = {
     return created;
   },
 
-  async updateGenres(id: string, genres: string[]) {
+  async updateGenres(id: string, genres: string[], manualGenres: string[]) {
     const db = await getDb();
     const now = new Date().toISOString();
-    await db.runAsync('UPDATE books SET genres = ?, updated_at = ? WHERE id = ?', [
+    await db.runAsync('UPDATE books SET genres = ?, manual_genres = ?, updated_at = ? WHERE id = ?', [
       JSON.stringify(genres),
+      JSON.stringify(manualGenres),
       now,
       id,
     ]);
@@ -173,10 +177,10 @@ export const sqliteBookRepository: BookRepository = {
         // that already exists — no separate existence check needed.
         const result = await db.runAsync(
           `INSERT OR IGNORE INTO books (
-            id, google_books_id, title, subtitle, authors, genres, thumbnail_url,
+            id, google_books_id, title, subtitle, authors, genres, manual_genres, thumbnail_url,
             description, published_date, page_count, publisher, language, notes,
             status, created_at, updated_at
-          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
           [
             book.id,
             book.googleBooksId,
@@ -186,6 +190,7 @@ export const sqliteBookRepository: BookRepository = {
             book.subtitle ?? null,
             JSON.stringify(book.authors),
             JSON.stringify(book.genres),
+            JSON.stringify(book.manualGenres ?? []),
             book.thumbnailUrl,
             book.description,
             book.publishedDate,

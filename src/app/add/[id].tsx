@@ -28,6 +28,7 @@ export default function AddBookScreen() {
   const { data: volume, isLoading, isError, error, refetch } = useGoogleBookDetails(id);
   const addBook = useAddBook();
   const [genres, setGenres] = useState<string[]>([]);
+  const [manualGenres, setManualGenres] = useState<string[]>([]);
 
   useEffect(() => {
     if (!volume) return;
@@ -101,6 +102,7 @@ export default function AddBookScreen() {
       subtitle: subtitle ?? null,
       authors: authors ?? [],
       genres,
+      manualGenres,
       thumbnailUrl: coverUrl,
       description: sanitizedDescription,
       publishedDate: publishedDate ?? null,
@@ -143,7 +145,14 @@ export default function AddBookScreen() {
           <ThemedText style={[Typography.sectionTitle, { color: textColor }]}>
             {t('addConfirm.genres')}
           </ThemedText>
-          <GenreEditor genres={genres} onChange={setGenres} />
+          <GenreEditor
+            genres={genres}
+            manualGenres={manualGenres}
+            onChange={(updatedGenres, updatedManualGenres) => {
+              setGenres(updatedGenres);
+              setManualGenres(updatedManualGenres);
+            }}
+          />
         </View>
       </View>
     </ScrollView>

@@ -9,9 +9,9 @@ interface TranslatedGenres {
   isLoading: boolean;
 }
 
-export function useTranslatedGenres(genres: string[]): TranslatedGenres {
+export function useTranslatedGenres(genres: string[], manualGenres: string[] = []): TranslatedGenres {
   const { locale } = useTranslation();
-  const sortedGenres = [...new Set(genres)].sort();
+  const sortedGenres = [...new Set(genres)].filter((genre) => !manualGenres.includes(genre)).sort();
 
   const cacheRef = useRef<{ locale: string; translations: Record<string, string> }>({
     locale,

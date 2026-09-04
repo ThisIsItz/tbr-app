@@ -60,18 +60,20 @@ export function useAddBook() {
 export function useUpdateBookGenres() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, genres }: { id: string; genres: string[] }) =>
-      bookRepository.updateGenres(id, genres),
-    onMutate: async ({ id, genres }) => {
+    mutationFn: ({ id, genres, manualGenres }: { id: string; genres: string[]; manualGenres: string[] }) =>
+      bookRepository.updateGenres(id, genres, manualGenres),
+    onMutate: async ({ id, genres, manualGenres }) => {
       await queryClient.cancelQueries({ queryKey: booksQueryKey });
 
       const previousBooks = queryClient.getQueryData<Book[]>(booksQueryKey);
       const previousBook = queryClient.getQueryData<Book>([...booksQueryKey, id]);
 
       queryClient.setQueryData<Book[]>(booksQueryKey, (books) =>
-        books?.map((book) => (book.id === id ? { ...book, genres } : book)),
+        books?.map((book) => (book.id === id ? { ...book, genres, manualGenres } : book)),
       );
-      queryClient.setQueryData<Book>([...booksQueryKey, id], (book) => (book ? { ...book, genres } : book));
+      queryClient.setQueryData<Book>([...booksQueryKey, id], (book) =>
+        book ? { ...book, genres, manualGenres } : book,
+      );
 
       return { previousBooks, previousBook };
     },

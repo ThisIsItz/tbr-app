@@ -1,6 +1,6 @@
 import { type SQLiteDatabase } from 'expo-sqlite';
 
-const SCHEMA_VERSION = 5;
+const SCHEMA_VERSION = 6;
 
 const MIGRATIONS: Record<number, string> = {
   1: `
@@ -40,6 +40,9 @@ const MIGRATIONS: Record<number, string> = {
   `,
   5: `
     ALTER TABLE books ADD COLUMN notes TEXT;
+  `,
+  6: `
+    ALTER TABLE books ADD COLUMN manual_genres TEXT NOT NULL DEFAULT '[]';
   `,
 };
 

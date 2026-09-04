@@ -118,7 +118,11 @@ export default function MyTbrScreen() {
       Array.from(new Set([...genresByBookId.values()].flat())).sort((a, b) => a.localeCompare(b)),
     [genresByBookId],
   );
-  const { translations: genreTranslations } = useTranslatedGenres(allGenres);
+  const allManualGenres = useMemo(
+    () => Array.from(new Set(books?.flatMap((book) => book.manualGenres) ?? [])),
+    [books],
+  );
+  const { translations: genreTranslations } = useTranslatedGenres(allGenres, allManualGenres);
   const allAuthors = useMemo(
     () =>
       Array.from(new Set(books?.flatMap((book) => book.authors) ?? [])).sort((a, b) => a.localeCompare(b)),
