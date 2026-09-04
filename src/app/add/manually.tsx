@@ -181,7 +181,7 @@ export default function AddManuallyScreen() {
   return (
     <KeyboardAvoidingView
       style={styles.flex}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <SafeAreaView style={[styles.flex, { backgroundColor }]} edges={['bottom']}>
         <ScrollView
           style={{ backgroundColor }}
@@ -361,20 +361,20 @@ export default function AddManuallyScreen() {
               textAlignVertical="top"
             />
           </View>
-        </ScrollView>
 
-        <Pressable
-          style={[styles.saveButton, styles.saveButtonFooter, { backgroundColor: accentColor }]}
-          onPress={handleSave}
-          disabled={isSaving}
-          accessibilityRole="button"
-          accessibilityLabel={t(isEditing ? 'addManually.saveChanges' : 'addManually.save')}>
-          <ThemedText style={[Typography.button, { color: onAccentColor }]}>
-            {isSaving
-              ? t(isEditing ? 'addManually.savingChanges' : 'addManually.saving')
-              : t(isEditing ? 'addManually.saveChanges' : 'addManually.save')}
-          </ThemedText>
-        </Pressable>
+          <Pressable
+            style={[styles.saveButton, { backgroundColor: accentColor }]}
+            onPress={handleSave}
+            disabled={isSaving}
+            accessibilityRole="button"
+            accessibilityLabel={t(isEditing ? 'addManually.saveChanges' : 'addManually.save')}>
+            <ThemedText style={[Typography.button, { color: onAccentColor }]}>
+              {isSaving
+                ? t(isEditing ? 'addManually.savingChanges' : 'addManually.saving')
+                : t(isEditing ? 'addManually.saveChanges' : 'addManually.save')}
+            </ThemedText>
+          </Pressable>
+        </ScrollView>
       </SafeAreaView>
 
       <Modal
@@ -428,7 +428,7 @@ const styles = StyleSheet.create({
   container: {
     padding: 16,
     gap: 12,
-    paddingBottom: 32,
+    paddingBottom: 56,
   },
   centered: {
     flex: 1,
@@ -512,10 +512,7 @@ const styles = StyleSheet.create({
     minHeight: 44,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  saveButtonFooter: {
-    marginHorizontal: 16,
-    marginBottom: 12,
+    marginTop: 8,
   },
   backdrop: {
     flex: 1,
