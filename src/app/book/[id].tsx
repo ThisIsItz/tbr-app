@@ -1,6 +1,6 @@
 import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { Pencil, Trash2 } from 'lucide-react-native';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   KeyboardAvoidingView,
@@ -61,10 +61,25 @@ export default function BookDetailScreen() {
   const [isGenreModalVisible, setGenreModalVisible] = useState(false);
   const [isCoverViewerVisible, setCoverViewerVisible] = useState(false);
   const [notes, setNotes] = useState('');
+  const notesRef = useRef(notes);
+  notesRef.current = notes;
+  const bookRef = useRef(book);
+  bookRef.current = book;
 
   useEffect(() => {
     setNotes(book?.notes ?? '');
   }, [book?.notes]);
+
+  useEffect(() => {
+    return () => {
+      const currentBook = bookRef.current;
+      if (!currentBook) return;
+      const trimmed = notesRef.current.trim() || null;
+      if (trimmed === currentBook.notes) return;
+      updateNotes.mutate({ id: currentBook.id, notes: trimmed });
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const genres = normalizeGenres(book?.genres ?? []);
   const manualGenres = book?.manualGenres ?? [];
