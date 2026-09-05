@@ -1,8 +1,8 @@
 import { File, Paths } from 'expo-file-system';
-import { StorageAccessFramework } from 'expo-file-system/legacy';
 import * as Sharing from 'expo-sharing';
 import { Platform } from 'react-native';
 
+import { saveFileAsync } from '../../modules/save-file';
 import { bookRepository } from '@/api/repository';
 import type { ImportBooksResult } from '@/api/repository/types';
 import type { Book, ReadingStatus } from '@/types/book';
@@ -51,14 +51,7 @@ export async function exportAndShareBackup(): Promise<void> {
   const filename = `tbr-backup-${Date.now()}.json`;
 
   if (Platform.OS === 'android') {
-    const permissions = await StorageAccessFramework.requestDirectoryPermissionsAsync();
-    if (!permissions.granted) return;
-    const fileUri = await StorageAccessFramework.createFileAsync(
-      permissions.directoryUri,
-      filename,
-      'application/json',
-    );
-    await StorageAccessFramework.writeAsStringAsync(fileUri, contents);
+    await saveFileAsync(filename, 'application/json', contents);
     return;
   }
 
