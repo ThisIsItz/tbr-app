@@ -49,7 +49,7 @@ export function BookHero({
 
   const metadataParts = [
     publishedDate && getPublishedYear(publishedDate),
-    pageCount != null && t(pageCount === 1 ? 'bookDetail.onePage' : 'bookDetail.pagesCount', { count: pageCount }),
+    !!pageCount && t(pageCount === 1 ? 'bookDetail.onePage' : 'bookDetail.pagesCount', { count: pageCount }),
     language && language !== locale && getLanguageName(language, locale),
   ].filter((part): part is string => !!part);
 
