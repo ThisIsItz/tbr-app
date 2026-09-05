@@ -1,16 +1,7 @@
 import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { Pencil, Trash2 } from 'lucide-react-native';
 import { useEffect, useRef, useState } from 'react';
-import {
-  ActivityIndicator,
-  KeyboardAvoidingView,
-  Modal,
-  Platform,
-  Pressable,
-  StyleSheet,
-  TextInput,
-  View,
-} from 'react-native';
+import { ActivityIndicator, Modal, Pressable, StyleSheet, TextInput, View } from 'react-native';
 import Animated, { useAnimatedKeyboard, useAnimatedStyle } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -41,6 +32,9 @@ export default function BookDetailScreen() {
   const keyboard = useAnimatedKeyboard();
   const scrollContentAnimatedStyle = useAnimatedStyle(() => ({
     paddingBottom: keyboard.height.value,
+  }));
+  const genreSheetAnimatedStyle = useAnimatedStyle(() => ({
+    marginBottom: keyboard.height.value,
   }));
   const backgroundColor = useThemeColor({}, 'background');
   const surfaceColor = useThemeColor({}, 'surface');
@@ -248,13 +242,11 @@ export default function BookDetailScreen() {
         transparent
         animationType="fade"
         onRequestClose={() => setGenreModalVisible(false)}>
-        <KeyboardAvoidingView
-          style={styles.flex}
-          behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-          <Pressable
-            style={styles.backdrop}
-            onPress={() => setGenreModalVisible(false)}
-            accessibilityLabel={t('common.done')}>
+        <Pressable
+          style={styles.backdrop}
+          onPress={() => setGenreModalVisible(false)}
+          accessibilityLabel={t('common.done')}>
+          <Animated.View style={genreSheetAnimatedStyle}>
             <Pressable
               style={[styles.sheet, { backgroundColor: surfaceColor, paddingBottom: 32 + insets.bottom }]}
               onPress={(e) => e.stopPropagation()}>
@@ -278,8 +270,8 @@ export default function BookDetailScreen() {
                 </ThemedText>
               </Pressable>
             </Pressable>
-          </Pressable>
-        </KeyboardAvoidingView>
+          </Animated.View>
+        </Pressable>
       </Modal>
 
       <CoverViewerModal
@@ -292,9 +284,6 @@ export default function BookDetailScreen() {
 }
 
 const styles = StyleSheet.create({
-  flex: {
-    flex: 1,
-  },
   scrollView: {
     flex: 1,
   },

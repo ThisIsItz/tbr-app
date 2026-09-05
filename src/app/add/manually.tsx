@@ -4,9 +4,7 @@ import { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   Image,
-  KeyboardAvoidingView,
   Modal,
-  Platform,
   Pressable,
   StyleSheet,
   TextInput,
@@ -44,6 +42,9 @@ export default function AddManuallyScreen() {
   const keyboard = useAnimatedKeyboard();
   const scrollContentAnimatedStyle = useAnimatedStyle(() => ({
     paddingBottom: 56 + keyboard.height.value,
+  }));
+  const genreSheetAnimatedStyle = useAnimatedStyle(() => ({
+    marginBottom: keyboard.height.value,
   }));
   const { width } = useWindowDimensions();
   const isNarrowScreen = width < NARROW_SCREEN_WIDTH;
@@ -385,11 +386,11 @@ export default function AddManuallyScreen() {
         transparent
         animationType="fade"
         onRequestClose={() => setGenreModalVisible(false)}>
-        <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-          <Pressable
-            style={styles.backdrop}
-            onPress={() => setGenreModalVisible(false)}
-            accessibilityLabel={t('common.done')}>
+        <Pressable
+          style={styles.backdrop}
+          onPress={() => setGenreModalVisible(false)}
+          accessibilityLabel={t('common.done')}>
+          <Animated.View style={genreSheetAnimatedStyle}>
             <Pressable
               style={[
                 styles.sheet,
@@ -417,8 +418,8 @@ export default function AddManuallyScreen() {
                 </ThemedText>
               </Pressable>
             </Pressable>
-          </Pressable>
-        </KeyboardAvoidingView>
+          </Animated.View>
+        </Pressable>
       </Modal>
     </>
   );
