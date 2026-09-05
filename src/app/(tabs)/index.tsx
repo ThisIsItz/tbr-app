@@ -22,6 +22,7 @@ import { getSetting, setSetting } from '@/api/repository/settingsRepository';
 import { BackupFileError } from '@/lib/backup';
 import { capitalizeFirst } from '@/lib/capitalize';
 import { showAlert } from '@/lib/dialog';
+import { ANIMATED_KEYBOARD_OPTIONS } from '@/lib/keyboardOptions';
 import { normalizeGenres } from '@/lib/genres';
 import { getLanguageName } from '@/lib/languageNames';
 import { type Book } from '@/types/book';
@@ -51,7 +52,7 @@ export default function MyTbrScreen() {
   const surfaceMutedColor = useThemeColor({}, 'surfaceMuted');
 
   const insets = useSafeAreaInsets();
-  const keyboard = useAnimatedKeyboard();
+  const keyboard = useAnimatedKeyboard(ANIMATED_KEYBOARD_OPTIONS);
   const floatingAddWrapperStyle = useAnimatedStyle(() => ({
     bottom: keyboard.height.value > 0 ? keyboard.height.value + 12 : insets.bottom + 28,
   }));

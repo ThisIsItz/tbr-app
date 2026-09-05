@@ -18,6 +18,7 @@ import { useTranslatedGenres } from '@/hooks/useTranslatedGenres';
 import { useTranslation } from '@/hooks/useTranslation';
 import { capitalizeFirst } from '@/lib/capitalize';
 import { confirmAsync } from '@/lib/dialog';
+import { ANIMATED_KEYBOARD_OPTIONS } from '@/lib/keyboardOptions';
 import { estimateGenreSkeletonWidth, normalizeGenres } from '@/lib/genres';
 import { useUndoContext } from '@/lib/undo/UndoProvider';
 import { toHighResUrl } from '@/api/googleBooks';
@@ -29,7 +30,7 @@ export default function BookDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
-  const keyboard = useAnimatedKeyboard();
+  const keyboard = useAnimatedKeyboard(ANIMATED_KEYBOARD_OPTIONS);
   const scrollContentAnimatedStyle = useAnimatedStyle(() => ({
     paddingBottom: keyboard.height.value,
   }));

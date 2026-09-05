@@ -25,6 +25,7 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { capitalizeFirst } from '@/lib/capitalize';
 import { showAlert } from '@/lib/dialog';
 import { estimateGenreSkeletonWidth } from '@/lib/genres';
+import { ANIMATED_KEYBOARD_OPTIONS } from '@/lib/keyboardOptions';
 import { deleteLocalImage, persistLocalImage } from '@/lib/localImage';
 
 const NARROW_SCREEN_WIDTH = 360;
@@ -39,7 +40,7 @@ export default function AddManuallyScreen() {
   const isEditing = !!id;
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
-  const keyboard = useAnimatedKeyboard();
+  const keyboard = useAnimatedKeyboard(ANIMATED_KEYBOARD_OPTIONS);
   const scrollContentAnimatedStyle = useAnimatedStyle(() => ({
     paddingBottom: 56 + keyboard.height.value,
   }));
