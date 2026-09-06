@@ -1,4 +1,5 @@
 import { BookMarked, Camera, Dices, ImageUp, Palette } from 'lucide-react-native';
+import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 
 import { ThemedText } from '@/components/ThemedText';
@@ -29,6 +30,13 @@ export function Paywall() {
   const dangerColor = useThemeColor({}, 'danger');
 
   const price = offering?.availablePackages[0]?.product.priceString;
+  const [nothingToRestore, setNothingToRestore] = useState(false);
+
+  async function handleRestore() {
+    setNothingToRestore(false);
+    const result = await restore();
+    if (result === 'empty') setNothingToRestore(true);
+  }
 
   return (
     <View style={[styles.root, { backgroundColor }]}>
@@ -72,9 +80,11 @@ export function Paywall() {
       </ScrollView>
 
       <View style={styles.footer}>
-        {error && (
+        {(error || nothingToRestore) && (
           <ThemedText style={[Typography.caption, styles.centeredText, { color: dangerColor }]}>
-            {t(error === 'purchase' ? 'paywall.purchaseError' : 'paywall.restoreError')}
+            {error
+              ? t(error === 'purchase' ? 'paywall.purchaseError' : 'paywall.restoreError')
+              : t('settings.restoreErrorBody')}
           </ThemedText>
         )}
 
@@ -97,7 +107,7 @@ export function Paywall() {
         </Pressable>
 
         <Pressable
-          onPress={restore}
+          onPress={handleRestore}
           disabled={isLoading}
           accessibilityRole="button"
           accessibilityLabel={t('paywall.restoreButton')}

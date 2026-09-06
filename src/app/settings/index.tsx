@@ -244,8 +244,9 @@ export default function SettingsScreen() {
 
   async function handleRestore() {
     setIsRestoring(true);
-    const restored = await restore();
+    const result = await restore();
     setIsRestoring(false);
+    const restored = result === 'restored';
     showAlert(
       restored ? t('settings.restoreSuccessTitle') : t('settings.restoreErrorTitle'),
       restored ? t('settings.restoreSuccessBody') : t('settings.restoreErrorBody'),

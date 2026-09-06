@@ -12,6 +12,7 @@ import Purchases, {
 export const PRO_ENTITLEMENT_ID = 'tbr_pro';
 
 export type PurchaseErrorKind = 'purchase' | 'restore' | null;
+export type RestoreResult = 'restored' | 'empty' | 'error';
 
 export interface PurchasesContextValue {
   isLoading: boolean;
@@ -21,7 +22,7 @@ export interface PurchasesContextValue {
   justPurchased: boolean;
   dismissJustPurchased: () => void;
   purchase: () => Promise<void>;
-  restore: () => Promise<boolean>;
+  restore: () => Promise<RestoreResult>;
 }
 
 export const PurchasesContext = createContext<PurchasesContextValue | null>(null);
@@ -95,17 +96,17 @@ export function PurchasesProvider({ children }: { children: ReactNode }) {
     }
   }, [offering]);
 
-  const restore = useCallback(async () => {
+  const restore = useCallback(async (): Promise<RestoreResult> => {
     setError(null);
     try {
       const customerInfo = await Purchases.restorePurchases();
       const nowPro = hasProEntitlement(customerInfo);
       setIsPro(nowPro);
-      return nowPro;
+      return nowPro ? 'restored' : 'empty';
     } catch (err) {
       console.warn('[Purchases] restore failed:', err);
       setError('restore');
-      return false;
+      return 'error';
     }
   }, []);
 
