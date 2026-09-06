@@ -430,7 +430,6 @@ const styles = StyleSheet.create({
   },
   container: {
     padding: 16,
-    paddingBottom: 56,
     gap: 12,
   },
   centered: {
