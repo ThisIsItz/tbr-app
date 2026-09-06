@@ -99,6 +99,12 @@ export function SpinReel({ candidates, spinToken, excludeIdFromTarget, onLanded,
     return [...pool.slice(startIndex), ...pool.slice(0, startIndex)];
   }, []);
 
+  const handleSpinComplete = useCallback((book: Book, landedIndex: number) => {
+    currentBookRef.current = book;
+    centerIndexRef.current = landedIndex;
+    onLandedRef.current(book);
+  }, []);
+
   useEffect(() => {
     if (items || spinToken > 0 || viewportWidth === 0) return;
     const pool = candidatesRef.current;
@@ -156,14 +162,10 @@ export function SpinReel({ candidates, spinToken, excludeIdFromTarget, onLanded,
 
     translateX.value = withTiming(finalX, { duration: SPIN_DURATION, easing: SPIN_EASING }, (finished) => {
       if (finished) {
-        runOnJS((book: Book, landedIndex: number) => {
-          currentBookRef.current = book;
-          centerIndexRef.current = landedIndex;
-          onLandedRef.current(book);
-        })(target, finalIndex);
+        runOnJS(handleSpinComplete)(target, finalIndex);
       }
     });
-  }, [spinToken, translateX, buildFiller, centerXForIndex, rotateToStart]);
+  }, [spinToken, translateX, buildFiller, centerXForIndex, rotateToStart, handleSpinComplete]);
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ translateX: translateX.value }],
