@@ -19,6 +19,7 @@ const LANGUAGE_NAMES: Record<string, { en: string; es: string }> = {
   ca: { en: 'Catalan', es: 'Catalán' },
   eu: { en: 'Basque', es: 'Euskera' },
   gl: { en: 'Galician', es: 'Gallego' },
+  oc: { en: 'Occitan', es: 'Occitano' },
   sv: { en: 'Swedish', es: 'Sueco' },
   no: { en: 'Norwegian', es: 'Noruego' },
   da: { en: 'Danish', es: 'Danés' },
