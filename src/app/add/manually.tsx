@@ -3,8 +3,8 @@ import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
+  BackHandler,
   Image,
-  Modal,
   Pressable,
   StyleSheet,
   TextInput,
@@ -75,6 +75,15 @@ export default function AddManuallyScreen() {
     genres,
     manualGenres,
   );
+
+  useEffect(() => {
+    if (!isGenreModalVisible) return;
+    const subscription = BackHandler.addEventListener('hardwareBackPress', () => {
+      setGenreModalVisible(false);
+      return true;
+    });
+    return () => subscription.remove();
+  }, [isGenreModalVisible]);
 
   useEffect(() => {
     if (!isEditing || !existingBook || isPrefilled) return;
@@ -375,13 +384,9 @@ export default function AddManuallyScreen() {
         </KeyboardAwareScrollView>
       </SafeAreaView>
 
-      <Modal
-        visible={isGenreModalVisible}
-        transparent
-        animationType="fade"
-        onRequestClose={() => setGenreModalVisible(false)}>
+      {isGenreModalVisible && (
         <Pressable
-          style={styles.backdrop}
+          style={[styles.backdrop, StyleSheet.absoluteFill]}
           onPress={() => setGenreModalVisible(false)}
           accessibilityLabel={t('common.done')}>
           <KeyboardStickyView>
@@ -414,7 +419,7 @@ export default function AddManuallyScreen() {
             </Pressable>
           </KeyboardStickyView>
         </Pressable>
-      </Modal>
+      )}
     </>
   );
 }
