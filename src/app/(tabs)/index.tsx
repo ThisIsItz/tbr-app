@@ -3,7 +3,7 @@ import { router } from 'expo-router';
 import { ArrowUpDown, BookOpenText, Dices, LayoutGrid, LayoutList, List, Settings } from 'lucide-react-native';
 import { useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, FlatList, Pressable, StyleSheet, View } from 'react-native';
-import Animated, { useAnimatedKeyboard, useAnimatedStyle } from 'react-native-reanimated';
+import { KeyboardStickyView } from 'react-native-keyboard-controller';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { BookCard } from '@/components/BookCard';
@@ -22,7 +22,6 @@ import { getSetting, setSetting } from '@/api/repository/settingsRepository';
 import { BackupFileError } from '@/lib/backup';
 import { capitalizeFirst } from '@/lib/capitalize';
 import { showAlert } from '@/lib/dialog';
-import { ANIMATED_KEYBOARD_OPTIONS } from '@/lib/keyboardOptions';
 import { normalizeGenres } from '@/lib/genres';
 import { getLanguageName } from '@/lib/languageNames';
 import { type Book } from '@/types/book';
@@ -52,10 +51,6 @@ export default function MyTbrScreen() {
   const surfaceMutedColor = useThemeColor({}, 'surfaceMuted');
 
   const insets = useSafeAreaInsets();
-  const keyboard = useAnimatedKeyboard(ANIMATED_KEYBOARD_OPTIONS);
-  const floatingAddWrapperStyle = useAnimatedStyle(() => ({
-    bottom: keyboard.height.value > 0 ? keyboard.height.value + 12 : insets.bottom + 28,
-  }));
   const { data: books, isLoading } = useBooks();
   const importBackup = useImportBackup();
 
@@ -397,8 +392,8 @@ export default function MyTbrScreen() {
         />
       )}
 
-      <Animated.View
-        style={[styles.floatingAddWrapper, styles.pointerEventsBoxNone, floatingAddWrapperStyle]}>
+      <KeyboardStickyView
+        style={[styles.floatingAddWrapper, styles.pointerEventsBoxNone, { bottom: insets.bottom + 28 }]}>
         <Pressable
           onPress={() => router.push('/add/book')}
           accessibilityRole="button"
@@ -412,7 +407,7 @@ export default function MyTbrScreen() {
             {t('library.addBook')}
           </ThemedText>
         </Pressable>
-      </Animated.View>
+      </KeyboardStickyView>
     </SafeAreaView>
   );
 }

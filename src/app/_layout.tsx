@@ -6,6 +6,7 @@ import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
+import { KeyboardProvider } from 'react-native-keyboard-controller';
 import 'react-native-reanimated';
 
 import { AppDialog } from '@/components/AppDialog';
@@ -109,47 +110,49 @@ function RootLayoutNav() {
   const screenHeaderOptions = useScreenHeaderOptions();
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-        <UndoProvider>
-          <Stack>
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen
-              name="book/[id]"
-              options={{ title: t('screenTitles.bookDetails'), ...screenHeaderOptions }}
-            />
-            <Stack.Screen
-              name="add/book"
-              options={{ title: t('screenTitles.addBook'), ...screenHeaderOptions }}
-            />
-            <Stack.Screen
-              name="add/[id]"
-              options={{ title: t('screenTitles.addToTbr'), ...screenHeaderOptions }}
-            />
-            <Stack.Screen
-              name="add/manually"
-              options={{ title: t('screenTitles.addManually'), ...screenHeaderOptions }}
-            />
-            <Stack.Screen
-              name="add/scan-isbn"
-              options={{ title: t('screenTitles.scanIsbn'), ...screenHeaderOptions }}
-            />
-            <Stack.Screen
-              name="settings/index"
-              options={{ title: t('screenTitles.settings'), ...screenHeaderOptions }}
-            />
-            <Stack.Screen name="spin" options={{ title: t('screenTitles.spin'), ...screenHeaderOptions }} />
-            <Stack.Screen
-              name="paywall"
-              options={{ title: t('screenTitles.paywall'), ...screenHeaderOptions }}
-            />
-          </Stack>
-          <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
-          <PurchaseCelebration />
-          <UndoToast />
-          <AppDialog />
-        </UndoProvider>
-      </ThemeProvider>
-    </QueryClientProvider>
+    <KeyboardProvider statusBarTranslucent navigationBarTranslucent>
+      <QueryClientProvider client={queryClient}>
+        <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+          <UndoProvider>
+            <Stack>
+              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              <Stack.Screen
+                name="book/[id]"
+                options={{ title: t('screenTitles.bookDetails'), ...screenHeaderOptions }}
+              />
+              <Stack.Screen
+                name="add/book"
+                options={{ title: t('screenTitles.addBook'), ...screenHeaderOptions }}
+              />
+              <Stack.Screen
+                name="add/[id]"
+                options={{ title: t('screenTitles.addToTbr'), ...screenHeaderOptions }}
+              />
+              <Stack.Screen
+                name="add/manually"
+                options={{ title: t('screenTitles.addManually'), ...screenHeaderOptions }}
+              />
+              <Stack.Screen
+                name="add/scan-isbn"
+                options={{ title: t('screenTitles.scanIsbn'), ...screenHeaderOptions }}
+              />
+              <Stack.Screen
+                name="settings/index"
+                options={{ title: t('screenTitles.settings'), ...screenHeaderOptions }}
+              />
+              <Stack.Screen name="spin" options={{ title: t('screenTitles.spin'), ...screenHeaderOptions }} />
+              <Stack.Screen
+                name="paywall"
+                options={{ title: t('screenTitles.paywall'), ...screenHeaderOptions }}
+              />
+            </Stack>
+            <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
+            <PurchaseCelebration />
+            <UndoToast />
+            <AppDialog />
+          </UndoProvider>
+        </ThemeProvider>
+      </QueryClientProvider>
+    </KeyboardProvider>
   );
 }

@@ -2,7 +2,7 @@ import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { Pencil, Trash2 } from 'lucide-react-native';
 import { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Modal, Pressable, StyleSheet, TextInput, View } from 'react-native';
-import Animated, { useAnimatedKeyboard, useAnimatedStyle } from 'react-native-reanimated';
+import { KeyboardAwareScrollView, KeyboardStickyView } from 'react-native-keyboard-controller';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { BookHero, CircleButton } from '@/components/BookHero';
@@ -18,7 +18,6 @@ import { useTranslatedGenres } from '@/hooks/useTranslatedGenres';
 import { useTranslation } from '@/hooks/useTranslation';
 import { capitalizeFirst } from '@/lib/capitalize';
 import { confirmAsync } from '@/lib/dialog';
-import { ANIMATED_KEYBOARD_OPTIONS } from '@/lib/keyboardOptions';
 import { estimateGenreSkeletonWidth, normalizeGenres } from '@/lib/genres';
 import { useUndoContext } from '@/lib/undo/UndoProvider';
 import { toHighResUrl } from '@/api/googleBooks';
@@ -30,13 +29,6 @@ export default function BookDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
-  const keyboard = useAnimatedKeyboard(ANIMATED_KEYBOARD_OPTIONS);
-  const scrollContentAnimatedStyle = useAnimatedStyle(() => ({
-    paddingBottom: keyboard.height.value,
-  }));
-  const genreSheetAnimatedStyle = useAnimatedStyle(() => ({
-    marginBottom: keyboard.height.value,
-  }));
   const backgroundColor = useThemeColor({}, 'background');
   const surfaceColor = useThemeColor({}, 'surface');
   const surfaceMutedColor = useThemeColor({}, 'surfaceMuted');
@@ -135,9 +127,10 @@ export default function BookDetailScreen() {
   const description = book.description ? sanitizeDescription(book.description) : null;
 
   return (
-    <Animated.ScrollView
+    <KeyboardAwareScrollView
       style={[styles.scrollView, { backgroundColor }]}
-      contentContainerStyle={[styles.container, scrollContentAnimatedStyle]}>
+      contentContainerStyle={styles.container}
+      bottomOffset={24}>
       <Stack.Screen options={{ headerShown: false }} />
       <BookHero
         title={book.title}
@@ -247,7 +240,7 @@ export default function BookDetailScreen() {
           style={styles.backdrop}
           onPress={() => setGenreModalVisible(false)}
           accessibilityLabel={t('common.done')}>
-          <Animated.View style={genreSheetAnimatedStyle}>
+          <KeyboardStickyView>
             <Pressable
               style={[styles.sheet, { backgroundColor: surfaceColor, paddingBottom: 32 + insets.bottom }]}
               onPress={(e) => e.stopPropagation()}>
@@ -271,7 +264,7 @@ export default function BookDetailScreen() {
                 </ThemedText>
               </Pressable>
             </Pressable>
-          </Animated.View>
+          </KeyboardStickyView>
         </Pressable>
       </Modal>
 
@@ -280,7 +273,7 @@ export default function BookDetailScreen() {
         coverUrl={coverUrl}
         onClose={() => setCoverViewerVisible(false)}
       />
-    </Animated.ScrollView>
+    </KeyboardAwareScrollView>
   );
 }
 

@@ -11,7 +11,7 @@ import {
   useWindowDimensions,
   View,
 } from 'react-native';
-import Animated, { useAnimatedKeyboard, useAnimatedStyle } from 'react-native-reanimated';
+import { KeyboardAwareScrollView, KeyboardStickyView } from 'react-native-keyboard-controller';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { GenreEditor } from '@/components/GenreEditor';
@@ -25,7 +25,6 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { capitalizeFirst } from '@/lib/capitalize';
 import { showAlert } from '@/lib/dialog';
 import { estimateGenreSkeletonWidth } from '@/lib/genres';
-import { ANIMATED_KEYBOARD_OPTIONS } from '@/lib/keyboardOptions';
 import { deleteLocalImage, persistLocalImage } from '@/lib/localImage';
 
 const NARROW_SCREEN_WIDTH = 360;
@@ -40,13 +39,6 @@ export default function AddManuallyScreen() {
   const isEditing = !!id;
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
-  const keyboard = useAnimatedKeyboard(ANIMATED_KEYBOARD_OPTIONS);
-  const scrollContentAnimatedStyle = useAnimatedStyle(() => ({
-    paddingBottom: 56 + keyboard.height.value,
-  }));
-  const genreSheetAnimatedStyle = useAnimatedStyle(() => ({
-    marginBottom: keyboard.height.value,
-  }));
   const { width } = useWindowDimensions();
   const isNarrowScreen = width < NARROW_SCREEN_WIDTH;
 
@@ -188,9 +180,10 @@ export default function AddManuallyScreen() {
   return (
     <>
       <SafeAreaView style={[styles.flex, { backgroundColor }]} edges={['bottom']}>
-        <Animated.ScrollView
+        <KeyboardAwareScrollView
           style={{ backgroundColor }}
-          contentContainerStyle={[styles.container, scrollContentAnimatedStyle]}
+          contentContainerStyle={styles.container}
+          bottomOffset={24}
           keyboardShouldPersistTaps="handled">
           <Stack.Screen
             options={{ title: isEditing ? t('screenTitles.editBook') : t('screenTitles.addManually') }}
@@ -379,7 +372,7 @@ export default function AddManuallyScreen() {
                 : t(isEditing ? 'addManually.saveChanges' : 'addManually.save')}
             </ThemedText>
           </Pressable>
-        </Animated.ScrollView>
+        </KeyboardAwareScrollView>
       </SafeAreaView>
 
       <Modal
@@ -391,7 +384,7 @@ export default function AddManuallyScreen() {
           style={styles.backdrop}
           onPress={() => setGenreModalVisible(false)}
           accessibilityLabel={t('common.done')}>
-          <Animated.View style={genreSheetAnimatedStyle}>
+          <KeyboardStickyView>
             <Pressable
               style={[
                 styles.sheet,
@@ -419,7 +412,7 @@ export default function AddManuallyScreen() {
                 </ThemedText>
               </Pressable>
             </Pressable>
-          </Animated.View>
+          </KeyboardStickyView>
         </Pressable>
       </Modal>
     </>
@@ -432,6 +425,7 @@ const styles = StyleSheet.create({
   },
   container: {
     padding: 16,
+    paddingBottom: 56,
     gap: 12,
   },
   centered: {
