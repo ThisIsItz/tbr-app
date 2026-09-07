@@ -3,7 +3,6 @@ import { router } from 'expo-router';
 import { ArrowUpDown, BookOpenText, Dices, LayoutGrid, LayoutList, List, Settings } from 'lucide-react-native';
 import { useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, FlatList, Pressable, StyleSheet, View } from 'react-native';
-import { KeyboardStickyView } from 'react-native-keyboard-controller';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { BookCard } from '@/components/BookCard';
@@ -392,8 +391,7 @@ export default function MyTbrScreen() {
         />
       )}
 
-      <KeyboardStickyView
-        style={[styles.floatingAddWrapper, styles.pointerEventsBoxNone, { bottom: insets.bottom + 28 }]}>
+      <View style={[styles.floatingAddWrapper, styles.pointerEventsBoxNone, { bottom: insets.bottom + 28 }]}>
         <Pressable
           onPress={() => router.push('/add/book')}
           accessibilityRole="button"
@@ -407,7 +405,7 @@ export default function MyTbrScreen() {
             {t('library.addBook')}
           </ThemedText>
         </Pressable>
-      </KeyboardStickyView>
+      </View>
     </SafeAreaView>
   );
 }

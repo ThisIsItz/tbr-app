@@ -2,7 +2,7 @@ import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { Pencil, Trash2 } from 'lucide-react-native';
 import { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, BackHandler, Pressable, StyleSheet, TextInput, View } from 'react-native';
-import { KeyboardAwareScrollView, KeyboardStickyView } from 'react-native-keyboard-controller';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { BookHero, CircleButton } from '@/components/BookHero';
@@ -253,31 +253,29 @@ export default function BookDetailScreen() {
           style={[styles.backdrop, StyleSheet.absoluteFill]}
           onPress={() => setGenreModalVisible(false)}
           accessibilityLabel={t('common.done')}>
-          <KeyboardStickyView>
+          <Pressable
+            style={[styles.sheet, { backgroundColor: surfaceColor, paddingBottom: 32 + insets.bottom }]}
+            onPress={(e) => e.stopPropagation()}>
+            <ThemedText style={[Typography.sectionTitle, { color: textColor }]}>
+              {t('bookDetail.genres')}
+            </ThemedText>
+            <GenreEditor
+              genres={genres}
+              manualGenres={manualGenres}
+              onChange={(updatedGenres, updatedManualGenres) =>
+                updateGenres.mutate({ id: book.id, genres: updatedGenres, manualGenres: updatedManualGenres })
+              }
+            />
             <Pressable
-              style={[styles.sheet, { backgroundColor: surfaceColor, paddingBottom: 32 + insets.bottom }]}
-              onPress={(e) => e.stopPropagation()}>
-              <ThemedText style={[Typography.sectionTitle, { color: textColor }]}>
-                {t('bookDetail.genres')}
+              onPress={() => setGenreModalVisible(false)}
+              accessibilityRole="button"
+              accessibilityLabel={t('common.done')}
+              style={[styles.doneButton, { backgroundColor: accentColor }]}>
+              <ThemedText style={[Typography.button, { color: onAccentColor }]}>
+                {t('common.done')}
               </ThemedText>
-              <GenreEditor
-                genres={genres}
-                manualGenres={manualGenres}
-                onChange={(updatedGenres, updatedManualGenres) =>
-                  updateGenres.mutate({ id: book.id, genres: updatedGenres, manualGenres: updatedManualGenres })
-                }
-              />
-              <Pressable
-                onPress={() => setGenreModalVisible(false)}
-                accessibilityRole="button"
-                accessibilityLabel={t('common.done')}
-                style={[styles.doneButton, { backgroundColor: accentColor }]}>
-                <ThemedText style={[Typography.button, { color: onAccentColor }]}>
-                  {t('common.done')}
-                </ThemedText>
-              </Pressable>
             </Pressable>
-          </KeyboardStickyView>
+          </Pressable>
         </Pressable>
       )}
     </View>
