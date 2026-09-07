@@ -269,7 +269,7 @@ export default function AddManuallyScreen() {
           </View>
 
           <View style={styles.field}>
-            <ThemedText style={[Typography.metadata, styles.labelSecondary, { color: textMutedColor }]}>
+            <ThemedText style={[Typography.metadata, styles.labelPrimary, { color: textColor }]}>
               {t('addManually.descriptionLabel')}
             </ThemedText>
             <TextInput
@@ -288,7 +288,7 @@ export default function AddManuallyScreen() {
 
           <View style={[styles.row, isNarrowScreen && styles.rowStacked]}>
             <View style={[styles.field, styles.flexField]}>
-              <ThemedText style={[Typography.metadata, styles.labelSecondary, { color: textMutedColor }]}>
+              <ThemedText style={[Typography.metadata, styles.labelPrimary, { color: textColor }]}>
                 {t('addManually.pageCountLabel')}
               </ThemedText>
               <TextInput
@@ -303,7 +303,7 @@ export default function AddManuallyScreen() {
               />
             </View>
             <View style={[styles.field, styles.flexField]}>
-              <ThemedText style={[Typography.metadata, styles.labelSecondary, { color: textMutedColor }]}>
+              <ThemedText style={[Typography.metadata, styles.labelPrimary, { color: textColor }]}>
                 {t('addManually.publishedDateLabel')}
               </ThemedText>
               <TextInput
@@ -322,7 +322,7 @@ export default function AddManuallyScreen() {
 
           {!isEditing && (
             <View style={styles.field}>
-              <ThemedText style={[Typography.metadata, styles.labelSecondary, { color: textMutedColor }]}>
+              <ThemedText style={[Typography.metadata, styles.labelPrimary, { color: textColor }]}>
                 {t('addManually.genres')}
               </ThemedText>
               <Pressable
@@ -355,7 +355,7 @@ export default function AddManuallyScreen() {
           )}
 
           <View style={styles.field}>
-            <ThemedText style={[Typography.metadata, styles.labelSecondary, { color: textMutedColor }]}>
+            <ThemedText style={[Typography.metadata, styles.labelPrimary, { color: textColor }]}>
               {t('addManually.notesLabel')}
             </ThemedText>
             <TextInput
@@ -468,9 +468,6 @@ const styles = StyleSheet.create({
   },
   labelPrimary: {
     fontWeight: '700',
-  },
-  labelSecondary: {
-    fontWeight: '500',
   },
   centeredText: {
     textAlign: 'center',
