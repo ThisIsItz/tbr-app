@@ -11,7 +11,7 @@ import {
   useWindowDimensions,
   View,
 } from 'react-native';
-import { KeyboardAwareScrollView, KeyboardStickyView } from 'react-native-keyboard-controller';
+import { KeyboardAvoidingView, KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { GenreEditor } from '@/components/GenreEditor';
@@ -392,7 +392,7 @@ export default function AddManuallyScreen() {
           style={[styles.backdrop, StyleSheet.absoluteFill]}
           onPress={() => setGenreModalVisible(false)}
           accessibilityLabel={t('common.done')}>
-          <KeyboardStickyView>
+          <KeyboardAvoidingView behavior="padding">
             <Pressable
               style={[
                 styles.sheet,
@@ -420,7 +420,7 @@ export default function AddManuallyScreen() {
                 </ThemedText>
               </Pressable>
             </Pressable>
-          </KeyboardStickyView>
+          </KeyboardAvoidingView>
         </Pressable>
       )}
     </>

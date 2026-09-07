@@ -2,7 +2,7 @@ import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { Pencil, Trash2 } from 'lucide-react-native';
 import { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, BackHandler, Pressable, StyleSheet, TextInput, View } from 'react-native';
-import { KeyboardAwareScrollView, KeyboardStickyView } from 'react-native-keyboard-controller';
+import { KeyboardAvoidingView, KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { BookHero, CircleButton } from '@/components/BookHero';
@@ -253,7 +253,7 @@ export default function BookDetailScreen() {
           style={[styles.backdrop, StyleSheet.absoluteFill]}
           onPress={() => setGenreModalVisible(false)}
           accessibilityLabel={t('common.done')}>
-          <KeyboardStickyView>
+          <KeyboardAvoidingView behavior="padding">
             <Pressable
               style={[styles.sheet, { backgroundColor: surfaceColor, paddingBottom: 32 + insets.bottom }]}
               onPress={(e) => e.stopPropagation()}>
@@ -277,7 +277,7 @@ export default function BookDetailScreen() {
                 </ThemedText>
               </Pressable>
             </Pressable>
-          </KeyboardStickyView>
+          </KeyboardAvoidingView>
         </Pressable>
       )}
     </View>
