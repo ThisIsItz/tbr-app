@@ -11,7 +11,7 @@ import {
   useWindowDimensions,
   View,
 } from 'react-native';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
+import { KeyboardAwareScrollView, KeyboardStickyView } from 'react-native-keyboard-controller';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { GenreEditor } from '@/components/GenreEditor';
@@ -392,33 +392,35 @@ export default function AddManuallyScreen() {
           style={[styles.backdrop, StyleSheet.absoluteFill]}
           onPress={() => setGenreModalVisible(false)}
           accessibilityLabel={t('common.done')}>
-          <Pressable
-            style={[
-              styles.sheet,
-              { backgroundColor: surfaceColor, boxShadow: `0px -2px 6px ${shadowColor}`, paddingBottom: 32 + insets.bottom },
-            ]}
-            onPress={(e) => e.stopPropagation()}>
-            <ThemedText style={[Typography.sectionTitle, { color: textColor }]}>
-              {t('addManually.genres')}
-            </ThemedText>
-            <GenreEditor
-              genres={genres}
-              manualGenres={manualGenres}
-              onChange={(updatedGenres, updatedManualGenres) => {
-                setGenres(updatedGenres);
-                setManualGenres(updatedManualGenres);
-              }}
-            />
+          <KeyboardStickyView>
             <Pressable
-              onPress={() => setGenreModalVisible(false)}
-              accessibilityRole="button"
-              accessibilityLabel={t('common.done')}
-              style={[styles.doneButton, { backgroundColor: accentColor }]}>
-              <ThemedText style={[Typography.button, { color: onAccentColor }]}>
-                {t('common.done')}
+              style={[
+                styles.sheet,
+                { backgroundColor: surfaceColor, boxShadow: `0px -2px 6px ${shadowColor}`, paddingBottom: 32 + insets.bottom },
+              ]}
+              onPress={(e) => e.stopPropagation()}>
+              <ThemedText style={[Typography.sectionTitle, { color: textColor }]}>
+                {t('addManually.genres')}
               </ThemedText>
+              <GenreEditor
+                genres={genres}
+                manualGenres={manualGenres}
+                onChange={(updatedGenres, updatedManualGenres) => {
+                  setGenres(updatedGenres);
+                  setManualGenres(updatedManualGenres);
+                }}
+              />
+              <Pressable
+                onPress={() => setGenreModalVisible(false)}
+                accessibilityRole="button"
+                accessibilityLabel={t('common.done')}
+                style={[styles.doneButton, { backgroundColor: accentColor }]}>
+                <ThemedText style={[Typography.button, { color: onAccentColor }]}>
+                  {t('common.done')}
+                </ThemedText>
+              </Pressable>
             </Pressable>
-          </Pressable>
+          </KeyboardStickyView>
         </Pressable>
       )}
     </>
