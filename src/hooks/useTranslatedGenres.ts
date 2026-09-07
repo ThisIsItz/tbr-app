@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 
+import { getGenreTranslations, saveGenreTranslations } from '@/api/repository/genreTranslationsRepository';
 import { translateCategories } from '@/api/translate';
 import { useTranslation } from '@/hooks/useTranslation';
 import { getStaticGenreTranslation } from '@/lib/genreTranslations';
@@ -14,38 +15,43 @@ export function useTranslatedGenres(genres: string[], manualGenres: string[] = [
   const { locale } = useTranslation();
   const sortedGenres = [...new Set(genres)].filter((genre) => !manualGenres.includes(genre)).sort();
 
-  const cacheRef = useRef<{ locale: string; translations: Record<string, string> }>({
-    locale,
-    translations: {},
-  });
-  if (cacheRef.current.locale !== locale) {
-    cacheRef.current = { locale, translations: {} };
-  }
-
   const staticTranslations: Record<string, string> = {};
+  const genresNeedingLookup: string[] = [];
   for (const genre of sortedGenres) {
     const staticMatch = getStaticGenreTranslation(genre);
     if (staticMatch) staticTranslations[genre] = staticMatch;
+    else genresNeedingLookup.push(genre);
   }
 
-  const missingGenres = sortedGenres.filter(
-    (genre) => !(genre in staticTranslations) && !(genre in cacheRef.current.translations),
-  );
+  const { data: persisted, isLoading: isLoadingPersisted } = useQuery({
+    queryKey: ['persistedGenreTranslations', locale, genresNeedingLookup],
+    queryFn: () => getGenreTranslations(genresNeedingLookup, locale),
+    enabled: locale !== 'en' && genresNeedingLookup.length > 0,
+    staleTime: Infinity,
+    gcTime: Infinity,
+  });
 
-  const { data } = useQuery({
+  const missingGenres = genresNeedingLookup.filter((genre) => !persisted?.[genre]);
+
+  const { data: fetched } = useQuery({
     queryKey: ['translatedGenres', locale, missingGenres],
     queryFn: () => translateCategories(missingGenres, locale),
-    enabled: locale !== 'en' && missingGenres.length > 0,
+    enabled: locale !== 'en' && !!persisted && missingGenres.length > 0,
     staleTime: Infinity,
     gcTime: Infinity,
   });
 
   useEffect(() => {
-    if (data) Object.assign(cacheRef.current.translations, data);
-  }, [data]);
+    if (fetched && Object.keys(fetched).length > 0) {
+      saveGenreTranslations(fetched, locale);
+    }
+  }, [fetched, locale]);
 
   return {
-    translations: { ...cacheRef.current.translations, ...data, ...staticTranslations },
-    isLoading: locale !== 'en' && missingGenres.length > 0 && !data,
+    translations: { ...persisted, ...fetched, ...staticTranslations },
+    isLoading:
+      locale !== 'en' &&
+      genresNeedingLookup.length > 0 &&
+      (isLoadingPersisted || (missingGenres.length > 0 && !fetched)),
   };
 }
