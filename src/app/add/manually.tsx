@@ -192,7 +192,7 @@ export default function AddManuallyScreen() {
         <KeyboardAwareScrollView
           style={{ backgroundColor }}
           contentContainerStyle={styles.container}
-          bottomOffset={24}
+          bottomOffset={10}
           keyboardShouldPersistTaps="handled">
           <Stack.Screen
             options={{ title: isEditing ? t('screenTitles.editBook') : t('screenTitles.addManually') }}
