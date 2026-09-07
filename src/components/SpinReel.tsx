@@ -150,7 +150,9 @@ export function SpinReel({ candidates, spinToken, excludeIdFromTarget, onLanded,
     }
     loops.push(target);
 
-    const trailing = buildFiller(pool);
+    const rotatedFromTarget = rotateToStart(pool, target);
+    const afterTarget = [...rotatedFromTarget.slice(1), rotatedFromTarget[0]];
+    const trailing = buildFiller(afterTarget);
     const baseIndex = centerIndexRef.current;
     const finalIndex = baseIndex + loops.length;
     const finalX = centerXForIndex(finalIndex);
