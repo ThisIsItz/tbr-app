@@ -11,7 +11,8 @@ import {
   useWindowDimensions,
   View,
 } from 'react-native';
-import { KeyboardAvoidingView, KeyboardAwareScrollView } from 'react-native-keyboard-controller';
+import { KeyboardAwareScrollView, useReanimatedKeyboardAnimation } from 'react-native-keyboard-controller';
+import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { GenreEditor } from '@/components/GenreEditor';
@@ -40,6 +41,10 @@ export default function AddManuallyScreen() {
   const isEditing = !!id;
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
+  const { height: keyboardHeight } = useReanimatedKeyboardAnimation();
+  const genreSheetAnimatedStyle = useAnimatedStyle(() => ({
+    paddingBottom: -keyboardHeight.value,
+  }));
   const { width } = useWindowDimensions();
   const isNarrowScreen = width < NARROW_SCREEN_WIDTH;
 
@@ -392,7 +397,7 @@ export default function AddManuallyScreen() {
           style={[styles.backdrop, StyleSheet.absoluteFill]}
           onPress={() => setGenreModalVisible(false)}
           accessibilityLabel={t('common.done')}>
-          <KeyboardAvoidingView behavior="padding">
+          <Animated.View style={genreSheetAnimatedStyle}>
             <Pressable
               style={[
                 styles.sheet,
@@ -420,7 +425,7 @@ export default function AddManuallyScreen() {
                 </ThemedText>
               </Pressable>
             </Pressable>
-          </KeyboardAvoidingView>
+          </Animated.View>
         </Pressable>
       )}
     </>

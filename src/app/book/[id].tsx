@@ -2,7 +2,8 @@ import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { Pencil, Trash2 } from 'lucide-react-native';
 import { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, BackHandler, Pressable, StyleSheet, TextInput, View } from 'react-native';
-import { KeyboardAvoidingView, KeyboardAwareScrollView } from 'react-native-keyboard-controller';
+import { KeyboardAwareScrollView, useReanimatedKeyboardAnimation } from 'react-native-keyboard-controller';
+import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { BookHero, CircleButton } from '@/components/BookHero';
@@ -29,6 +30,10 @@ export default function BookDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
+  const { height: keyboardHeight } = useReanimatedKeyboardAnimation();
+  const genreSheetAnimatedStyle = useAnimatedStyle(() => ({
+    paddingBottom: -keyboardHeight.value,
+  }));
   const backgroundColor = useThemeColor({}, 'background');
   const surfaceColor = useThemeColor({}, 'surface');
   const surfaceMutedColor = useThemeColor({}, 'surfaceMuted');
@@ -253,7 +258,7 @@ export default function BookDetailScreen() {
           style={[styles.backdrop, StyleSheet.absoluteFill]}
           onPress={() => setGenreModalVisible(false)}
           accessibilityLabel={t('common.done')}>
-          <KeyboardAvoidingView behavior="padding">
+          <Animated.View style={genreSheetAnimatedStyle}>
             <Pressable
               style={[styles.sheet, { backgroundColor: surfaceColor, paddingBottom: 32 + insets.bottom }]}
               onPress={(e) => e.stopPropagation()}>
@@ -277,7 +282,7 @@ export default function BookDetailScreen() {
                 </ThemedText>
               </Pressable>
             </Pressable>
-          </KeyboardAvoidingView>
+          </Animated.View>
         </Pressable>
       )}
     </View>
