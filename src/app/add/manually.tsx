@@ -26,6 +26,7 @@ import { capitalizeFirst } from '@/lib/capitalize';
 import { showAlert } from '@/lib/dialog';
 import { estimateGenreSkeletonWidth } from '@/lib/genres';
 import { deleteLocalImage, persistLocalImage } from '@/lib/localImage';
+import { getPublishedYear } from '@/lib/publishedYear';
 
 const NARROW_SCREEN_WIDTH = 360;
 
@@ -93,7 +94,7 @@ export default function AddManuallyScreen() {
     setAuthorsText(existingBook.authors.join(', '));
     setGenres(existingBook.genres);
     setDescription(existingBook.description ?? '');
-    setPublishedDate(existingBook.publishedDate ?? '');
+    setPublishedDate(existingBook.publishedDate ? getPublishedYear(existingBook.publishedDate) ?? '' : '');
     setPageCountText(existingBook.pageCount != null ? String(existingBook.pageCount) : '');
     setNotes(existingBook.notes ?? '');
     setIsPrefilled(true);
@@ -307,7 +308,9 @@ export default function AddManuallyScreen() {
               </ThemedText>
               <TextInput
                 value={publishedDate}
-                onChangeText={setPublishedDate}
+                onChangeText={(text) => setPublishedDate(text.replace(/[^0-9]/g, ''))}
+                keyboardType="number-pad"
+                maxLength={4}
                 style={[
                   Typography.body,
                   styles.input,

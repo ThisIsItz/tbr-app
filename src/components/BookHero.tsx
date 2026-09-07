@@ -9,12 +9,8 @@ import { useThemeColor } from '@/hooks/useThemeColor';
 import { useTranslation } from '@/hooks/useTranslation';
 import { capitalizeFirst } from '@/lib/capitalize';
 import { getLanguageName } from '@/lib/languageNames';
+import { getPublishedYear } from '@/lib/publishedYear';
 import { Typography } from '@/lib/theme/theme';
-
-function getPublishedYear(raw: string): string | null {
-  const match = /^(\d{4})/.exec(raw);
-  return match ? match[1] : null;
-}
 
 interface BookHeroProps {
   title: string;
