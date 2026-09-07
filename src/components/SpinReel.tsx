@@ -148,6 +148,9 @@ export function SpinReel({ candidates, spinToken, excludeIdFromTarget, onLanded,
     for (let i = 1; i < REEL_LENGTH; i++) {
       loops.push(rotatedPool[i % rotatedPool.length]);
     }
+    if (loops.length > 0 && rotatedPool.length > 1 && loops[loops.length - 1].id === target.id) {
+      loops[loops.length - 1] = rotatedPool[REEL_LENGTH % rotatedPool.length];
+    }
     loops.push(target);
 
     const rotatedFromTarget = rotateToStart(pool, target);
