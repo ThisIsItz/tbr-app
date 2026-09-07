@@ -1,7 +1,6 @@
 import { router } from 'expo-router';
 import { Dices } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Image } from 'expo-image';
 import { ActivityIndicator, Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
 import Animated, {
   Easing,
@@ -15,6 +14,7 @@ import Animated, {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import ConfettiCannon from 'react-native-confetti-cannon';
 
+import { CoverImage } from '@/components/CoverImage';
 import { Paywall } from '@/components/Paywall';
 import { SpinReel } from '@/components/SpinReel';
 import { ThemedText } from '@/components/ThemedText';
@@ -183,7 +183,7 @@ export default function SpinScreen() {
             author: landedBook.authors.join(', ') || t('bookCard.unknownAuthor'),
           })}>
           {coverUrl ? (
-            <Image source={{ uri: coverUrl }} style={styles.revealCover} contentFit="cover" />
+            <CoverImage uri={coverUrl} style={styles.revealCover} />
           ) : (
             <View style={[styles.revealCover, styles.revealCoverPlaceholder, { backgroundColor: surfaceMutedColor }]}>
               <ThemedText style={[Typography.caption, { color: textMutedColor }]}>{t('bookCard.noCover')}</ThemedText>

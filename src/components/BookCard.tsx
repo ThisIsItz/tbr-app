@@ -1,13 +1,13 @@
-import { Image } from 'expo-image';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { ThemedText } from '@/components/ThemedText';
+import { CoverImage } from '@/components/CoverImage';
 import { IconSymbol } from '@/components/IconSymbol';
 import { Typography } from '@/lib/theme/theme';
 import { capitalizeFirst } from '@/lib/capitalize';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { useTranslation } from '@/hooks/useTranslation';
-import { toHighResUrl } from '@/api/googleBooks';
+import { toHighResUrl, toHttpsUrl } from '@/api/googleBooks';
 
 interface BookCardAction {
   label: string;
@@ -53,6 +53,7 @@ export function BookCard({
   const accentSoftColor = useThemeColor({}, 'accentSoft');
 
   const coverUrl = toHighResUrl(thumbnailUrl);
+  const fallbackCoverUrl = toHttpsUrl(thumbnailUrl);
   const isResult = variant === 'result';
   const isList = variant === 'list';
   const isGrid = variant === 'grid';
@@ -65,12 +66,7 @@ export function BookCard({
         {coverUrl ? (
           <View style={[styles.coverGrid, { boxShadow: `0px 3px 6px ${shadowColor}` }]}>
             <View style={styles.coverGridClip}>
-              <Image
-                source={{ uri: coverUrl }}
-                style={styles.coverGridImage}
-                contentFit="cover"
-                onError={(e) => console.warn('[BookCard] cover failed to load:', coverUrl, e.error)}
-              />
+              <CoverImage uri={coverUrl} fallbackUri={fallbackCoverUrl} style={styles.coverGridImage} />
             </View>
           </View>
         ) : (
@@ -100,12 +96,7 @@ export function BookCard({
         accessibilityLabel={displayAuthor ? `${displayTitle}, ${displayAuthor}` : displayTitle}
         style={[styles.listRow, { borderBottomColor: surfaceMutedColor }]}>
         {coverUrl ? (
-          <Image
-            source={{ uri: coverUrl }}
-            style={styles.coverList}
-            contentFit="cover"
-            onError={(e) => console.warn('[BookCard] cover failed to load:', coverUrl, e.error)}
-          />
+          <CoverImage uri={coverUrl} fallbackUri={fallbackCoverUrl} style={styles.coverList} />
         ) : (
           <View style={[styles.coverList, styles.coverPlaceholder, { backgroundColor: surfaceMutedColor }]} />
         )}
@@ -137,12 +128,7 @@ export function BookCard({
           accessibilityLabel={displayAuthor ? `${displayTitle}, ${displayAuthor}` : displayTitle}
           style={styles.resultPressArea}>
           {coverUrl ? (
-            <Image
-              source={{ uri: coverUrl }}
-              style={[styles.cover, styles.coverResult]}
-              contentFit="cover"
-              onError={(e) => console.warn('[BookCard] cover failed to load:', coverUrl, e.error)}
-            />
+            <CoverImage uri={coverUrl} fallbackUri={fallbackCoverUrl} style={[styles.cover, styles.coverResult]} />
           ) : (
             <View
               style={[
@@ -216,12 +202,7 @@ export function BookCard({
         { backgroundColor: surfaceColor, boxShadow: `0px 4px 10px ${shadowColor}` },
       ]}>
       {coverUrl ? (
-        <Image
-          source={{ uri: coverUrl }}
-          style={[styles.cover, styles.coverLibrary]}
-          contentFit="cover"
-          onError={(e) => console.warn('[BookCard] cover failed to load:', coverUrl, e.error)}
-        />
+        <CoverImage uri={coverUrl} fallbackUri={fallbackCoverUrl} style={[styles.cover, styles.coverLibrary]} />
       ) : (
         <View
           style={[

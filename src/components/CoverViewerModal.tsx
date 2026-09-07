@@ -1,8 +1,8 @@
-import { Image } from 'expo-image';
 import { X } from 'lucide-react-native';
 import { Modal, Pressable, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { CoverImage } from '@/components/CoverImage';
 import { useTranslation } from '@/hooks/useTranslation';
 
 interface CoverViewerModalProps {
@@ -28,7 +28,7 @@ export function CoverViewerModal({ visible, coverUrl, onClose }: CoverViewerModa
           style={[styles.closeButton, { top: insets.top + 12 }]}>
           <X size={22} color="#FFFFFF" strokeWidth={2} />
         </Pressable>
-        <Image source={{ uri: coverUrl }} style={styles.cover} contentFit="contain" />
+        <CoverImage uri={coverUrl} style={styles.cover} contentFit="contain" />
       </View>
     </Modal>
   );

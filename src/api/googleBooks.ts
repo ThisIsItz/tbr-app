@@ -43,6 +43,14 @@ export function toHighResUrl(url: string | null | undefined): string | null {
   return httpsUrl.replace(/([?&])zoom=\d+/, '$1zoom=3').replace(/&edge=curl/g, '')
 }
 
+// Not every scanned cover has a zoom=3 tier — when it's missing, Google's
+// content server returns its own broken-image placeholder instead of the
+// real cover. Undoes the zoom=3 bump from `toHighResUrl` so callers can
+// retry at the default zoom level, which is always available.
+export function toFallbackZoomUrl(url: string): string {
+  return url.replace(/zoom=3\b/, 'zoom=1')
+}
+
 function booksApiUrl(): string {
   const apiUrl = process.env.EXPO_PUBLIC_BOOKS_API_URL
   if (!apiUrl) {

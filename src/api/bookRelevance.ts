@@ -17,6 +17,7 @@ const SCORE = {
   exactTitle: 100,
   titleStartsWith: 60,
   titleContainsWordsInOrder: 30,
+  authorMatch: 110,
   hasAuthor: 8,
   hasCover: 5,
   hasIsbn: 5,
@@ -122,6 +123,17 @@ export function scoreVolume(volume: GoogleBooksVolume, query: string): number {
 
   const hasAuthor = (volumeInfo.authors?.length ?? 0) > 0;
   const hasIsbn = !!getIsbn(volume);
+
+  // A search for an author's name should surface their own bibliography
+  // ahead of unrelated books that merely happen to share that title — e.g.
+  // biographies of the author, which otherwise win purely on title match.
+  const authorMatches =
+    normQuery.length > 2 &&
+    (volumeInfo.authors ?? []).some((author) => {
+      const normAuthor = normalize(author);
+      return normAuthor === normQuery || normAuthor.includes(normQuery) || normQuery.includes(normAuthor);
+    });
+  if (authorMatches) score += SCORE.authorMatch;
 
   if (hasAuthor) score += SCORE.hasAuthor;
   if (volumeInfo.imageLinks?.thumbnail) score += SCORE.hasCover;

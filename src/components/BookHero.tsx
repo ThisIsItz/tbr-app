@@ -1,9 +1,9 @@
-import { Image } from 'expo-image';
 import { ArrowLeft } from 'lucide-react-native';
 import type { ReactNode } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { CoverImage } from '@/components/CoverImage';
 import { ThemedText } from '@/components/ThemedText';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -52,7 +52,7 @@ export function BookHero({
   return (
     <View style={styles.hero}>
       {coverUrl ? (
-        <Image source={{ uri: coverUrl }} style={StyleSheet.absoluteFill} contentFit="cover" blurRadius={30} />
+        <CoverImage uri={coverUrl} style={StyleSheet.absoluteFill} blurRadius={30} />
       ) : (
         <View style={[StyleSheet.absoluteFill, { backgroundColor: surfaceMutedColor }]} />
       )}
@@ -73,7 +73,7 @@ export function BookHero({
               disabled={!onCoverPress}
               accessibilityRole={onCoverPress ? 'button' : undefined}
               accessibilityLabel={onCoverPress ? t('bookDetail.viewCover') : undefined}>
-              <Image source={{ uri: coverUrl }} style={styles.thumbnail} contentFit="cover" />
+              <CoverImage uri={coverUrl} style={styles.thumbnail} />
             </Pressable>
           ) : (
             <View style={[styles.thumbnail, styles.thumbnailPlaceholder, { backgroundColor: surfaceMutedColor }]}>
