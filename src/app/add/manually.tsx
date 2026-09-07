@@ -397,7 +397,7 @@ export default function AddManuallyScreen() {
           style={[styles.backdrop, StyleSheet.absoluteFill]}
           onPress={() => setGenreModalVisible(false)}
           accessibilityLabel={t('common.done')}>
-          <Animated.View style={genreSheetAnimatedStyle}>
+          <Animated.View style={[genreSheetAnimatedStyle, { backgroundColor: surfaceColor }]}>
             <Pressable
               style={[
                 styles.sheet,
