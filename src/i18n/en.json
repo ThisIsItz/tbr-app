@@ -29,6 +29,7 @@
     "author": "Author",
     "language": "Language",
     "sort": "Sort",
+    "allGenres": "All genres",
     "allAuthors": "All authors",
     "allLanguages": "All languages",
     "sortRecent": "Recently added",

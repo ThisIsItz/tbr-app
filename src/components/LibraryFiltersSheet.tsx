@@ -205,6 +205,13 @@ export function LibraryFiltersSheet({
                     <ThemedText style={[Typography.body, { color: textMutedColor }]}>—</ThemedText>
                   ) : (
                     <View>
+                      {renderRow({
+                        key: '__all_genres',
+                        label: t('library.allGenres'),
+                        isSelected: selectedGenres.length === 0,
+                        checkbox: true,
+                        onPress: () => onGenresChange([]),
+                      })}
                       {genreOptions.map((genre) =>
                         renderRow({
                           key: genre,
@@ -227,6 +234,7 @@ export function LibraryFiltersSheet({
                       key: '__all_authors',
                       label: t('library.allAuthors'),
                       isSelected: selectedAuthors.length === 0,
+                      checkbox: true,
                       onPress: () => onAuthorsChange([]),
                     })}
                     {authorOptions.map((author) =>
@@ -250,6 +258,7 @@ export function LibraryFiltersSheet({
                       key: '__all_languages',
                       label: t('library.allLanguages'),
                       isSelected: selectedLanguages.length === 0,
+                      checkbox: true,
                       onPress: () => onLanguagesChange([]),
                     })}
                     {languageOptions.map((language) =>
