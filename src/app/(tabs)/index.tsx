@@ -13,17 +13,14 @@ import { SearchInput } from '@/components/SearchInput';
 import { ThemedText } from '@/components/ThemedText';
 import { IconSymbol } from '@/components/IconSymbol';
 import { Typography } from '@/lib/theme/theme';
+import { useBookFilters } from '@/hooks/useBookFilters';
 import { useBooks, useImportBackup } from '@/hooks/useLibrary';
 import { useDebouncedValue } from '@/hooks/useDebouncedValue';
 import { useThemeColor } from '@/hooks/useThemeColor';
-import { useTranslatedGenres } from '@/hooks/useTranslatedGenres';
 import { useTranslation } from '@/hooks/useTranslation';
 import { getSetting, setSetting } from '@/api/repository/settingsRepository';
 import { BackupFileError } from '@/lib/backup';
-import { capitalizeFirst } from '@/lib/capitalize';
 import { showAlert } from '@/lib/dialog';
-import { normalizeGenres } from '@/lib/genres';
-import { getLanguageName } from '@/lib/languageNames';
 import { type Book } from '@/types/book';
 
 function hexToRgba(hex: string, alpha: number): string {
@@ -40,7 +37,7 @@ const VIEW_MODE_SETTING_KEY = 'libraryViewMode';
 type SortBy = 'title-asc' | 'title-desc' | 'author-asc' | 'author-desc' | 'recent';
 
 export default function MyTbrScreen() {
-  const { t, locale } = useTranslation();
+  const { t } = useTranslation();
   const backgroundColor = useThemeColor({}, 'background');
   const textColor = useThemeColor({}, 'text');
   const textMutedColor = useThemeColor({}, 'textMuted');
@@ -79,9 +76,24 @@ export default function MyTbrScreen() {
 
   const [searchQuery, setSearchQuery] = useState('');
   const debouncedSearchQuery = useDebouncedValue(searchQuery, 300);
-  const [genreFilters, setGenreFilters] = useState<string[]>([]);
-  const [authorFilters, setAuthorFilters] = useState<string[]>([]);
-  const [languageFilters, setLanguageFilters] = useState<string[]>([]);
+  const libraryBooks = useMemo(() => books ?? [], [books]);
+  const {
+    genreFilters,
+    setGenreFilters,
+    authorFilters,
+    setAuthorFilters,
+    languageFilters,
+    setLanguageFilters,
+    genresByBookId,
+    allGenres,
+    allAuthors,
+    allLanguages,
+    genreTranslations,
+    hasActiveFilters: hasActiveBookFilters,
+    activeFilterLabels: activeBookFilterLabels,
+    clearFilters: clearBookFilters,
+    applyFilters,
+  } = useBookFilters(libraryBooks);
   const [sortBy, setSortBy] = useState<SortBy>('recent');
   const [viewMode, setViewMode] = useState<ViewMode>('card');
 
@@ -112,42 +124,7 @@ export default function MyTbrScreen() {
     { value: 'author-desc', label: t('library.sortAuthorDesc'), shortLabel: t('library.sortAuthorDescShort') },
   ];
 
-  const genresByBookId = useMemo(() => {
-    const map = new Map<string, string[]>();
-    for (const book of books ?? []) {
-      map.set(book.id, normalizeGenres(book.genres));
-    }
-    return map;
-  }, [books]);
-
-  const allGenres = useMemo(
-    () =>
-      Array.from(new Set([...genresByBookId.values()].flat())).sort((a, b) => a.localeCompare(b)),
-    [genresByBookId],
-  );
-  const allManualGenres = useMemo(
-    () => Array.from(new Set(books?.flatMap((book) => book.manualGenres) ?? [])),
-    [books],
-  );
-  const { translations: genreTranslations } = useTranslatedGenres(allGenres, allManualGenres);
-  const allAuthors = useMemo(
-    () =>
-      Array.from(new Set(books?.flatMap((book) => book.authors) ?? [])).sort((a, b) => a.localeCompare(b)),
-    [books],
-  );
-  const allLanguages = useMemo(
-    () =>
-      Array.from(new Set(books?.map((book) => book.language).filter((l): l is string => !!l) ?? [])).sort(
-        (a, b) => getLanguageName(a, locale).localeCompare(getLanguageName(b, locale)),
-      ),
-    [books, locale],
-  );
-
-  const hasActiveFilters =
-    genreFilters.length > 0 ||
-    authorFilters.length > 0 ||
-    languageFilters.length > 0 ||
-    debouncedSearchQuery.trim().length > 0;
+  const hasActiveFilters = hasActiveBookFilters || debouncedSearchQuery.trim().length > 0;
   const totalBookCount = books?.length ?? 0;
 
   const filteredBooks = useMemo(() => {
@@ -162,15 +139,7 @@ export default function MyTbrScreen() {
           genresByBookId.get(book.id)?.some((genre) => genre.toLowerCase().includes(query)),
       );
     }
-    if (genreFilters.length > 0) {
-      list = list.filter((book) => genresByBookId.get(book.id)?.some((g) => genreFilters.includes(g)));
-    }
-    if (authorFilters.length > 0) {
-      list = list.filter((book) => book.authors.some((author) => authorFilters.includes(author)));
-    }
-    if (languageFilters.length > 0) {
-      list = list.filter((book) => !!book.language && languageFilters.includes(book.language));
-    }
+    list = applyFilters(list);
 
     if (sortBy === 'recent') {
       return [...list].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
@@ -183,7 +152,7 @@ export default function MyTbrScreen() {
       return aValue.localeCompare(bValue);
     });
     return direction === 'desc' ? sorted.reverse() : sorted;
-  }, [books, debouncedSearchQuery, genreFilters, authorFilters, languageFilters, sortBy, genresByBookId]);
+  }, [books, debouncedSearchQuery, applyFilters, sortBy, genresByBookId]);
 
   const gridBooks: (Book | null)[] = useMemo(() => {
     if (viewMode !== 'grid' || filteredBooks.length % 2 === 0) return filteredBooks;
@@ -191,9 +160,7 @@ export default function MyTbrScreen() {
   }, [filteredBooks, viewMode]);
 
   const activeFilterLabels = [
-    ...genreFilters.map((genre) => capitalizeFirst(genreTranslations[genre] ?? genre)),
-    ...authorFilters,
-    ...languageFilters.map((language) => getLanguageName(language, locale)),
+    ...activeBookFilterLabels,
     ...(debouncedSearchQuery.trim() ? [`"${debouncedSearchQuery.trim()}"`] : []),
   ];
 
@@ -208,9 +175,7 @@ export default function MyTbrScreen() {
 
   function clearFilters() {
     setSearchQuery('');
-    setGenreFilters([]);
-    setAuthorFilters([]);
-    setLanguageFilters([]);
+    clearBookFilters();
   }
 
   // Reset filters once the library is empty, so they don't hide new books.
@@ -218,11 +183,9 @@ export default function MyTbrScreen() {
   useEffect(() => {
     if (!isLibraryEmpty) return;
     setSearchQuery('');
-    setGenreFilters([]);
-    setAuthorFilters([]);
-    setLanguageFilters([]);
+    clearBookFilters();
     setSortBy('recent');
-  }, [isLibraryEmpty]);
+  }, [isLibraryEmpty, clearBookFilters]);
 
   if (isLoading) {
     return (

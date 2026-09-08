@@ -21,19 +21,17 @@ import { Paywall } from '@/components/Paywall';
 import { SpinReel } from '@/components/SpinReel';
 import { ThemedText } from '@/components/ThemedText';
 import { Typography } from '@/lib/theme/theme';
+import { useBookFilters } from '@/hooks/useBookFilters';
 import { useBooks } from '@/hooks/useLibrary';
 import { usePurchases } from '@/hooks/usePurchases';
 import { useThemeColor } from '@/hooks/useThemeColor';
-import { useTranslatedGenres } from '@/hooks/useTranslatedGenres';
 import { useTranslation } from '@/hooks/useTranslation';
 import { capitalizeFirst } from '@/lib/capitalize';
-import { normalizeGenres } from '@/lib/genres';
-import { getLanguageName } from '@/lib/languageNames';
 import { toHighResUrl } from '@/api/googleBooks';
 import type { Book } from '@/types/book';
 
 export default function SpinScreen() {
-  const { t, locale } = useTranslation();
+  const { t } = useTranslation();
   const backgroundColor = useThemeColor({}, 'background');
   const textColor = useThemeColor({}, 'text');
   const textMutedColor = useThemeColor({}, 'textMuted');
@@ -50,64 +48,24 @@ export default function SpinScreen() {
   const { data: books } = useBooks();
   const toReadBooks = useMemo(() => (books ?? []).filter((book) => book.status === 'to_read'), [books]);
 
-  const [genreFilters, setGenreFilters] = useState<string[]>([]);
-  const [authorFilters, setAuthorFilters] = useState<string[]>([]);
-  const [languageFilters, setLanguageFilters] = useState<string[]>([]);
+  const {
+    genreFilters,
+    setGenreFilters,
+    authorFilters,
+    setAuthorFilters,
+    languageFilters,
+    setLanguageFilters,
+    allGenres,
+    allAuthors,
+    allLanguages,
+    genreTranslations,
+    hasActiveFilters,
+    activeFilterLabels,
+    clearFilters,
+    applyFilters,
+  } = useBookFilters(toReadBooks);
 
-  const genresByBookId = useMemo(() => {
-    const map = new Map<string, string[]>();
-    for (const book of toReadBooks) {
-      map.set(book.id, normalizeGenres(book.genres));
-    }
-    return map;
-  }, [toReadBooks]);
-  const allGenres = useMemo(
-    () => Array.from(new Set([...genresByBookId.values()].flat())).sort((a, b) => a.localeCompare(b)),
-    [genresByBookId],
-  );
-  const allManualGenres = useMemo(
-    () => Array.from(new Set(toReadBooks.flatMap((book) => book.manualGenres))),
-    [toReadBooks],
-  );
-  const { translations: genreTranslations } = useTranslatedGenres(allGenres, allManualGenres);
-  const allAuthors = useMemo(
-    () => Array.from(new Set(toReadBooks.flatMap((book) => book.authors))).sort((a, b) => a.localeCompare(b)),
-    [toReadBooks],
-  );
-  const allLanguages = useMemo(
-    () =>
-      Array.from(new Set(toReadBooks.map((book) => book.language).filter((l): l is string => !!l))).sort((a, b) =>
-        getLanguageName(a, locale).localeCompare(getLanguageName(b, locale)),
-      ),
-    [toReadBooks, locale],
-  );
-
-  const hasActiveFilters = genreFilters.length > 0 || authorFilters.length > 0 || languageFilters.length > 0;
-  const activeFilterLabels = [
-    ...genreFilters.map((genre) => capitalizeFirst(genreTranslations[genre] ?? genre)),
-    ...authorFilters,
-    ...languageFilters.map((language) => getLanguageName(language, locale)),
-  ];
-
-  function clearFilters() {
-    setGenreFilters([]);
-    setAuthorFilters([]);
-    setLanguageFilters([]);
-  }
-
-  const candidates = useMemo(() => {
-    let list = toReadBooks;
-    if (genreFilters.length > 0) {
-      list = list.filter((book) => genresByBookId.get(book.id)?.some((g) => genreFilters.includes(g)));
-    }
-    if (authorFilters.length > 0) {
-      list = list.filter((book) => book.authors.some((author) => authorFilters.includes(author)));
-    }
-    if (languageFilters.length > 0) {
-      list = list.filter((book) => !!book.language && languageFilters.includes(book.language));
-    }
-    return list;
-  }, [toReadBooks, genreFilters, authorFilters, languageFilters, genresByBookId]);
+  const candidates = useMemo(() => applyFilters(toReadBooks), [toReadBooks, applyFilters]);
 
   const [coversReady, setCoversReady] = useState(false);
   const handleReelReady = useCallback(() => setCoversReady(true), []);

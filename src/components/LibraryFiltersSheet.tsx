@@ -111,22 +111,20 @@ export function LibraryFiltersSheet({
     key,
     label,
     isSelected,
-    checkbox,
     onPress,
   }: {
     key: string;
     label: string;
     isSelected: boolean;
-    checkbox?: boolean;
     onPress: () => void;
   }) {
     return (
       <Pressable
         key={key}
         onPress={onPress}
-        accessibilityRole={checkbox ? 'checkbox' : 'radio'}
+        accessibilityRole="checkbox"
         accessibilityLabel={label}
-        accessibilityState={checkbox ? { checked: isSelected } : { selected: isSelected }}
+        accessibilityState={{ checked: isSelected }}
         style={styles.optionRow}>
         <ThemedText
           style={[
@@ -135,16 +133,55 @@ export function LibraryFiltersSheet({
           ]}>
           {label}
         </ThemedText>
-        {checkbox ? (
-          <IconSymbol
-            name={isSelected ? 'checkmark.circle.fill' : 'circle'}
-            size={20}
-            color={isSelected ? accentColor : textMutedColor}
-          />
-        ) : (
-          isSelected && <IconSymbol name="checkmark" size={18} color={accentColor} />
-        )}
+        <IconSymbol
+          name={isSelected ? 'checkmark.circle.fill' : 'circle'}
+          size={20}
+          color={isSelected ? accentColor : textMutedColor}
+        />
       </Pressable>
+    );
+  }
+
+  function renderSection({
+    groupLabel,
+    allLabel,
+    options,
+    selected,
+    getLabel,
+    onToggle,
+    onSelectAll,
+    divider,
+  }: {
+    groupLabel: string;
+    allLabel: string;
+    options: string[];
+    selected: string[];
+    getLabel: (value: string) => string;
+    onToggle: (value: string) => void;
+    onSelectAll: () => void;
+    divider?: boolean;
+  }) {
+    return (
+      <View style={[styles.section, divider && [styles.sectionDivider, { borderTopColor: borderColor }]]}>
+        <ThemedText style={[Typography.caption, styles.groupLabel, { color: textMutedColor }]}>
+          {groupLabel}
+        </ThemedText>
+        {options.length === 0 ? (
+          <ThemedText style={[Typography.body, { color: textMutedColor }]}>—</ThemedText>
+        ) : (
+          <View>
+            {renderRow({ key: '__all', label: allLabel, isSelected: selected.length === 0, onPress: onSelectAll })}
+            {options.map((value) =>
+              renderRow({
+                key: value,
+                label: getLabel(value),
+                isSelected: selected.includes(value),
+                onPress: () => onToggle(value),
+              }),
+            )}
+          </View>
+        )}
+      </View>
     );
   }
 
@@ -197,81 +234,37 @@ export function LibraryFiltersSheet({
                 scrollEventThrottle={16}
                 showsVerticalScrollIndicator={false}
                 onContentSizeChange={(_w, h) => setContentHeight(h)}>
-                <View style={styles.section}>
-                  <ThemedText style={[Typography.caption, styles.groupLabel, { color: textMutedColor }]}>
-                    {t('library.genre')}
-                  </ThemedText>
-                  {genreOptions.length === 0 ? (
-                    <ThemedText style={[Typography.body, { color: textMutedColor }]}>—</ThemedText>
-                  ) : (
-                    <View>
-                      {renderRow({
-                        key: '__all_genres',
-                        label: t('library.allGenres'),
-                        isSelected: selectedGenres.length === 0,
-                        checkbox: true,
-                        onPress: () => onGenresChange([]),
-                      })}
-                      {genreOptions.map((genre) =>
-                        renderRow({
-                          key: genre,
-                          label: capitalizeFirst(genreLabels?.[genre] ?? genre),
-                          isSelected: selectedGenres.includes(genre),
-                          checkbox: true,
-                          onPress: () => toggleGenre(genre),
-                        }),
-                      )}
-                    </View>
-                  )}
-                </View>
+                {renderSection({
+                  groupLabel: t('library.genre'),
+                  allLabel: t('library.allGenres'),
+                  options: genreOptions,
+                  selected: selectedGenres,
+                  getLabel: (genre) => capitalizeFirst(genreLabels?.[genre] ?? genre),
+                  onToggle: toggleGenre,
+                  onSelectAll: () => onGenresChange([]),
+                })}
 
-                <View style={[styles.section, styles.sectionDivider, { borderTopColor: borderColor }]}>
-                  <ThemedText style={[Typography.caption, styles.groupLabel, { color: textMutedColor }]}>
-                    {t('library.author')}
-                  </ThemedText>
-                  <View>
-                    {renderRow({
-                      key: '__all_authors',
-                      label: t('library.allAuthors'),
-                      isSelected: selectedAuthors.length === 0,
-                      checkbox: true,
-                      onPress: () => onAuthorsChange([]),
-                    })}
-                    {authorOptions.map((author) =>
-                      renderRow({
-                        key: author,
-                        label: author,
-                        isSelected: selectedAuthors.includes(author),
-                        checkbox: true,
-                        onPress: () => toggleAuthor(author),
-                      }),
-                    )}
-                  </View>
-                </View>
+                {renderSection({
+                  groupLabel: t('library.author'),
+                  allLabel: t('library.allAuthors'),
+                  options: authorOptions,
+                  selected: selectedAuthors,
+                  getLabel: (author) => author,
+                  onToggle: toggleAuthor,
+                  onSelectAll: () => onAuthorsChange([]),
+                  divider: true,
+                })}
 
-                <View style={[styles.section, styles.sectionDivider, { borderTopColor: borderColor }]}>
-                  <ThemedText style={[Typography.caption, styles.groupLabel, { color: textMutedColor }]}>
-                    {t('library.language')}
-                  </ThemedText>
-                  <View>
-                    {renderRow({
-                      key: '__all_languages',
-                      label: t('library.allLanguages'),
-                      isSelected: selectedLanguages.length === 0,
-                      checkbox: true,
-                      onPress: () => onLanguagesChange([]),
-                    })}
-                    {languageOptions.map((language) =>
-                      renderRow({
-                        key: language,
-                        label: getLanguageName(language, locale),
-                        isSelected: selectedLanguages.includes(language),
-                        checkbox: true,
-                        onPress: () => toggleLanguage(language),
-                      }),
-                    )}
-                  </View>
-                </View>
+                {renderSection({
+                  groupLabel: t('library.language'),
+                  allLabel: t('library.allLanguages'),
+                  options: languageOptions,
+                  selected: selectedLanguages,
+                  getLabel: (language) => getLanguageName(language, locale),
+                  onToggle: toggleLanguage,
+                  onSelectAll: () => onLanguagesChange([]),
+                  divider: true,
+                })}
               </Animated.ScrollView>
               {canScroll && (
                 <View style={[styles.scrollTrack, { backgroundColor: surfaceMutedColor }]}>
