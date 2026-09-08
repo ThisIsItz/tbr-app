@@ -37,12 +37,20 @@ function getIsbn(volume: GoogleBooksVolume): string | null {
   return isbn13?.identifier ?? isbn10?.identifier ?? identifiers[0]?.identifier ?? null;
 }
 
+function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+// Matches each word as a whole word, not a raw substring — otherwise a
+// short query word like "j" or "mass" spuriously matches inside unrelated
+// words ("January", "Massachusetts"), inflating the relevance score of
+// books that have nothing to do with the query.
 function containsWordsInOrder(haystack: string, words: string[]): boolean {
   let searchFrom = 0;
   for (const word of words) {
-    const index = haystack.indexOf(word, searchFrom);
-    if (index === -1) return false;
-    searchFrom = index + word.length;
+    const match = new RegExp(`\\b${escapeRegExp(word)}`).exec(haystack.slice(searchFrom));
+    if (!match) return false;
+    searchFrom += match.index + word.length;
   }
   return true;
 }
@@ -113,14 +121,6 @@ export function scoreVolume(volume: GoogleBooksVolume, query: string): number {
 
   let score = 0;
 
-  if (title === normQuery) {
-    score += SCORE.exactTitle;
-  } else if (normQuery.length > 0 && title.startsWith(normQuery)) {
-    score += SCORE.titleStartsWith;
-  } else if (queryWords.length > 0 && containsWordsInOrder(title, queryWords)) {
-    score += SCORE.titleContainsWordsInOrder;
-  }
-
   const hasAuthor = (volumeInfo.authors?.length ?? 0) > 0;
   const hasIsbn = !!getIsbn(volume);
 
@@ -134,6 +134,22 @@ export function scoreVolume(volume: GoogleBooksVolume, query: string): number {
       return normAuthor === normQuery || normAuthor.includes(normQuery) || normQuery.includes(normAuthor);
     });
   if (authorMatches) score += SCORE.authorMatch;
+
+  if (title === normQuery) {
+    // An exact title match is always meaningful — e.g. an author's own
+    // self-titled memoir is genuinely their most notable "Isaac Asimov".
+    score += SCORE.exactTitle;
+  } else if (!authorMatches) {
+    // Skip weaker partial title-match tiers when the author already
+    // matched: an anthology titled "Isaac Asimov Presents..." would
+    // otherwise double-count the same "it's his name" signal and outrank
+    // his actual standalone novels, whose titles don't repeat his name.
+    if (normQuery.length > 0 && title.startsWith(normQuery)) {
+      score += SCORE.titleStartsWith;
+    } else if (queryWords.length > 0 && containsWordsInOrder(title, queryWords)) {
+      score += SCORE.titleContainsWordsInOrder;
+    }
+  }
 
   if (hasAuthor) score += SCORE.hasAuthor;
   if (volumeInfo.imageLinks?.thumbnail) score += SCORE.hasCover;

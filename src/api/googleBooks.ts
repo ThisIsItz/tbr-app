@@ -92,15 +92,22 @@ export async function searchGoogleBooks(
   const trimmed = query.trim()
   if (!trimmed) return []
 
-  // Prefer a title-scoped search — for a normal query like "Harry Potter"
-  // this surfaces the actual novels instead of unrelated books that merely
-  // mention the phrase in their description.
-  const titleResults = await fetchVolumes(`intitle:${trimmed}`)
+  // Title-scoped search surfaces the actual novels for a normal query like
+  // "Harry Potter" instead of unrelated books that merely mention the
+  // phrase in their description. Author-scoped search runs alongside it —
+  // searching an author's name by title alone can return 20 title matches
+  // (compilations, "about the author" books) without ever surfacing their
+  // actual bibliography, since a novel's own title rarely contains its
+  // author's name.
+  const [titleResults, authorResults] = await Promise.all([
+    fetchVolumes(`intitle:${trimmed}`),
+    fetchVolumes(`inauthor:${trimmed}`),
+  ])
 
-  let candidates = titleResults
+  let candidates = [...titleResults, ...authorResults]
   if (titleResults.length < MIN_RESULTS_BEFORE_FALLBACK) {
     const broaderResults = await fetchVolumes(trimmed)
-    candidates = [...titleResults, ...broaderResults]
+    candidates = [...candidates, ...broaderResults]
   }
 
   return rankSearchResults(candidates, trimmed)
