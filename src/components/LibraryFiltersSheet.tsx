@@ -24,11 +24,11 @@ interface LibraryFiltersSheetProps {
   selectedGenres: string[];
   onGenresChange: (genres: string[]) => void;
   authorOptions: string[];
-  selectedAuthor: string | null;
-  onAuthorChange: (author: string | null) => void;
+  selectedAuthors: string[];
+  onAuthorsChange: (authors: string[]) => void;
   languageOptions: string[];
-  selectedLanguage: string | null;
-  onLanguageChange: (language: string | null) => void;
+  selectedLanguages: string[];
+  onLanguagesChange: (languages: string[]) => void;
   disabled?: boolean;
 }
 
@@ -38,11 +38,11 @@ export function LibraryFiltersSheet({
   selectedGenres,
   onGenresChange,
   authorOptions,
-  selectedAuthor,
-  onAuthorChange,
+  selectedAuthors,
+  onAuthorsChange,
   languageOptions,
-  selectedLanguage,
-  onLanguageChange,
+  selectedLanguages,
+  onLanguagesChange,
   disabled,
 }: LibraryFiltersSheetProps) {
   const { t, locale } = useTranslation();
@@ -78,7 +78,7 @@ export function LibraryFiltersSheet({
     ],
   }));
 
-  const activeCount = selectedGenres.length + (selectedAuthor ? 1 : 0) + (selectedLanguage ? 1 : 0);
+  const activeCount = selectedGenres.length + selectedAuthors.length + selectedLanguages.length;
   const isActive = activeCount > 0;
 
   function toggleGenre(genre: string) {
@@ -87,10 +87,24 @@ export function LibraryFiltersSheet({
     );
   }
 
+  function toggleAuthor(author: string) {
+    onAuthorsChange(
+      selectedAuthors.includes(author) ? selectedAuthors.filter((a) => a !== author) : [...selectedAuthors, author],
+    );
+  }
+
+  function toggleLanguage(language: string) {
+    onLanguagesChange(
+      selectedLanguages.includes(language)
+        ? selectedLanguages.filter((l) => l !== language)
+        : [...selectedLanguages, language],
+    );
+  }
+
   function clearAll() {
     onGenresChange([]);
-    onAuthorChange(null);
-    onLanguageChange(null);
+    onAuthorsChange([]);
+    onLanguagesChange([]);
   }
 
   function renderRow({
@@ -212,15 +226,16 @@ export function LibraryFiltersSheet({
                     {renderRow({
                       key: '__all_authors',
                       label: t('library.allAuthors'),
-                      isSelected: !selectedAuthor,
-                      onPress: () => onAuthorChange(null),
+                      isSelected: selectedAuthors.length === 0,
+                      onPress: () => onAuthorsChange([]),
                     })}
                     {authorOptions.map((author) =>
                       renderRow({
                         key: author,
                         label: author,
-                        isSelected: author === selectedAuthor,
-                        onPress: () => onAuthorChange(author),
+                        isSelected: selectedAuthors.includes(author),
+                        checkbox: true,
+                        onPress: () => toggleAuthor(author),
                       }),
                     )}
                   </View>
@@ -234,15 +249,16 @@ export function LibraryFiltersSheet({
                     {renderRow({
                       key: '__all_languages',
                       label: t('library.allLanguages'),
-                      isSelected: !selectedLanguage,
-                      onPress: () => onLanguageChange(null),
+                      isSelected: selectedLanguages.length === 0,
+                      onPress: () => onLanguagesChange([]),
                     })}
                     {languageOptions.map((language) =>
                       renderRow({
                         key: language,
                         label: getLanguageName(language, locale),
-                        isSelected: language === selectedLanguage,
-                        onPress: () => onLanguageChange(language),
+                        isSelected: selectedLanguages.includes(language),
+                        checkbox: true,
+                        onPress: () => toggleLanguage(language),
                       }),
                     )}
                   </View>

@@ -80,8 +80,8 @@ export default function MyTbrScreen() {
   const [searchQuery, setSearchQuery] = useState('');
   const debouncedSearchQuery = useDebouncedValue(searchQuery, 300);
   const [genreFilters, setGenreFilters] = useState<string[]>([]);
-  const [authorFilter, setAuthorFilter] = useState<string | null>(null);
-  const [languageFilter, setLanguageFilter] = useState<string | null>(null);
+  const [authorFilters, setAuthorFilters] = useState<string[]>([]);
+  const [languageFilters, setLanguageFilters] = useState<string[]>([]);
   const [sortBy, setSortBy] = useState<SortBy>('recent');
   const [viewMode, setViewMode] = useState<ViewMode>('card');
 
@@ -144,7 +144,10 @@ export default function MyTbrScreen() {
   );
 
   const hasActiveFilters =
-    genreFilters.length > 0 || !!authorFilter || !!languageFilter || debouncedSearchQuery.trim().length > 0;
+    genreFilters.length > 0 ||
+    authorFilters.length > 0 ||
+    languageFilters.length > 0 ||
+    debouncedSearchQuery.trim().length > 0;
   const totalBookCount = books?.length ?? 0;
 
   const filteredBooks = useMemo(() => {
@@ -162,8 +165,12 @@ export default function MyTbrScreen() {
     if (genreFilters.length > 0) {
       list = list.filter((book) => genresByBookId.get(book.id)?.some((g) => genreFilters.includes(g)));
     }
-    if (authorFilter) list = list.filter((book) => book.authors.includes(authorFilter));
-    if (languageFilter) list = list.filter((book) => book.language === languageFilter);
+    if (authorFilters.length > 0) {
+      list = list.filter((book) => book.authors.some((author) => authorFilters.includes(author)));
+    }
+    if (languageFilters.length > 0) {
+      list = list.filter((book) => !!book.language && languageFilters.includes(book.language));
+    }
 
     if (sortBy === 'recent') {
       return [...list].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
@@ -176,7 +183,7 @@ export default function MyTbrScreen() {
       return aValue.localeCompare(bValue);
     });
     return direction === 'desc' ? sorted.reverse() : sorted;
-  }, [books, debouncedSearchQuery, genreFilters, authorFilter, languageFilter, sortBy, genresByBookId]);
+  }, [books, debouncedSearchQuery, genreFilters, authorFilters, languageFilters, sortBy, genresByBookId]);
 
   const gridBooks: (Book | null)[] = useMemo(() => {
     if (viewMode !== 'grid' || filteredBooks.length % 2 === 0) return filteredBooks;
@@ -185,8 +192,8 @@ export default function MyTbrScreen() {
 
   const activeFilterLabels = [
     ...genreFilters.map((genre) => capitalizeFirst(genreTranslations[genre] ?? genre)),
-    ...(authorFilter ? [authorFilter] : []),
-    ...(languageFilter ? [getLanguageName(languageFilter, locale)] : []),
+    ...authorFilters,
+    ...languageFilters.map((language) => getLanguageName(language, locale)),
     ...(debouncedSearchQuery.trim() ? [`"${debouncedSearchQuery.trim()}"`] : []),
   ];
 
@@ -202,8 +209,8 @@ export default function MyTbrScreen() {
   function clearFilters() {
     setSearchQuery('');
     setGenreFilters([]);
-    setAuthorFilter(null);
-    setLanguageFilter(null);
+    setAuthorFilters([]);
+    setLanguageFilters([]);
   }
 
   // Reset filters once the library is empty, so they don't hide new books.
@@ -212,8 +219,8 @@ export default function MyTbrScreen() {
     if (!isLibraryEmpty) return;
     setSearchQuery('');
     setGenreFilters([]);
-    setAuthorFilter(null);
-    setLanguageFilter(null);
+    setAuthorFilters([]);
+    setLanguageFilters([]);
     setSortBy('recent');
   }, [isLibraryEmpty]);
 
@@ -274,11 +281,11 @@ export default function MyTbrScreen() {
               selectedGenres={genreFilters}
               onGenresChange={setGenreFilters}
               authorOptions={allAuthors}
-              selectedAuthor={authorFilter}
-              onAuthorChange={setAuthorFilter}
+              selectedAuthors={authorFilters}
+              onAuthorsChange={setAuthorFilters}
               languageOptions={allLanguages}
-              selectedLanguage={languageFilter}
-              onLanguageChange={setLanguageFilter}
+              selectedLanguages={languageFilters}
+              onLanguagesChange={setLanguageFilters}
               disabled={allGenres.length === 0 && allAuthors.length === 0 && allLanguages.length === 0}
             />
             <FilterSheet

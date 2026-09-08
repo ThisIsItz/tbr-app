@@ -51,8 +51,8 @@ export default function SpinScreen() {
   const toReadBooks = useMemo(() => (books ?? []).filter((book) => book.status === 'to_read'), [books]);
 
   const [genreFilters, setGenreFilters] = useState<string[]>([]);
-  const [authorFilter, setAuthorFilter] = useState<string | null>(null);
-  const [languageFilter, setLanguageFilter] = useState<string | null>(null);
+  const [authorFilters, setAuthorFilters] = useState<string[]>([]);
+  const [languageFilters, setLanguageFilters] = useState<string[]>([]);
 
   const genresByBookId = useMemo(() => {
     const map = new Map<string, string[]>();
@@ -82,17 +82,17 @@ export default function SpinScreen() {
     [toReadBooks, locale],
   );
 
-  const hasActiveFilters = genreFilters.length > 0 || !!authorFilter || !!languageFilter;
+  const hasActiveFilters = genreFilters.length > 0 || authorFilters.length > 0 || languageFilters.length > 0;
   const activeFilterLabels = [
     ...genreFilters.map((genre) => capitalizeFirst(genreTranslations[genre] ?? genre)),
-    ...(authorFilter ? [authorFilter] : []),
-    ...(languageFilter ? [getLanguageName(languageFilter, locale)] : []),
+    ...authorFilters,
+    ...languageFilters.map((language) => getLanguageName(language, locale)),
   ];
 
   function clearFilters() {
     setGenreFilters([]);
-    setAuthorFilter(null);
-    setLanguageFilter(null);
+    setAuthorFilters([]);
+    setLanguageFilters([]);
   }
 
   const candidates = useMemo(() => {
@@ -100,10 +100,14 @@ export default function SpinScreen() {
     if (genreFilters.length > 0) {
       list = list.filter((book) => genresByBookId.get(book.id)?.some((g) => genreFilters.includes(g)));
     }
-    if (authorFilter) list = list.filter((book) => book.authors.includes(authorFilter));
-    if (languageFilter) list = list.filter((book) => book.language === languageFilter);
+    if (authorFilters.length > 0) {
+      list = list.filter((book) => book.authors.some((author) => authorFilters.includes(author)));
+    }
+    if (languageFilters.length > 0) {
+      list = list.filter((book) => !!book.language && languageFilters.includes(book.language));
+    }
     return list;
-  }, [toReadBooks, genreFilters, authorFilter, languageFilter, genresByBookId]);
+  }, [toReadBooks, genreFilters, authorFilters, languageFilters, genresByBookId]);
 
   const [coversReady, setCoversReady] = useState(false);
   const handleReelReady = useCallback(() => setCoversReady(true), []);
@@ -118,7 +122,7 @@ export default function SpinScreen() {
     setLandedBook(null);
     setLastLandedId(null);
     setShowConfetti(false);
-  }, [genreFilters, authorFilter, languageFilter]);
+  }, [genreFilters, authorFilters, languageFilters]);
 
   const handleSpinPress = useCallback(() => {
     setLandedBook(null);
@@ -208,11 +212,11 @@ export default function SpinScreen() {
           selectedGenres={genreFilters}
           onGenresChange={setGenreFilters}
           authorOptions={allAuthors}
-          selectedAuthor={authorFilter}
-          onAuthorChange={setAuthorFilter}
+          selectedAuthors={authorFilters}
+          onAuthorsChange={setAuthorFilters}
           languageOptions={allLanguages}
-          selectedLanguage={languageFilter}
-          onLanguageChange={setLanguageFilter}
+          selectedLanguages={languageFilters}
+          onLanguagesChange={setLanguageFilters}
           disabled={allGenres.length === 0 && allAuthors.length === 0 && allLanguages.length === 0}
         />
       </View>
