@@ -1,7 +1,7 @@
 import * as DocumentPicker from 'expo-document-picker';
 import { router } from 'expo-router';
 import { ArrowUpDown, BookOpenText, Dices, LayoutGrid, LayoutList, List, Settings } from 'lucide-react-native';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, FlatList, Pressable, StyleSheet, View } from 'react-native';
 import { KeyboardStickyView } from 'react-native-keyboard-controller';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -10,17 +10,19 @@ import { BookCard } from '@/components/BookCard';
 import { FilterSheet } from '@/components/FilterSheet';
 import { LibraryFiltersSheet } from '@/components/LibraryFiltersSheet';
 import { SearchInput } from '@/components/SearchInput';
+import { SwipeToDeleteRow } from '@/components/SwipeToDeleteRow';
 import { ThemedText } from '@/components/ThemedText';
 import { IconSymbol } from '@/components/IconSymbol';
 import { Typography } from '@/lib/theme/theme';
 import { useBookFilters } from '@/hooks/useBookFilters';
-import { useBooks, useImportBackup } from '@/hooks/useLibrary';
+import { useBooks, useDeleteBook, useImportBackup } from '@/hooks/useLibrary';
 import { useDebouncedValue } from '@/hooks/useDebouncedValue';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { useTranslation } from '@/hooks/useTranslation';
 import { getSetting, setSetting } from '@/api/repository/settingsRepository';
 import { BackupFileError } from '@/lib/backup';
 import { showAlert } from '@/lib/dialog';
+import { useUndoContext } from '@/lib/undo/UndoProvider';
 import { type Book } from '@/types/book';
 
 function hexToRgba(hex: string, alpha: number): string {
@@ -30,6 +32,8 @@ function hexToRgba(hex: string, alpha: number): string {
   const b = parseInt(value.slice(4, 6), 16);
   return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 }
+
+const EMPTY_GENRES: string[] = [];
 
 type ViewMode = 'card' | 'grid' | 'list';
 const VIEW_MODE_SETTING_KEY = 'libraryViewMode';
@@ -50,6 +54,16 @@ export default function MyTbrScreen() {
   const insets = useSafeAreaInsets();
   const { data: books, isLoading } = useBooks();
   const importBackup = useImportBackup();
+  const deleteBook = useDeleteBook();
+  const { notifyDeleted } = useUndoContext();
+
+  const handleSwipeDelete = useCallback(
+    (book: Book) => {
+      deleteBook.mutate(book.id);
+      notifyDeleted(book);
+    },
+    [deleteBook, notifyDeleted],
+  );
 
   async function handleImportBackup() {
     const result = await DocumentPicker.getDocumentAsync();
@@ -158,6 +172,36 @@ export default function MyTbrScreen() {
     if (viewMode !== 'grid' || filteredBooks.length % 2 === 0) return filteredBooks;
     return [...filteredBooks, null];
   }, [filteredBooks, viewMode]);
+
+  const translatedGenresByBookId = useMemo(() => {
+    const map = new Map<string, string[]>();
+    for (const [bookId, genres] of genresByBookId) {
+      map.set(bookId, genres.map((genre) => genreTranslations[genre] ?? genre));
+    }
+    return map;
+  }, [genresByBookId, genreTranslations]);
+
+  const renderBookItem = useCallback(
+    ({ item }: { item: Book | null }) => {
+      if (item === null) return <View style={styles.gridFiller} />;
+
+      const card = (
+        <BookCard
+          variant={viewMode === 'list' ? 'list' : viewMode === 'grid' ? 'grid' : 'library'}
+          title={item.title}
+          author={item.authors.join(', ') || null}
+          genres={translatedGenresByBookId.get(item.id) ?? EMPTY_GENRES}
+          thumbnailUrl={item.thumbnailUrl}
+          onPress={() => router.push(`/book/${item.id}`)}
+        />
+      );
+
+      if (viewMode === 'grid') return card;
+
+      return <SwipeToDeleteRow onDelete={() => handleSwipeDelete(item)}>{card}</SwipeToDeleteRow>;
+    },
+    [viewMode, translatedGenresByBookId, handleSwipeDelete],
+  );
 
   const activeFilterLabels = [
     ...activeBookFilterLabels,
@@ -339,26 +383,17 @@ export default function MyTbrScreen() {
           keyExtractor={(item: Book | null, index) => item?.id ?? `__filler-${index}`}
           numColumns={viewMode === 'grid' ? 2 : 1}
           columnWrapperStyle={viewMode === 'grid' ? styles.gridRow : undefined}
+          initialNumToRender={12}
+          maxToRenderPerBatch={12}
+          windowSize={7}
+          removeClippedSubviews
           contentContainerStyle={[
             styles.listContent,
             { paddingBottom: 88 + insets.bottom },
             viewMode === 'list' && styles.listContentCompact,
             viewMode === 'grid' && styles.gridContent,
           ]}
-          renderItem={({ item }) =>
-            item === null ? (
-              <View style={styles.gridFiller} />
-            ) : (
-              <BookCard
-                variant={viewMode === 'list' ? 'list' : viewMode === 'grid' ? 'grid' : 'library'}
-                title={item.title}
-                author={item.authors.join(', ') || null}
-                genres={(genresByBookId.get(item.id) ?? []).map((genre) => genreTranslations[genre] ?? genre)}
-                thumbnailUrl={item.thumbnailUrl}
-                onPress={() => router.push(`/book/${item.id}`)}
-              />
-            )
-          }
+          renderItem={renderBookItem}
         />
       )}
 

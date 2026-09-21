@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { ThemedText } from '@/components/ThemedText';
@@ -32,7 +33,7 @@ interface BookCardProps {
   variant?: 'library' | 'result' | 'list' | 'grid';
 }
 
-export function BookCard({
+export const BookCard = memo(function BookCard({
   title,
   author,
   genres = [],
@@ -235,7 +236,7 @@ export function BookCard({
       </View>
     </Pressable>
   );
-}
+});
 
 const styles = StyleSheet.create({
   card: {

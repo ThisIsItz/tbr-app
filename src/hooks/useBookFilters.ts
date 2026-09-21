@@ -29,8 +29,6 @@ export function useBookFilters(books: Book[]) {
     () => Array.from(new Set([...genresByBookId.values()].flat())).sort((a, b) => a.localeCompare(b)),
     [genresByBookId],
   );
-  const allManualGenres = useMemo(() => Array.from(new Set(books.flatMap((book) => book.manualGenres))), [books]);
-
   const { data: libraryBooks } = useBooks();
   const libraryGenres = useMemo(
     () => Array.from(new Set((libraryBooks ?? books).flatMap((book) => normalizeGenres(book.genres)))),
