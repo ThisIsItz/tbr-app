@@ -408,14 +408,13 @@ export default function RecognizeCoverScreen() {
                   {matches.map((item) => {
                     const alreadySaved = savedGoogleIds.has(item.id);
                     const adding = isAdding(item.id);
-                    const { title: matchTitle, authors, categories, imageLinks } = item.volumeInfo;
+                    const { title: matchTitle, authors, imageLinks } = item.volumeInfo;
                     return (
                       <BookCard
                         key={item.id}
                         variant="result"
                         title={matchTitle}
                         author={authors?.join(', ') ?? null}
-                        genres={categories ?? []}
                         thumbnailUrl={imageLinks?.thumbnail ?? null}
                         onPress={() =>
                           router.push({
