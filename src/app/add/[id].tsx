@@ -1,5 +1,5 @@
 import { router, Stack, useLocalSearchParams } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 
 import { BookHero } from '@/components/BookHero';
@@ -16,35 +16,34 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { normalizeGenres } from '@/lib/genres';
 import { GoogleBooksApiError, toHighResUrl, toHttpsUrl } from '@/api/googleBooks';
 import { sanitizeDescription } from '@/lib/sanitizeHtml';
+import type { GoogleBooksVolume } from '@/types/google-books';
 
 export default function AddBookScreen() {
-  const { id, fallbackGenres } = useLocalSearchParams<{ id: string; fallbackGenres?: string }>();
+  const { id, volume: volumeParam } = useLocalSearchParams<{ id: string; volume?: string }>();
   const { t } = useTranslation();
   const backgroundColor = useThemeColor({}, 'background');
   const textColor = useThemeColor({}, 'text');
   const accentColor = useThemeColor({}, 'accent');
   const onAccentColor = useThemeColor({}, 'onAccent');
 
-  const { data: volume, isLoading, isError, error, refetch } = useGoogleBookDetails(id);
+  const initialVolume = useMemo<GoogleBooksVolume | undefined>(() => {
+    if (!volumeParam) return undefined;
+    try {
+      return JSON.parse(volumeParam) as GoogleBooksVolume;
+    } catch {
+      return undefined;
+    }
+  }, [volumeParam]);
+
+  const { data: volume, isLoading, isError, error, refetch } = useGoogleBookDetails(id, initialVolume);
   const addBook = useAddBook();
-  const [genres, setGenres] = useState<string[]>([]);
+  const [genres, setGenres] = useState<string[]>(() => normalizeGenres(initialVolume?.volumeInfo.categories ?? []));
   const [manualGenres, setManualGenres] = useState<string[]>([]);
 
   useEffect(() => {
-    if (!volume) return;
-    if (volume.volumeInfo.categories?.length) {
-      setGenres(normalizeGenres(volume.volumeInfo.categories));
-      return;
-    }
-    // The detail-by-id endpoint sometimes omits categories that the search
-    // results did include; fall back to what the search list already had.
-    try {
-      const parsed = fallbackGenres ? JSON.parse(fallbackGenres) : [];
-      setGenres(normalizeGenres(Array.isArray(parsed) ? parsed : []));
-    } catch {
-      setGenres([]);
-    }
-  }, [volume, fallbackGenres]);
+    if (initialVolume || !volume?.volumeInfo.categories?.length) return;
+    setGenres(normalizeGenres(volume.volumeInfo.categories));
+  }, [volume, initialVolume]);
 
   if (isLoading) {
     return (

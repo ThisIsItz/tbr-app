@@ -417,7 +417,12 @@ export default function RecognizeCoverScreen() {
                         author={authors?.join(', ') ?? null}
                         genres={categories ?? []}
                         thumbnailUrl={imageLinks?.thumbnail ?? null}
-                        onPress={() => router.push(`/add/${item.id}`)}
+                        onPress={() =>
+                          router.push({
+                            pathname: '/add/[id]',
+                            params: { id: item.id, volume: JSON.stringify(item) },
+                          })
+                        }
                         action={{
                           label: alreadySaved ? t('search.added') : t('search.add'),
                           disabled: alreadySaved || adding,

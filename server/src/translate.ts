@@ -19,12 +19,6 @@ function cacheKeyFor(category: string, targetLang: string): string {
 
 async function translateOne(env: Env, category: string, targetLang: string): Promise<string> {
   const cacheKey = cacheKeyFor(category, targetLang);
-  const cached = await env.RECOGNITION_KV.get(cacheKey);
-  if (cached !== null) return cached;
-
-  const withinBudget = await checkGlobalBudget(env.RECOGNITION_KV, FEATURE, env.TRANSLATE_DAILY_BUDGET_LIMIT);
-  if (!withinBudget) return category;
-
   try {
     const result = (await env.AI.run(MODEL, {
       text: category,
@@ -72,8 +66,6 @@ export async function handleTranslateCategories(request: Request, env: Env): Pro
 
   const uniqueCategories = [...new Set(categories as string[])];
 
-  // Rate limits only guard the paid AI call, so check cache first — a fully
-  // cached request (the common case once genres warm up) costs zero KV writes.
   const cacheChecks = await Promise.all(
     uniqueCategories.map(
       async (category) => [category, await env.RECOGNITION_KV.get(cacheKeyFor(category, targetLang))] as const,
@@ -82,6 +74,7 @@ export async function handleTranslateCategories(request: Request, env: Env): Pro
   const cached = new Map(cacheChecks.filter((entry): entry is [string, string] => entry[1] !== null));
   const missing = uniqueCategories.filter((category) => !cached.has(category));
 
+  let withinBudget = true;
   if (missing.length > 0) {
     const withinTokenLimit = await checkPerTokenLimit(
       env.RECOGNITION_KV,
@@ -92,10 +85,19 @@ export async function handleTranslateCategories(request: Request, env: Env): Pro
     if (!withinTokenLimit) {
       return jsonResponse({ error: 'rate_limited' }, 429);
     }
+
+    withinBudget = await checkGlobalBudget(
+      env.RECOGNITION_KV,
+      FEATURE,
+      env.TRANSLATE_DAILY_BUDGET_LIMIT,
+      missing.length,
+    );
   }
 
   const missingEntries = await Promise.all(
-    missing.map(async (category) => [category, await translateOne(env, category, targetLang)] as const),
+    missing.map(
+      async (category) => [category, withinBudget ? await translateOne(env, category, targetLang) : category] as const,
+    ),
   );
 
   return jsonResponse({ translations: Object.fromEntries([...cached, ...missingEntries]) }, 200);

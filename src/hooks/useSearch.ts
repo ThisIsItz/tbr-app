@@ -17,19 +17,16 @@ export function useSearchBooks(query: string) {
   });
 }
 
-export function useGoogleBookDetails(volumeId: string | undefined) {
+export function useGoogleBookDetails(volumeId: string | undefined, initialVolume?: GoogleBooksVolume) {
   return useQuery({
     queryKey: ['google-books-volume', volumeId],
     queryFn: () => getGoogleBookById(volumeId as string),
-    enabled: !!volumeId,
+    enabled: !!volumeId && !initialVolume,
+    initialData: initialVolume,
     staleTime: Infinity,
   });
 }
 
-// Saves a search/scan result straight to the library with its default
-// (categories-derived) genres — no detail-review step. Used by the "+ Add"
-// button on result cards; tapping the card itself still opens /add/[id] for
-// reviewing/editing genres before saving.
 export function useQuickAddBook() {
   const addBook = useAddBook();
 

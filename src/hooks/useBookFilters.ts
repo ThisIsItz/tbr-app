@@ -1,5 +1,6 @@
 import { useCallback, useMemo, useState } from 'react';
 
+import { useBooks } from '@/hooks/useLibrary';
 import { useTranslatedGenres } from '@/hooks/useTranslatedGenres';
 import { useTranslation } from '@/hooks/useTranslation';
 import { capitalizeFirst } from '@/lib/capitalize';
@@ -29,7 +30,17 @@ export function useBookFilters(books: Book[]) {
     [genresByBookId],
   );
   const allManualGenres = useMemo(() => Array.from(new Set(books.flatMap((book) => book.manualGenres))), [books]);
-  const { translations: genreTranslations } = useTranslatedGenres(allGenres, allManualGenres);
+
+  const { data: libraryBooks } = useBooks();
+  const libraryGenres = useMemo(
+    () => Array.from(new Set((libraryBooks ?? books).flatMap((book) => normalizeGenres(book.genres)))),
+    [libraryBooks, books],
+  );
+  const libraryManualGenres = useMemo(
+    () => Array.from(new Set((libraryBooks ?? books).flatMap((book) => book.manualGenres))),
+    [libraryBooks, books],
+  );
+  const { translations: genreTranslations } = useTranslatedGenres(libraryGenres, libraryManualGenres);
   const allAuthors = useMemo(
     () => Array.from(new Set(books.flatMap((book) => book.authors))).sort((a, b) => a.localeCompare(b)),
     [books],
