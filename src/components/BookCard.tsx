@@ -152,15 +152,6 @@ export function BookCard({
                 {displayAuthor || t('bookCard.unknownAuthor')}
               </ThemedText>
             </View>
-            {!!genres[0] && (
-              <View style={styles.resultFooterRow}>
-                <View style={[styles.tag, { backgroundColor: accentSoftColor }]}>
-                  <ThemedText numberOfLines={1} style={[Typography.caption, { color: onAccentSoftColor }]}>
-                    {capitalizeFirst(genres[0])}
-                  </ThemedText>
-                </View>
-              </View>
-            )}
           </View>
         </Pressable>
 
@@ -218,24 +209,24 @@ export function BookCard({
       )}
 
       <View style={styles.body}>
-        <ThemedText numberOfLines={3} style={[Typography.bookTitle, { color: textColor }]}>
-          {displayTitle}
-        </ThemedText>
-        <View style={styles.libraryFooter}>
+        <View style={styles.resultTop}>
+          <ThemedText numberOfLines={3} style={[Typography.bookTitle, { color: textColor }]}>
+            {displayTitle}
+          </ThemedText>
           {!!displayAuthor && (
             <ThemedText numberOfLines={1} style={[Typography.metadata, { color: textMutedColor }]}>
               {displayAuthor}
             </ThemedText>
           )}
-          <View style={styles.tagRow}>
-            {genres.slice(0, 2).map((genre) => (
-              <View key={genre} style={[styles.tag, { backgroundColor: accentSoftColor }]}>
-                <ThemedText numberOfLines={1} style={[Typography.caption, { color: onAccentSoftColor }]}>
-                  {capitalizeFirst(genre)}
-                </ThemedText>
-              </View>
-            ))}
-          </View>
+        </View>
+        <View style={styles.tagRow}>
+          {genres.slice(0, 2).map((genre) => (
+            <View key={genre} style={[styles.tag, { backgroundColor: accentSoftColor }]}>
+              <ThemedText numberOfLines={1} style={[Typography.caption, { color: onAccentSoftColor }]}>
+                {capitalizeFirst(genre)}
+              </ThemedText>
+            </View>
+          ))}
         </View>
       </View>
 
@@ -286,9 +277,6 @@ const styles = StyleSheet.create({
   resultTop: {
     gap: 2,
   },
-  libraryFooter: {
-    gap: 4,
-  },
   tagRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -300,11 +288,6 @@ const styles = StyleSheet.create({
     paddingVertical: 3,
     paddingHorizontal: 8,
     maxWidth: '100%',
-  },
-  resultFooterRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 6,
   },
   resultActions: {
     justifyContent: 'flex-end',

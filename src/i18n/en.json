@@ -53,6 +53,9 @@
   },
   "search": {
     "placeholder": "Search by title, author, or ISBN",
+    "searchButton": "Search",
+    "searching": "Searching books",
+    "showMore": "Show more",
     "scanIsbn": "Scan ISBN",
     "scanCover": "Take Photo",
     "uploadPhoto": "Upload Cover",

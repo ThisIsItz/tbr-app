@@ -9,14 +9,13 @@ import { ThemedText } from '@/components/ThemedText';
 import { Typography } from '@/lib/theme/theme';
 import { useBooks } from '@/hooks/useLibrary';
 import { useQuickAddBook, useSearchBooks } from '@/hooks/useSearch';
-import { useDebouncedValue } from '@/hooks/useDebouncedValue';
 import { useThemeColor } from '@/hooks/useThemeColor';
-import { useTranslatedGenres } from '@/hooks/useTranslatedGenres';
 import { useTranslation } from '@/hooks/useTranslation';
 import { showAlert } from '@/lib/dialog';
-import { normalizeGenres } from '@/lib/genres';
 import { getErrorTranslationKey } from '@/api/googleBooks';
 import type { GoogleBooksVolume } from '@/types/google-books';
+
+const INITIAL_RESULTS_LIMIT = 8;
 
 export default function AddBookScreen() {
   const { t } = useTranslation();
@@ -27,9 +26,10 @@ export default function AddBookScreen() {
   const accentColor = useThemeColor({}, 'accent');
   const onAccentColor = useThemeColor({}, 'onAccent');
   const [query, setQuery] = useState('');
-  const debouncedQuery = useDebouncedValue(query, 400);
+  const [submittedQuery, setSubmittedQuery] = useState('');
+  const [visibleCount, setVisibleCount] = useState(INITIAL_RESULTS_LIMIT);
 
-  const { data: results, isLoading, isError, error, refetch } = useSearchBooks(debouncedQuery);
+  const { data: results, isLoading, isError, error, refetch } = useSearchBooks(submittedQuery);
   const { data: libraryBooks } = useBooks();
   const { quickAdd, isAdding } = useQuickAddBook();
 
@@ -38,16 +38,15 @@ export default function AddBookScreen() {
     [libraryBooks],
   );
 
-  const allResultGenres = useMemo(
-    () =>
-      Array.from(
-        new Set((results ?? []).flatMap((item) => normalizeGenres(item.volumeInfo.categories ?? []))),
-      ),
-    [results],
-  );
-  const { translations: genreTranslations, isLoading: genresTranslating } = useTranslatedGenres(allResultGenres);
+  const hasSearched = submittedQuery.trim().length > 0;
+  const visibleResults = results?.slice(0, visibleCount);
+  const hiddenResultsCount = (results?.length ?? 0) - (visibleResults?.length ?? 0);
+  const nextBatchSize = Math.min(INITIAL_RESULTS_LIMIT, hiddenResultsCount);
 
-  const hasSearched = debouncedQuery.trim().length > 0;
+  function handleSubmitSearch() {
+    setSubmittedQuery(query);
+    setVisibleCount(INITIAL_RESULTS_LIMIT);
+  }
 
   async function handleQuickAdd(item: GoogleBooksVolume) {
     try {
@@ -62,6 +61,7 @@ export default function AddBookScreen() {
       <SearchInput
         value={query}
         onChangeText={setQuery}
+        onSubmit={handleSubmitSearch}
         placeholder={t('search.placeholder')}
         returnKeyType="search"
         autoFocus
@@ -69,7 +69,7 @@ export default function AddBookScreen() {
       />
 
       <FlatList
-        data={results ?? []}
+        data={visibleResults ?? []}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.listContent}
         ListHeaderComponent={
@@ -124,7 +124,14 @@ export default function AddBookScreen() {
               </View>
             )}
 
-            {isLoading && <ActivityIndicator style={{ marginTop: 24 }} color={accentColor} />}
+            {isLoading && (
+              <View style={styles.centered}>
+                <ActivityIndicator color={accentColor} />
+                <ThemedText style={[Typography.metadata, { color: textMutedColor }]}>
+                  {t('search.searching')}
+                </ThemedText>
+              </View>
+            )}
 
             {isError && (
               <View style={styles.centered}>
@@ -144,7 +151,7 @@ export default function AddBookScreen() {
             {hasSearched && !isLoading && !isError && (results?.length ?? 0) === 0 && (
               <View style={styles.centered}>
                 <ThemedText style={[Typography.body, styles.centeredText, { color: textColor }]}>
-                  {t('search.noResultsFor', { query: debouncedQuery })}
+                  {t('search.noResultsFor', { query: submittedQuery })}
                 </ThemedText>
               </View>
             )}
@@ -153,19 +160,17 @@ export default function AddBookScreen() {
         renderItem={({ item }) => {
           const alreadySaved = savedGoogleIds.has(item.id);
           const adding = isAdding(item.id);
-          const { title, authors, categories, imageLinks } = item.volumeInfo;
-          const itemGenres = normalizeGenres(categories ?? []);
+          const { title, authors, imageLinks } = item.volumeInfo;
           return (
             <BookCard
               variant="result"
               title={title}
               author={authors?.join(', ') ?? null}
-              genres={genresTranslating ? [] : itemGenres.map((genre) => genreTranslations[genre] ?? genre)}
               thumbnailUrl={imageLinks?.thumbnail ?? null}
               onPress={() =>
                 router.push({
                   pathname: '/add/[id]',
-                  params: { id: item.id, fallbackGenres: JSON.stringify(itemGenres) },
+                  params: { id: item.id, volume: JSON.stringify(item) },
                 })
               }
               action={{
@@ -176,6 +181,19 @@ export default function AddBookScreen() {
             />
           );
         }}
+        ListFooterComponent={
+          hiddenResultsCount > 0 ? (
+            <Pressable
+              style={[styles.showMoreButton, { backgroundColor: surfaceMutedColor }]}
+              onPress={() => setVisibleCount((count) => count + INITIAL_RESULTS_LIMIT)}
+              accessibilityRole="button"
+              accessibilityLabel={t('search.showMore')}>
+              <ThemedText style={[Typography.button, { color: textColor }]}>
+                {t('search.showMore')} ({nextBatchSize})
+              </ThemedText>
+            </Pressable>
+          ) : null
+        }
       />
     </SafeAreaView>
   );
@@ -227,5 +245,12 @@ const styles = StyleSheet.create({
     gap: 10,
     paddingTop: 16,
     paddingBottom: 24,
+  },
+  showMoreButton: {
+    marginTop: 4,
+    minHeight: 44,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
