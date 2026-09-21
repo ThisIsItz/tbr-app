@@ -16,6 +16,7 @@ const PENALTY_PHRASES = [
 const SCORE = {
   exactTitle: 100,
   titleStartsWith: 60,
+  crossFieldMatch: 50,
   titleContainsWordsInOrder: 30,
   authorMatch: 110,
   hasAuthor: 8,
@@ -53,6 +54,10 @@ function containsWordsInOrder(haystack: string, words: string[]): boolean {
     searchFrom += match.index + word.length;
   }
   return true;
+}
+
+function containsWord(haystack: string, word: string): boolean {
+  return new RegExp(`\\b${escapeRegExp(word)}`).test(haystack);
 }
 
 function metadataCompleteness(volume: GoogleBooksVolume): number {
@@ -135,10 +140,12 @@ export function scoreVolume(volume: GoogleBooksVolume, query: string): number {
     });
   if (authorMatches) score += SCORE.authorMatch;
 
+  let titleMatched = false;
   if (title === normQuery) {
     // An exact title match is always meaningful — e.g. an author's own
     // self-titled memoir is genuinely their most notable "Isaac Asimov".
     score += SCORE.exactTitle;
+    titleMatched = true;
   } else if (!authorMatches) {
     // Skip weaker partial title-match tiers when the author already
     // matched: an anthology titled "Isaac Asimov Presents..." would
@@ -146,9 +153,20 @@ export function scoreVolume(volume: GoogleBooksVolume, query: string): number {
     // his actual standalone novels, whose titles don't repeat his name.
     if (normQuery.length > 0 && title.startsWith(normQuery)) {
       score += SCORE.titleStartsWith;
+      titleMatched = true;
     } else if (queryWords.length > 0 && containsWordsInOrder(title, queryWords)) {
       score += SCORE.titleContainsWordsInOrder;
+      titleMatched = true;
     }
+  }
+
+  // Query words split across title and author (e.g. "Rayuela Julio").
+  if (!authorMatches && !titleMatched && queryWords.length > 1) {
+    const normAuthors = (volumeInfo.authors ?? []).map(normalize);
+    const coversEveryWord = queryWords.every(
+      (word) => containsWord(title, word) || normAuthors.some((author) => containsWord(author, word)),
+    );
+    if (coversEveryWord) score += SCORE.crossFieldMatch;
   }
 
   if (hasAuthor) score += SCORE.hasAuthor;
