@@ -3,7 +3,6 @@
     "name": "TBR",
     "slug": "tbr-app",
     "version": "1.0.0",
-    "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "tbrapp",
     "userInterfaceStyle": "automatic",
@@ -62,6 +61,15 @@
           "url": "https://sentry.io/",
           "project": "react-native",
           "organization": "itziar-urbieta-leon"
+        }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "enableMinifyInReleaseBuilds": true,
+            "enableShrinkResourcesInReleaseBuilds": true
+          }
         }
       ]
     ],
