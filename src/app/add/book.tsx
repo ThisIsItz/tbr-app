@@ -4,6 +4,7 @@ import { ActivityIndicator, FlatList, Pressable, StyleSheet, View } from 'react-
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { BookCard } from '@/components/BookCard';
+import { ErrorRetry } from '@/components/ErrorRetry';
 import { SearchInput } from '@/components/SearchInput';
 import { ThemedText } from '@/components/ThemedText';
 import { Typography } from '@/lib/theme/theme';
@@ -24,7 +25,6 @@ export default function AddBookScreen() {
   const textColor = useThemeColor({}, 'text');
   const textMutedColor = useThemeColor({}, 'textMuted');
   const accentColor = useThemeColor({}, 'accent');
-  const onAccentColor = useThemeColor({}, 'onAccent');
   const [query, setQuery] = useState('');
   const [submittedQuery, setSubmittedQuery] = useState('');
   const [visibleCount, setVisibleCount] = useState(INITIAL_RESULTS_LIMIT);
@@ -135,16 +135,7 @@ export default function AddBookScreen() {
 
             {isError && (
               <View style={styles.centered}>
-                <ThemedText style={[Typography.body, styles.centeredText, { color: textColor }]}>
-                  {t(getErrorTranslationKey(error))}
-                </ThemedText>
-                <Pressable
-                  onPress={() => refetch()}
-                  accessibilityRole="button"
-                  accessibilityLabel={t('common.retry')}
-                  style={[styles.retryButton, { backgroundColor: accentColor }]}>
-                  <ThemedText style={[Typography.button, { color: onAccentColor }]}>{t('common.retry')}</ThemedText>
-                </Pressable>
+                <ErrorRetry message={t(getErrorTranslationKey(error))} onRetry={() => refetch()} />
               </View>
             )}
 
@@ -232,14 +223,6 @@ const styles = StyleSheet.create({
   },
   centeredText: {
     textAlign: 'center',
-  },
-  retryButton: {
-    marginTop: 8,
-    borderRadius: 10,
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    minHeight: 44,
-    justifyContent: 'center',
   },
   listContent: {
     gap: 10,

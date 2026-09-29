@@ -4,6 +4,7 @@ import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 
 import { BookHero } from '@/components/BookHero';
 import { BookHeroSkeleton } from '@/components/BookHeroSkeleton';
+import { ErrorRetry } from '@/components/ErrorRetry';
 import { ExpandableDescription } from '@/components/ExpandableDescription';
 import { GenreEditor } from '@/components/GenreEditor';
 import { Skeleton } from '@/components/Skeleton';
@@ -29,7 +30,6 @@ export default function AddBookScreen() {
   const backgroundColor = useThemeColor({}, 'background');
   const textColor = useThemeColor({}, 'text');
   const accentColor = useThemeColor({}, 'accent');
-  const onAccentColor = useThemeColor({}, 'onAccent');
 
   const initialVolume = useMemo<GoogleBooksVolume | undefined>(() => {
     if (!volumeParam) return undefined;
@@ -80,16 +80,7 @@ export default function AddBookScreen() {
         : t('addConfirm.loadError');
     return (
       <View style={[styles.centered, { backgroundColor }]}>
-        <ThemedText style={[Typography.body, styles.centeredText, { color: textColor }]}>
-          {message}
-        </ThemedText>
-        <Pressable
-          onPress={() => refetch()}
-          accessibilityRole="button"
-          accessibilityLabel={t('common.retry')}
-          style={[styles.retryButton, { backgroundColor: accentColor }]}>
-          <ThemedText style={[Typography.button, { color: onAccentColor }]}>{t('common.retry')}</ThemedText>
-        </Pressable>
+        <ErrorRetry message={message} onRetry={() => refetch()} />
       </View>
     );
   }
@@ -184,16 +175,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 12,
     paddingHorizontal: 24,
-  },
-  centeredText: {
-    textAlign: 'center',
-  },
-  retryButton: {
-    borderRadius: 10,
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    minHeight: 44,
-    justifyContent: 'center',
   },
   section: {
     gap: 4,
