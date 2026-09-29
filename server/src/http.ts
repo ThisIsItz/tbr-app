@@ -1,7 +1,7 @@
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'X-Client-Token, Content-Type',
-  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
 };
 
 export function jsonResponse(body: unknown, status: number): Response {
