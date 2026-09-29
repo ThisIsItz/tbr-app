@@ -46,6 +46,7 @@ export function SwipeToDeleteRow({ onDelete, children, borderRadius = 0 }: Swipe
 const styles = StyleSheet.create({
   wrapper: {
     position: 'relative',
+    width: '100%',
   },
   iconArea: {
     position: 'absolute',
