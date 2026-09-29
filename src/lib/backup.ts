@@ -5,7 +5,7 @@ import { Platform } from 'react-native';
 import { saveFileAsync } from '../../modules/save-file';
 import { bookRepository } from '@/api/repository';
 import type { ImportBooksResult } from '@/api/repository/types';
-import type { Book, ReadingStatus } from '@/types/book';
+import { READING_STATUSES, type Book, type ReadingStatus } from '@/types/book';
 
 const BACKUP_VERSION = 1;
 
@@ -23,7 +23,7 @@ export class BackupFileError extends Error {
 }
 
 function isReadingStatus(value: unknown): value is ReadingStatus {
-  return value === 'to_read' || value === 'reading' || value === 'read' || value === 'dnf';
+  return READING_STATUSES.includes(value as ReadingStatus);
 }
 
 function isValidBook(value: unknown): value is Book {
