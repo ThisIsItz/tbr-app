@@ -47,8 +47,7 @@ const styles = StyleSheet.create({
     position: 'relative',
     width: '100%',
     overflow: 'hidden',
-    borderTopRightRadius: 14,
-    borderBottomRightRadius: 14,
+    borderRadius: 14,
   },
   iconArea: {
     position: 'absolute',
