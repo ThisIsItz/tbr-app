@@ -6,6 +6,12 @@ import type {
 
 const GOOGLE_BOOKS_API_URL = 'https://www.googleapis.com/books/v1/volumes'
 
+function withApiKey(params: URLSearchParams): URLSearchParams {
+  const apiKey = process.env.EXPO_PUBLIC_GOOGLE_BOOKS_API_KEY
+  if (apiKey) params.set('key', apiKey)
+  return params
+}
+
 // If an `intitle:`-scoped search returns fewer than this many results, we
 // broaden to an unscoped search too — a title search alone can be too
 // narrow for typos, subtitles, or less literal queries.
@@ -73,7 +79,7 @@ const volumesCache = new Map<string, Promise<GoogleBooksVolume[]>>()
 
 function fetchVolumes(q: string): Promise<GoogleBooksVolume[]> {
   return memoizeAsync(volumesCache, q, async () => {
-    const params = new URLSearchParams({ q, maxResults: String(MAX_RESULTS_PER_QUERY) })
+    const params = withApiKey(new URLSearchParams({ q, maxResults: String(MAX_RESULTS_PER_QUERY) }))
     const response = await fetch(`${GOOGLE_BOOKS_API_URL}?${params.toString()}`)
     if (!response.ok) {
       throw new GoogleBooksApiError(response.status)
@@ -118,7 +124,8 @@ const volumeByIdCache = new Map<string, Promise<GoogleBooksVolume>>()
 
 export function getGoogleBookById(volumeId: string): Promise<GoogleBooksVolume> {
   return memoizeAsync(volumeByIdCache, volumeId, async () => {
-    const response = await fetch(`${GOOGLE_BOOKS_API_URL}/${encodeURIComponent(volumeId)}`)
+    const params = withApiKey(new URLSearchParams())
+    const response = await fetch(`${GOOGLE_BOOKS_API_URL}/${encodeURIComponent(volumeId)}?${params.toString()}`)
     if (!response.ok) {
       throw new GoogleBooksApiError(response.status)
     }
