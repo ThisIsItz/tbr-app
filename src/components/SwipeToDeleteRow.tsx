@@ -1,6 +1,6 @@
 import { Trash2 } from 'lucide-react-native';
 import type { ReactNode } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 import ReanimatedSwipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
 
 import { ThemedText } from '@/components/ThemedText';
@@ -11,34 +11,54 @@ import { useTranslation } from '@/hooks/useTranslation';
 interface SwipeToDeleteRowProps {
   onDelete: () => void;
   children: ReactNode;
+  borderRadius?: number;
 }
 
-// No confirmation dialog — the Undo toast is the safety net here.
-export function SwipeToDeleteRow({ onDelete, children }: SwipeToDeleteRowProps) {
+const ACTION_WIDTH = 96;
+
+export function SwipeToDeleteRow({ onDelete, children, borderRadius = 0 }: SwipeToDeleteRowProps) {
   const { t } = useTranslation();
   const dangerColor = useThemeColor({}, 'danger');
 
   return (
-    <ReanimatedSwipeable
-      renderRightActions={() => (
-        <View style={[styles.action, { backgroundColor: dangerColor }]}>
-          <Trash2 size={20} color="#fff" strokeWidth={2} />
-          <ThemedText style={[Typography.caption, styles.actionText]}>{t('common.remove')}</ThemedText>
-        </View>
-      )}
-      overshootRight={false}
-      onSwipeableOpen={onDelete}>
-      {children}
-    </ReanimatedSwipeable>
+    <View style={[styles.wrapper, { backgroundColor: dangerColor, borderRadius }]}>
+      <View style={styles.iconArea} pointerEvents="none">
+        <Trash2 size={20} color="#fff" strokeWidth={2} />
+        <ThemedText style={[Typography.caption, styles.actionText]}>{t('common.remove')}</ThemedText>
+      </View>
+      <ReanimatedSwipeable
+        renderRightActions={() => (
+          <Pressable
+            onPress={onDelete}
+            accessibilityRole="button"
+            accessibilityLabel={t('common.remove')}
+            style={styles.action}
+          />
+        )}
+        overshootRight={false}
+        onSwipeableOpen={onDelete}>
+        {children}
+      </ReanimatedSwipeable>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  action: {
-    width: 96,
+  wrapper: {
+    position: 'relative',
+  },
+  iconArea: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    right: 0,
+    width: ACTION_WIDTH,
     alignItems: 'center',
     justifyContent: 'center',
     gap: 2,
+  },
+  action: {
+    width: ACTION_WIDTH,
   },
   actionText: {
     color: '#fff',
