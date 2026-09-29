@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 
 import { useAddBook } from '@/hooks/useLibrary';
 import { normalizeGenres } from '@/lib/genres';
+import { extractIsbnsFromVolume } from '@/lib/isbn';
 import { getGoogleBookById, searchGoogleBooks, toHttpsUrl } from '@/api/googleBooks';
 import { sanitizeDescription } from '@/lib/sanitizeHtml';
 import type { GoogleBooksVolume } from '@/types/google-books';
@@ -43,6 +44,7 @@ export function useQuickAddBook() {
       imageLinks,
       categories,
     } = volume.volumeInfo;
+    const { isbn13, isbn10 } = extractIsbnsFromVolume(volume);
     return addBook.mutateAsync({
       googleBooksId: volume.id,
       title,
@@ -56,6 +58,8 @@ export function useQuickAddBook() {
       pageCount: pageCount ?? null,
       publisher: publisher ?? null,
       language: language ?? null,
+      isbn13,
+      isbn10,
       notes: null,
     });
   }
