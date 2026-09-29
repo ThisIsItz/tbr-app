@@ -118,7 +118,7 @@ const volumeByIdCache = new Map<string, Promise<GoogleBooksVolume>>()
 
 export function getGoogleBookById(volumeId: string): Promise<GoogleBooksVolume> {
   return memoizeAsync(volumeByIdCache, volumeId, async () => {
-    const response = await fetch(`${GOOGLE_BOOKS_API_URL}/${volumeId}`)
+    const response = await fetch(`${GOOGLE_BOOKS_API_URL}/${encodeURIComponent(volumeId)}`)
     if (!response.ok) {
       throw new GoogleBooksApiError(response.status)
     }
