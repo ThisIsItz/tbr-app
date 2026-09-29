@@ -50,6 +50,7 @@ export const BookCard = memo(function BookCard({
 }: BookCardProps) {
   const { t } = useTranslation();
   const surfaceColor = useThemeColor({}, 'surface');
+  const backgroundColor = useThemeColor({}, 'background');
   const surfaceMutedColor = useThemeColor({}, 'surfaceMuted');
   const shadowColor = useThemeColor({}, 'shadow');
   const textColor = useThemeColor({}, 'text');
@@ -105,7 +106,7 @@ export const BookCard = memo(function BookCard({
         onPress={onPress}
         accessibilityRole="button"
         accessibilityLabel={displayAuthor ? `${displayTitle}, ${displayAuthor}` : displayTitle}
-        style={[styles.listRow, { backgroundColor: surfaceColor, borderBottomColor: surfaceMutedColor }]}>
+        style={[styles.listRow, { backgroundColor, borderBottomColor: surfaceMutedColor }]}>
         {coverUrl ? (
           <CoverImage uri={coverUrl} fallbackUri={fallbackCoverUrl} style={styles.coverList} />
         ) : (
