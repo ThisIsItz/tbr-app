@@ -11,9 +11,10 @@ import { useTranslation } from '@/hooks/useTranslation';
 interface SwipeToDeleteRowProps {
   onDelete: () => void;
   children: ReactNode;
+  borderRadius?: number;
 }
 
-export function SwipeToDeleteRow({ onDelete, children }: SwipeToDeleteRowProps) {
+export function SwipeToDeleteRow({ onDelete, children, borderRadius = 0 }: SwipeToDeleteRowProps) {
   const { t } = useTranslation();
   const dangerColor = useThemeColor({}, 'danger');
 
@@ -24,7 +25,7 @@ export function SwipeToDeleteRow({ onDelete, children }: SwipeToDeleteRowProps) 
           onPress={onDelete}
           accessibilityRole="button"
           accessibilityLabel={t('common.remove')}
-          style={[styles.action, { backgroundColor: dangerColor }]}>
+          style={[styles.action, { backgroundColor: dangerColor, borderRadius }]}>
           <Trash2 size={20} color="#fff" strokeWidth={2} />
           <ThemedText style={[Typography.caption, styles.actionText]}>{t('common.remove')}</ThemedText>
         </Pressable>

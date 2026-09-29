@@ -200,7 +200,11 @@ export default function MyTbrScreen() {
 
       if (viewMode === 'grid') return card;
 
-      return <SwipeToDeleteRow onDelete={() => handleSwipeDelete(item)}>{card}</SwipeToDeleteRow>;
+      return (
+        <SwipeToDeleteRow onDelete={() => handleSwipeDelete(item)} borderRadius={viewMode === 'list' ? 0 : 14}>
+          {card}
+        </SwipeToDeleteRow>
+      );
     },
     [viewMode, translatedGenresByBookId, handleSwipeDelete],
   );
