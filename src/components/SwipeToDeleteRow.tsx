@@ -40,6 +40,7 @@ export function SwipeToDeleteRow({ onDelete, children, borderRadius = 0 }: Swipe
 const styles = StyleSheet.create({
   action: {
     width: 96,
+    marginVertical: 6,
     alignItems: 'center',
     justifyContent: 'center',
     gap: 2,
