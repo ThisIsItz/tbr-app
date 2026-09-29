@@ -2,7 +2,6 @@ import { toHighResUrl, toHttpsUrl } from '@/api/googleBooks';
 
 export interface CoverResolution {
   url: string;
-  // false only on a network failure — don't persist this as final.
   resolved: boolean;
 }
 
