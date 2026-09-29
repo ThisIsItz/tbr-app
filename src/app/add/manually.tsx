@@ -26,6 +26,7 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { capitalizeFirst } from '@/lib/capitalize';
 import { showAlert } from '@/lib/dialog';
 import { estimateGenreSkeletonWidth } from '@/lib/genres';
+import { parseIsbnInput } from '@/lib/isbn';
 import { deleteLocalImage, persistLocalImage } from '@/lib/localImage';
 import { getPublishedYear } from '@/lib/publishedYear';
 
@@ -75,6 +76,7 @@ export default function AddManuallyScreen() {
   const [description, setDescription] = useState('');
   const [publishedDate, setPublishedDate] = useState('');
   const [pageCountText, setPageCountText] = useState('');
+  const [isbnText, setIsbnText] = useState('');
   const [notes, setNotes] = useState('');
   const [isGenreModalVisible, setGenreModalVisible] = useState(false);
   const { translations: genreTranslations, isLoading: genresTranslating } = useTranslatedGenres(
@@ -101,6 +103,7 @@ export default function AddManuallyScreen() {
     setDescription(existingBook.description ?? '');
     setPublishedDate(existingBook.publishedDate ? getPublishedYear(existingBook.publishedDate) ?? '' : '');
     setPageCountText(existingBook.pageCount != null ? String(existingBook.pageCount) : '');
+    setIsbnText(existingBook.isbn13 ?? existingBook.isbn10 ?? '');
     setNotes(existingBook.notes ?? '');
     setIsPrefilled(true);
   }, [isEditing, existingBook, isPrefilled]);
@@ -137,6 +140,7 @@ export default function AddManuallyScreen() {
 
     const parsedPageCount = Number.parseInt(pageCountText.trim(), 10);
     const pageCount = Number.isFinite(parsedPageCount) ? parsedPageCount : null;
+    const parsedIsbn = isbnText.trim() ? parseIsbnInput(isbnText.trim()) : null;
 
     try {
       const coverChanged = coverUri !== initialCoverUri;
@@ -154,6 +158,8 @@ export default function AddManuallyScreen() {
             pageCount,
             publisher: existingBook?.publisher ?? null,
             language: existingBook?.language ?? null,
+            isbn13: parsedIsbn?.isbn13 ?? null,
+            isbn10: parsedIsbn?.isbn10 ?? null,
             notes: notes.trim() || null,
           },
         });
@@ -175,6 +181,8 @@ export default function AddManuallyScreen() {
           pageCount,
           publisher: null,
           language: null,
+          isbn13: parsedIsbn?.isbn13 ?? null,
+          isbn10: parsedIsbn?.isbn10 ?? null,
           notes: notes.trim() || null,
         });
         router.dismissTo('/');
@@ -323,6 +331,23 @@ export default function AddManuallyScreen() {
                 ]}
               />
             </View>
+          </View>
+
+          <View style={styles.field}>
+            <ThemedText style={[Typography.metadata, styles.labelPrimary, { color: textColor }]}>
+              {t('addManually.isbnLabel')}
+            </ThemedText>
+            <TextInput
+              value={isbnText}
+              onChangeText={setIsbnText}
+              keyboardType="number-pad"
+              maxLength={13}
+              style={[
+                Typography.body,
+                styles.input,
+                { color: textColor, backgroundColor: surfaceMutedColor },
+              ]}
+            />
           </View>
 
           {!isEditing && (

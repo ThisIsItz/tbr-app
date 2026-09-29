@@ -14,6 +14,8 @@ export interface BookDetailsUpdate {
   pageCount: number | null;
   publisher: string | null;
   language: string | null;
+  isbn13: string | null;
+  isbn10: string | null;
   notes: string | null;
 }
 
@@ -27,6 +29,7 @@ export interface BookRepository {
    * stays read-only aside from genres. */
   updateDetails(id: string, updates: BookDetailsUpdate): Promise<Book>;
   updateNotes(id: string, notes: string | null): Promise<Book>;
+  updateIsbn(id: string, isbn13: string | null, isbn10: string | null): Promise<Book>;
   remove(id: string): Promise<void>;
   /** Bulk-inserts previously-exported books, preserving their original id/timestamps.
    * Any book whose id or googleBooksId already exists locally is left untouched. */

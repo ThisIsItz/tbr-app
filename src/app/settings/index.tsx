@@ -13,8 +13,10 @@ import { AccentColors, Typography, type AccentName } from '@/lib/theme/theme';
 import { useBooks, useExportBackup, useImportBackup } from '@/hooks/useLibrary';
 import { useAppColorScheme } from '@/hooks/useAppColorScheme';
 import { usePurchases } from '@/hooks/usePurchases';
+import { useStorePreference } from '@/hooks/useStorePreference';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { useTranslation } from '@/hooks/useTranslation';
+import { AFFILIATE_STORES } from '@/affiliate';
 import { BackupFileError } from '@/lib/backup';
 import { showAlert } from '@/lib/dialog';
 import type { Locale } from '@/i18n/translations';
@@ -190,9 +192,51 @@ function AccentCards({
   );
 }
 
+function StorePreferenceCard({
+  selectedId,
+  onSelect,
+}: {
+  selectedId: string | null;
+  onSelect: (id: (typeof AFFILIATE_STORES)[number]['id']) => void;
+}) {
+  const surfaceColor = useThemeColor({}, 'surface');
+  const shadowColor = useThemeColor({}, 'shadow');
+  const textColor = useThemeColor({}, 'text');
+  const accentSoftColor = useThemeColor({}, 'accentSoft');
+  const onAccentSoftColor = useThemeColor({}, 'onAccentSoft');
+
+  return (
+    <View style={[styles.optionsCard, { boxShadow: `0px 2px 6px ${shadowColor}` }]}>
+      <View style={[styles.optionsCardInner, { backgroundColor: surfaceColor }]}>
+        {AFFILIATE_STORES.filter((store) => store.enabled && store.awinmid).map((store) => {
+          const isSelected = store.id === selectedId;
+          return (
+            <Pressable
+              key={store.id}
+              onPress={() => onSelect(store.id)}
+              accessibilityRole="radio"
+              accessibilityLabel={store.name}
+              accessibilityState={{ selected: isSelected }}
+              style={[styles.dataRow, isSelected && { backgroundColor: accentSoftColor }]}>
+              <ThemedText
+                style={[
+                  Typography.body,
+                  { color: isSelected ? onAccentSoftColor : textColor, fontWeight: isSelected ? '700' : '400' },
+                ]}>
+                {store.name}
+              </ThemedText>
+            </Pressable>
+          );
+        })}
+      </View>
+    </View>
+  );
+}
+
 export default function SettingsScreen() {
   const { themePreference, setThemePreference, accentPreference, setAccentPreference } = useAppColorScheme();
   const { isPro, restore } = usePurchases();
+  const { preferredStore, setPreferredStoreId } = useStorePreference();
   const [isRestoring, setIsRestoring] = useState(false);
   const { t, locale, setLocale } = useTranslation();
   const backgroundColor = useThemeColor({}, 'background');
@@ -291,6 +335,14 @@ export default function SettingsScreen() {
             </View>
           </Pressable>
         )}
+
+        <ThemedText style={[Typography.sectionTitle, styles.sectionLabel, { color: textColor }]}>
+          {t('settings.preferredStore')}
+        </ThemedText>
+        <StorePreferenceCard selectedId={preferredStore?.id ?? null} onSelect={setPreferredStoreId} />
+        <ThemedText style={[Typography.caption, styles.storeHint, { color: textMutedColor }]}>
+          {t('settings.moreStoresComingSoon')}
+        </ThemedText>
 
         <ThemedText style={[Typography.sectionTitle, styles.sectionLabel, { color: textColor }]}>
           {t('settings.data')}
@@ -462,6 +514,9 @@ const styles = StyleSheet.create({
   },
   dataRowDisabled: {
     opacity: 0.5,
+  },
+  storeHint: {
+    marginTop: 4,
   },
   dataRowText: {
     flex: 1,

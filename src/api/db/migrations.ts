@@ -1,6 +1,6 @@
 import { type SQLiteDatabase } from 'expo-sqlite';
 
-const SCHEMA_VERSION = 7;
+const SCHEMA_VERSION = 8;
 
 const MIGRATIONS: Record<number, string> = {
   1: `
@@ -51,6 +51,12 @@ const MIGRATIONS: Record<number, string> = {
       translation TEXT NOT NULL,
       PRIMARY KEY (locale, genre)
     );
+  `,
+  8: `
+    ALTER TABLE books ADD COLUMN isbn13 TEXT;
+    ALTER TABLE books ADD COLUMN isbn10 TEXT;
+
+    CREATE INDEX IF NOT EXISTS idx_books_isbn13 ON books (isbn13);
   `,
 };
 

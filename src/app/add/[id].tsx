@@ -14,12 +14,17 @@ import { useGoogleBookDetails } from '@/hooks/useSearch';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { useTranslation } from '@/hooks/useTranslation';
 import { normalizeGenres } from '@/lib/genres';
+import { extractIsbnsFromVolume, normalizeIsbn13 } from '@/lib/isbn';
 import { GoogleBooksApiError, toHighResUrl, toHttpsUrl } from '@/api/googleBooks';
 import { sanitizeDescription } from '@/lib/sanitizeHtml';
 import type { GoogleBooksVolume } from '@/types/google-books';
 
 export default function AddBookScreen() {
-  const { id, volume: volumeParam } = useLocalSearchParams<{ id: string; volume?: string }>();
+  const { id, volume: volumeParam, scannedIsbn13 } = useLocalSearchParams<{
+    id: string;
+    volume?: string;
+    scannedIsbn13?: string;
+  }>();
   const { t } = useTranslation();
   const backgroundColor = useThemeColor({}, 'background');
   const textColor = useThemeColor({}, 'text');
@@ -96,6 +101,10 @@ export default function AddBookScreen() {
   const sanitizedDescription = description ? sanitizeDescription(description) : null;
 
   function handleSave() {
+    const extracted = extractIsbnsFromVolume(volume!);
+    // The scanned barcode outranks Google's isbn13 — it can be a different edition.
+    const scannedIsbn = scannedIsbn13 ? normalizeIsbn13(scannedIsbn13) : null;
+
     addBook.mutate({
       googleBooksId: volume!.id,
       title,
@@ -109,6 +118,8 @@ export default function AddBookScreen() {
       pageCount: pageCount ?? null,
       publisher: publisher ?? null,
       language: language ?? null,
+      isbn13: scannedIsbn ?? extracted.isbn13,
+      isbn10: extracted.isbn10,
       notes: null,
     });
     router.dismissTo('/');

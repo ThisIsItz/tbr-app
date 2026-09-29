@@ -1,3 +1,4 @@
+import { getBestIsbn } from '@/lib/isbn';
 import type { GoogleBooksVolume } from '@/types/google-books';
 
 // Phrases that mark a result as academic commentary/study material rather
@@ -31,13 +32,6 @@ function normalize(value: string): string {
   return value.trim().toLowerCase().replace(/\s+/g, ' ');
 }
 
-function getIsbn(volume: GoogleBooksVolume): string | null {
-  const identifiers = volume.volumeInfo.industryIdentifiers ?? [];
-  const isbn13 = identifiers.find((i) => i.type === 'ISBN_13');
-  const isbn10 = identifiers.find((i) => i.type === 'ISBN_10');
-  return isbn13?.identifier ?? isbn10?.identifier ?? identifiers[0]?.identifier ?? null;
-}
-
 function escapeRegExp(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
@@ -64,7 +58,7 @@ function metadataCompleteness(volume: GoogleBooksVolume): number {
   const { volumeInfo } = volume;
   let score = 0;
   if (volumeInfo.imageLinks?.thumbnail) score += 1;
-  if (getIsbn(volume)) score += 1;
+  if (getBestIsbn(volume)) score += 1;
   if (volumeInfo.description) score += 1;
   if (volumeInfo.categories?.length) score += 1;
   if ((volumeInfo.ratingsCount ?? 0) > 0) score += 1;
@@ -82,7 +76,7 @@ export function dedupeVolumes(volumes: GoogleBooksVolume[]): GoogleBooksVolume[]
   for (const volume of volumes) {
     if (seenIds.has(volume.id)) continue;
 
-    const isbn = getIsbn(volume);
+    const isbn = getBestIsbn(volume);
     if (isbn && seenIsbns.has(isbn)) continue;
 
     seenIds.add(volume.id);
@@ -127,7 +121,7 @@ export function scoreVolume(volume: GoogleBooksVolume, query: string): number {
   let score = 0;
 
   const hasAuthor = (volumeInfo.authors?.length ?? 0) > 0;
-  const hasIsbn = !!getIsbn(volume);
+  const hasIsbn = !!getBestIsbn(volume);
 
   // A search for an author's name should surface their own bibliography
   // ahead of unrelated books that merely happen to share that title — e.g.

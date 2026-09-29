@@ -35,7 +35,10 @@ export default function ScanIsbnScreen() {
     try {
       const volume = await searchGoogleBooksByIsbn(result.data);
       if (volume) {
-        router.replace(`/add/${volume.id}`);
+        router.replace({
+          pathname: '/add/[id]',
+          params: { id: volume.id, scannedIsbn13: result.data },
+        });
         return;
       }
       setNotFound(true);

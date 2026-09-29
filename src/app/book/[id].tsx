@@ -1,5 +1,5 @@
 import { router, Stack, useLocalSearchParams } from 'expo-router';
-import { Pencil, Trash2 } from 'lucide-react-native';
+import { Pencil, ShoppingCart, Trash2 } from 'lucide-react-native';
 import { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, BackHandler, Pressable, StyleSheet, TextInput, View } from 'react-native';
 import { KeyboardAwareScrollView, useReanimatedKeyboardAnimation } from 'react-native-keyboard-controller';
@@ -13,6 +13,7 @@ import { GenreEditor } from '@/components/GenreEditor';
 import { Skeleton } from '@/components/Skeleton';
 import { ThemedText } from '@/components/ThemedText';
 import { Typography } from '@/lib/theme/theme';
+import { useBuyBook } from '@/hooks/useBuyBook';
 import { useBook, useDeleteBook, useUpdateBookGenres, useUpdateBookNotes } from '@/hooks/useLibrary';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { useTranslatedGenres } from '@/hooks/useTranslatedGenres';
@@ -49,6 +50,7 @@ export default function BookDetailScreen() {
   const updateGenres = useUpdateBookGenres();
   const updateNotes = useUpdateBookNotes();
   const deleteBook = useDeleteBook();
+  const { buy, isResolving: isResolvingBuyLink, store: buyStore } = useBuyBook();
   const { notifyDeleted } = useUndoContext();
   const [isGenreModalVisible, setGenreModalVisible] = useState(false);
   const [isCoverViewerVisible, setCoverViewerVisible] = useState(false);
@@ -174,6 +176,24 @@ export default function BookDetailScreen() {
           }
         />
         <View style={styles.content}>
+          {buyStore && (
+            <Pressable
+              onPress={() => buy(book)}
+              disabled={isResolvingBuyLink}
+              accessibilityRole="button"
+              accessibilityLabel={t('bookDetail.buyAt', { store: buyStore.name })}
+              style={[styles.buyButton, { backgroundColor: accentColor }]}>
+              {isResolvingBuyLink ? (
+                <ActivityIndicator color={onAccentColor} />
+              ) : (
+                <ShoppingCart size={18} color={onAccentColor} strokeWidth={2} />
+              )}
+              <ThemedText style={[Typography.button, { color: onAccentColor }]}>
+                {t('bookDetail.buyAt', { store: buyStore.name })}
+              </ThemedText>
+            </Pressable>
+          )}
+
           {description && <ExpandableDescription description={description} />}
 
           <View style={styles.section}>
@@ -332,6 +352,15 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     paddingVertical: 6,
     paddingHorizontal: 12,
+  },
+  buyButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    borderRadius: 10,
+    minHeight: 44,
+    paddingVertical: 12,
   },
   notesInput: {
     borderRadius: 10,

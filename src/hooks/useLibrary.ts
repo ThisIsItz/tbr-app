@@ -32,7 +32,15 @@ export function useAddBook() {
 
       const previousBooks = queryClient.getQueryData<Book[]>(booksQueryKey);
       const now = new Date().toISOString();
-      const optimisticBook: Book = { ...input, id: randomUUID(), status: 'to_read', createdAt: now, updatedAt: now };
+      const optimisticBook: Book = {
+        ...input,
+        isbn13: input.isbn13 ?? null,
+        isbn10: input.isbn10 ?? null,
+        id: randomUUID(),
+        status: 'to_read',
+        createdAt: now,
+        updatedAt: now,
+      };
 
       queryClient.setQueryData<Book[]>(booksQueryKey, (books) =>
         books ? [optimisticBook, ...books] : [optimisticBook],
@@ -112,6 +120,17 @@ export function useUpdateBookNotes() {
   return useMutation({
     mutationFn: ({ id, notes }: { id: string; notes: string | null }) =>
       bookRepository.updateNotes(id, notes),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: booksQueryKey });
+    },
+  });
+}
+
+export function useUpdateBookIsbn() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, isbn13, isbn10 }: { id: string; isbn13: string | null; isbn10: string | null }) =>
+      bookRepository.updateIsbn(id, isbn13, isbn10),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: booksQueryKey });
     },

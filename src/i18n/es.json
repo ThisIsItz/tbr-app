@@ -85,6 +85,7 @@
     "descriptionLabel": "Descripción",
     "publishedDateLabel": "Año de publicación",
     "pageCountLabel": "Número de páginas",
+    "isbnLabel": "ISBN (opcional)",
     "notesLabel": "Notas",
     "save": "Añadir a mi TBR",
     "saving": "Añadiendo…",
@@ -92,6 +93,7 @@
     "savingChanges": "Guardando…"
   },
   "bookDetail": {
+    "buyAt": "Comprar en {{store}}",
     "description": "Descripción",
     "viewCover": "Ver portada",
     "removedToast": "\"{{title}}\" eliminado",
@@ -167,6 +169,8 @@
     "accentTeal": "Azul",
     "accentGreen": "Verde",
     "accentRed": "Rojo",
+    "preferredStore": "Tienda preferida",
+    "moreStoresComingSoon": "Próximamente, más tiendas",
     "data": "Datos",
     "exportBackup": "Exportar copia de seguridad",
     "exportBackupDescription": "Guarda tu biblioteca en un archivo que puedes conservar o compartir.",

@@ -85,6 +85,7 @@
     "descriptionLabel": "Description",
     "publishedDateLabel": "Publication year",
     "pageCountLabel": "Page count",
+    "isbnLabel": "ISBN (optional)",
     "notesLabel": "Notes",
     "save": "Add to My TBR",
     "saving": "Adding…",
@@ -92,6 +93,7 @@
     "savingChanges": "Saving…"
   },
   "bookDetail": {
+    "buyAt": "Buy at {{store}}",
     "description": "Description",
     "viewCover": "View cover",
     "removedToast": "\"{{title}}\" removed",
@@ -167,6 +169,8 @@
     "accentTeal": "Blue",
     "accentGreen": "Green",
     "accentRed": "Red",
+    "preferredStore": "Preferred Store",
+    "moreStoresComingSoon": "More stores coming soon",
     "data": "Data",
     "exportBackup": "Export Backup",
     "exportBackupDescription": "Save your library to a file you can keep or share.",
