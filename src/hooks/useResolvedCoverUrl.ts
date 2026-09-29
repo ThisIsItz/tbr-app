@@ -8,10 +8,7 @@ import { useUpdateBookCoverUrl } from './useLibrary';
 
 type ResolvableBook = Pick<Book, 'id' | 'thumbnailUrl' | 'coverResolved'>;
 
-// Resolves a saved book's cover at most once, ever: if it's already marked
-// resolved, returns the stored URL as-is (no check). Otherwise checks once
-// and persists the answer so future renders — for this book, anywhere in
-// the app — never check again.
+// Checks a book's cover at most once, ever, then persists the answer.
 export function useResolvedCoverUrl(book: ResolvableBook | null): string | null {
   const updateCoverUrl = useUpdateBookCoverUrl();
   const [liveUrl, setLiveUrl] = useState<string | null>(null);

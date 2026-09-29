@@ -30,9 +30,7 @@ export interface BookRepository {
   updateDetails(id: string, updates: BookDetailsUpdate): Promise<Book>;
   updateNotes(id: string, notes: string | null): Promise<Book>;
   updateIsbn(id: string, isbn13: string | null, isbn10: string | null): Promise<Book>;
-  /** Persists the cover URL confirmed by `useResolvedCoverUrl` (or the
-   * safe fallback if no higher-resolution tier exists) and marks it final,
-   * so it's never re-checked again. */
+  // Marks the cover final — never re-checked again after this.
   updateCoverUrl(id: string, thumbnailUrl: string): Promise<Book>;
   remove(id: string): Promise<void>;
   /** Bulk-inserts previously-exported books, preserving their original id/timestamps.

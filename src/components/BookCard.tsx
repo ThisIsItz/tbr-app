@@ -22,9 +22,7 @@ interface BookCardProps {
   author?: string | null;
   genres?: string[];
   thumbnailUrl?: string | null;
-  /** Present only for already-saved books — enables the resolve-once-and-
-   * persist cover check instead of the live per-render one used for
-   * search results (which aren't saved anywhere yet). */
+  // Present only for already-saved books — enables the resolve-once cover check.
   id?: string;
   coverResolved?: boolean;
   onPress?: () => void;

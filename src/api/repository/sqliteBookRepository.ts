@@ -72,9 +72,7 @@ export const sqliteBookRepository: BookRepository = {
     const db = await getDb();
     const id = randomUUID();
     const now = new Date().toISOString();
-    // Manual covers are local file URIs — there's no higher-res tier to
-    // check, so they're final from the start. Google-sourced covers start
-    // unresolved and get checked once on first render (useResolvedCoverUrl).
+    // Manual covers are local file URIs — always final, nothing to check.
     const coverResolved = input.googleBooksId === null ? 1 : 0;
 
     await db.runAsync(
@@ -228,8 +226,6 @@ export const sqliteBookRepository: BookRepository = {
             JSON.stringify(book.genres),
             JSON.stringify(book.manualGenres ?? []),
             book.thumbnailUrl,
-            // Older backups predate this too — treat as unresolved, so it's
-            // simply checked once on next render rather than trusted blindly.
             book.coverResolved ? 1 : 0,
             book.description,
             book.publishedDate,

@@ -2,14 +2,12 @@ import { toHighResUrl, toHttpsUrl } from '@/api/googleBooks';
 
 export interface CoverResolution {
   url: string;
-  /** false only on a network failure — the URL shown is a safe guess, not
-   * a confirmed answer, so callers shouldn't persist it as final. */
+  // false only on a network failure — don't persist this as final.
   resolved: boolean;
 }
 
-// Google doesn't error when the zoom=3 tier is missing — it returns 200
-// with its own "image not available" graphic (served as image/png; real
-// covers are always image/jpeg), so this is the only reliable way to tell.
+// A missing zoom=3 tier returns 200 with a placeholder graphic (png, not
+// jpeg) instead of erroring — content-type is the only way to tell.
 export async function resolveCoverUrl(rawThumbnailUrl: string): Promise<CoverResolution> {
   const fallback = toHttpsUrl(rawThumbnailUrl) ?? rawThumbnailUrl;
   const highRes = toHighResUrl(rawThumbnailUrl);

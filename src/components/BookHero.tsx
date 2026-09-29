@@ -17,8 +17,7 @@ interface BookHeroProps {
   subtitle?: string | null;
   authors: string[];
   coverUrl: string | null;
-  /** Set when `coverUrl` is already a confirmed-final URL (see
-   * `useResolvedCoverUrl`) — skips CoverImage's own hi-res check. */
+  // Set when coverUrl is already confirmed-final — skips the hi-res check.
   skipCoverCheck?: boolean;
   pageCount?: number | null;
   language?: string | null;
