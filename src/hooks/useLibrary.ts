@@ -10,6 +10,16 @@ export const booksQueryKey = ['books'] as const;
 
 const BOOKS_STALE_TIME_MS = 30_000;
 
+function useInvalidatingMutation<TVariables, TData>(mutationFn: (variables: TVariables) => Promise<TData>) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: booksQueryKey });
+    },
+  });
+}
+
 export function useBooks() {
   return useQuery({
     queryKey: booksQueryKey,
@@ -121,36 +131,22 @@ export function useUpdateBookDetails() {
 }
 
 export function useUpdateBookNotes() {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: ({ id, notes }: { id: string; notes: string | null }) =>
-      bookRepository.updateNotes(id, notes),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: booksQueryKey });
-    },
-  });
+  return useInvalidatingMutation(({ id, notes }: { id: string; notes: string | null }) =>
+    bookRepository.updateNotes(id, notes),
+  );
 }
 
 export function useUpdateBookIsbn() {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: ({ id, isbn13, isbn10 }: { id: string; isbn13: string | null; isbn10: string | null }) =>
+  return useInvalidatingMutation(
+    ({ id, isbn13, isbn10 }: { id: string; isbn13: string | null; isbn10: string | null }) =>
       bookRepository.updateIsbn(id, isbn13, isbn10),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: booksQueryKey });
-    },
-  });
+  );
 }
 
 export function useUpdateBookCoverUrl() {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: ({ id, thumbnailUrl }: { id: string; thumbnailUrl: string }) =>
-      bookRepository.updateCoverUrl(id, thumbnailUrl),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: booksQueryKey });
-    },
-  });
+  return useInvalidatingMutation(({ id, thumbnailUrl }: { id: string; thumbnailUrl: string }) =>
+    bookRepository.updateCoverUrl(id, thumbnailUrl),
+  );
 }
 
 export function useDeleteBook() {
@@ -175,13 +171,7 @@ export function useDeleteBook() {
 }
 
 export function useRestoreBook() {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: (book: Book) => bookRepository.importBooks([book]),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: booksQueryKey });
-    },
-  });
+  return useInvalidatingMutation((book: Book) => bookRepository.importBooks([book]));
 }
 
 export function useExportBackup() {
@@ -191,11 +181,5 @@ export function useExportBackup() {
 }
 
 export function useImportBackup() {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: (fileUri: string) => importBackupFromUri(fileUri),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: booksQueryKey });
-    },
-  });
+  return useInvalidatingMutation((fileUri: string) => importBackupFromUri(fileUri));
 }
