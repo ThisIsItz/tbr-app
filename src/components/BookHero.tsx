@@ -98,7 +98,7 @@ export function BookHero({
                 {metadataParts.join('  ·  ')}
               </ThemedText>
             )}
-            {belowMetadata}
+            {belowMetadata && <View style={styles.belowMetadataRow}>{belowMetadata}</View>}
           </View>
         </View>
 
@@ -161,7 +161,6 @@ const styles = StyleSheet.create({
   },
   bookRow: {
     flexDirection: 'row',
-    alignItems: 'flex-start',
     gap: 16,
   },
   thumbnail: {
@@ -200,6 +199,10 @@ const styles = StyleSheet.create({
   },
   heroTextMuted: {
     color: 'rgba(255, 255, 255, 0.7)',
+  },
+  belowMetadataRow: {
+    marginTop: 'auto',
+    alignSelf: 'flex-end',
   },
   bottomRightRow: {
     alignItems: 'flex-end',
