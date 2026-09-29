@@ -1,4 +1,3 @@
-import { handleBookById, handleBooksSearch } from './books';
 import { getCachedResult, hashImageBytes, setCachedResult } from './cache';
 import { corsPreflightResponse, jsonResponse } from './http';
 import { getActiveVisionProvider } from './providers';
@@ -8,7 +7,6 @@ import { handleTranslateCategories } from './translate';
 import type { Env } from './types';
 
 const RECOGNIZE_PATH = '/v1/recognize-cover';
-const BOOKS_VOLUMES_PATH = '/v1/books/volumes';
 const TRANSLATE_PATH = '/v1/translate-categories';
 const ALLOWED_CONTENT_TYPE = 'image/jpeg';
 
@@ -85,24 +83,6 @@ export default {
         return jsonResponse({ error: 'method_not_allowed' }, 405);
       }
       return handleRecognizeCover(request, env);
-    }
-
-    if (url.pathname === BOOKS_VOLUMES_PATH) {
-      if (request.method !== 'GET') {
-        return jsonResponse({ error: 'method_not_allowed' }, 405);
-      }
-      return handleBooksSearch(request, env);
-    }
-
-    if (url.pathname.startsWith(`${BOOKS_VOLUMES_PATH}/`)) {
-      if (request.method !== 'GET') {
-        return jsonResponse({ error: 'method_not_allowed' }, 405);
-      }
-      const volumeId = url.pathname.slice(`${BOOKS_VOLUMES_PATH}/`.length);
-      if (!volumeId) {
-        return jsonResponse({ error: 'not_found' }, 404);
-      }
-      return handleBookById(request, env, volumeId);
     }
 
     if (url.pathname === TRANSLATE_PATH) {

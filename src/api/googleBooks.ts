@@ -1,9 +1,10 @@
 import { rankSearchResults } from '@/api/bookRelevance'
-import { getOrCreateDeviceToken } from '@/lib/deviceToken'
 import type {
   GoogleBooksSearchResponse,
   GoogleBooksVolume
 } from '@/types/google-books'
+
+const GOOGLE_BOOKS_API_URL = 'https://www.googleapis.com/books/v1/volumes'
 
 // If an `intitle:`-scoped search returns fewer than this many results, we
 // broaden to an unscoped search too — a title search alone can be too
@@ -51,19 +52,6 @@ export function toFallbackZoomUrl(url: string): string {
   return url.replace(/zoom=3\b/, 'zoom=1')
 }
 
-function booksApiUrl(): string {
-  const apiUrl = process.env.EXPO_PUBLIC_BOOKS_API_URL
-  if (!apiUrl) {
-    throw new Error('EXPO_PUBLIC_BOOKS_API_URL is not configured')
-  }
-  return apiUrl
-}
-
-async function fetchWithClientToken(url: string): Promise<Response> {
-  const deviceToken = await getOrCreateDeviceToken()
-  return fetch(url, { headers: { 'X-Client-Token': deviceToken } })
-}
-
 const volumesCache = new Map<string, Promise<GoogleBooksVolume[]>>()
 
 async function fetchVolumes(q: string): Promise<GoogleBooksVolume[]> {
@@ -72,7 +60,7 @@ async function fetchVolumes(q: string): Promise<GoogleBooksVolume[]> {
 
   const promise = (async () => {
     const params = new URLSearchParams({ q, maxResults: String(MAX_RESULTS_PER_QUERY) })
-    const response = await fetchWithClientToken(`${booksApiUrl()}/volumes?${params.toString()}`)
+    const response = await fetch(`${GOOGLE_BOOKS_API_URL}?${params.toString()}`)
     if (!response.ok) {
       throw new GoogleBooksApiError(response.status)
     }
@@ -123,7 +111,7 @@ export function getGoogleBookById(volumeId: string): Promise<GoogleBooksVolume> 
   if (cached) return cached
 
   const promise = (async () => {
-    const response = await fetchWithClientToken(`${booksApiUrl()}/volumes/${volumeId}`)
+    const response = await fetch(`${GOOGLE_BOOKS_API_URL}/${volumeId}`)
     if (!response.ok) {
       throw new GoogleBooksApiError(response.status)
     }

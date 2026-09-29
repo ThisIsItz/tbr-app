@@ -26,10 +26,6 @@ DAILY_BUDGET_LIMIT = 500
 PER_TOKEN_DAILY_LIMIT = 20
 # Reject request bodies larger than this (bytes) before ever reading them.
 MAX_BODY_BYTES = 2097152
-# Global daily ceiling for the /v1/books/* proxy, across all clients.
-BOOKS_DAILY_BUDGET_LIMIT = 2000
-# Soft per-client-token daily limit for /v1/books/*.
-BOOKS_PER_TOKEN_DAILY_LIMIT = 300
 # Global daily ceiling for /v1/translate-categories, across all clients. Only
 # counts actual Workers AI calls (cache hits from RECOGNITION_KV are free and
 # unlimited), so this rarely gets touched once common categories are cached.

@@ -1,5 +1,4 @@
 export type { BookGuess } from '../../shared/recognition';
-export type { GoogleBooksSearchResponse, GoogleBooksVolume } from '../../shared/google-books';
 
 export interface Env {
   RECOGNITION_KV: KVNamespace;
@@ -9,9 +8,6 @@ export interface Env {
   DAILY_BUDGET_LIMIT: number;
   PER_TOKEN_DAILY_LIMIT: number;
   MAX_BODY_BYTES: number;
-  GOOGLE_BOOKS_API_KEY: string;
-  BOOKS_DAILY_BUDGET_LIMIT: number;
-  BOOKS_PER_TOKEN_DAILY_LIMIT: number;
   TRANSLATE_DAILY_BUDGET_LIMIT: number;
   TRANSLATE_PER_TOKEN_DAILY_LIMIT: number;
 }
