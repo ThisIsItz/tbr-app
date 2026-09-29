@@ -170,7 +170,6 @@ export default function RecognizeCoverScreen() {
   }
 
   function handleReset() {
-    setStage(bookCoverRecognitionService.isSupported ? 'idle' : 'unsupported');
     setImageUri(null);
     setConfidence('low');
     setSource('ocr');
@@ -178,6 +177,13 @@ export default function RecognizeCoverScreen() {
     setAuthor('');
     setMatches([]);
     setSearchStatus('idle');
+
+    if (pickSource) {
+      setStage('idle');
+      handlePick(pickSource);
+    } else {
+      setStage(bookCoverRecognitionService.isSupported ? 'idle' : 'unsupported');
+    }
   }
 
   function goToAddManually() {
