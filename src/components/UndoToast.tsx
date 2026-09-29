@@ -29,6 +29,7 @@ export function UndoToast() {
 
   return (
     <Animated.View
+      key={deletedBook.id}
       entering={FadeInDown.duration(200)}
       exiting={FadeOutDown.duration(200)}
       style={[styles.wrapper, styles.boxNone, { bottom: insets.bottom + 16 }]}>

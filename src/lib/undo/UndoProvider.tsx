@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useRef, useState, type ReactNode } from 'react';
+import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react';
 
 import type { Book } from '@/types/book';
 
@@ -13,22 +13,26 @@ interface UndoContextValue {
 const UndoContext = createContext<UndoContextValue | null>(null);
 
 export function UndoProvider({ children }: { children: ReactNode }) {
-  const [deletedBook, setDeletedBook] = useState<Book | null>(null);
-  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [queue, setQueue] = useState<Book[]>([]);
 
-  const dismiss = useCallback(() => {
-    if (timerRef.current) clearTimeout(timerRef.current);
-    setDeletedBook(null);
+  const advance = useCallback(() => {
+    setQueue((q) => q.slice(1));
   }, []);
 
   const notifyDeleted = useCallback((book: Book) => {
-    if (timerRef.current) clearTimeout(timerRef.current);
-    setDeletedBook(book);
-    timerRef.current = setTimeout(() => setDeletedBook(null), DISMISS_AFTER_MS);
+    setQueue((q) => [...q, book]);
   }, []);
 
+  useEffect(() => {
+    if (queue.length === 0) return;
+    const timeoutId = setTimeout(advance, DISMISS_AFTER_MS);
+    return () => clearTimeout(timeoutId);
+  }, [queue, advance]);
+
   return (
-    <UndoContext.Provider value={{ deletedBook, notifyDeleted, dismiss }}>{children}</UndoContext.Provider>
+    <UndoContext.Provider value={{ deletedBook: queue[0] ?? null, notifyDeleted, dismiss: advance }}>
+      {children}
+    </UndoContext.Provider>
   );
 }
 
