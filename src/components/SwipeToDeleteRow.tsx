@@ -1,6 +1,6 @@
 import { Trash2 } from 'lucide-react-native';
 import type { ReactNode } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet } from 'react-native';
 import ReanimatedSwipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
 
 import { ThemedText } from '@/components/ThemedText';
@@ -13,7 +13,6 @@ interface SwipeToDeleteRowProps {
   children: ReactNode;
 }
 
-// No confirmation dialog — the Undo toast is the safety net here.
 export function SwipeToDeleteRow({ onDelete, children }: SwipeToDeleteRowProps) {
   const { t } = useTranslation();
   const dangerColor = useThemeColor({}, 'danger');
@@ -21,13 +20,16 @@ export function SwipeToDeleteRow({ onDelete, children }: SwipeToDeleteRowProps) 
   return (
     <ReanimatedSwipeable
       renderRightActions={() => (
-        <View style={[styles.action, { backgroundColor: dangerColor }]}>
+        <Pressable
+          onPress={onDelete}
+          accessibilityRole="button"
+          accessibilityLabel={t('common.remove')}
+          style={[styles.action, { backgroundColor: dangerColor }]}>
           <Trash2 size={20} color="#fff" strokeWidth={2} />
           <ThemedText style={[Typography.caption, styles.actionText]}>{t('common.remove')}</ThemedText>
-        </View>
+        </Pressable>
       )}
-      overshootRight={false}
-      onSwipeableOpen={onDelete}>
+      overshootRight={false}>
       {children}
     </ReanimatedSwipeable>
   );
