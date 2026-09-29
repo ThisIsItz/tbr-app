@@ -25,7 +25,10 @@ export function SwipeToDeleteRow({ onDelete, children, borderRadius = 0 }: Swipe
           onPress={onDelete}
           accessibilityRole="button"
           accessibilityLabel={t('common.remove')}
-          style={[styles.action, { backgroundColor: dangerColor, borderRadius }]}>
+          style={[
+            styles.action,
+            { backgroundColor: dangerColor, borderTopRightRadius: borderRadius, borderBottomRightRadius: borderRadius },
+          ]}>
           <Trash2 size={20} color="#fff" strokeWidth={2} />
           <ThemedText style={[Typography.caption, styles.actionText]}>{t('common.remove')}</ThemedText>
         </Pressable>
@@ -40,7 +43,6 @@ export function SwipeToDeleteRow({ onDelete, children, borderRadius = 0 }: Swipe
 const styles = StyleSheet.create({
   action: {
     width: 96,
-    marginVertical: 6,
     alignItems: 'center',
     justifyContent: 'center',
     gap: 2,
