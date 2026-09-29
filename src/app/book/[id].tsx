@@ -10,6 +10,7 @@ import { BookHero, CircleButton } from '@/components/BookHero';
 import { CoverViewerModal } from '@/components/CoverViewerModal';
 import { ExpandableDescription } from '@/components/ExpandableDescription';
 import { GenreEditor } from '@/components/GenreEditor';
+import { ScreenLoading } from '@/components/ScreenLoading';
 import { Skeleton } from '@/components/Skeleton';
 import { ThemedText } from '@/components/ThemedText';
 import { Typography } from '@/lib/theme/theme';
@@ -100,11 +101,7 @@ export default function BookDetailScreen() {
   }
 
   if (isLoading) {
-    return (
-      <View style={[styles.centered, { backgroundColor }]}>
-        <ActivityIndicator color={accentColor} />
-      </View>
-    );
+    return <ScreenLoading />;
   }
 
   if (!book) {

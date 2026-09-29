@@ -2,7 +2,6 @@ import * as ImagePicker from 'expo-image-picker';
 import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import {
-  ActivityIndicator,
   BackHandler,
   Image,
   Pressable,
@@ -16,6 +15,7 @@ import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { GenreEditor } from '@/components/GenreEditor';
+import { ScreenLoading } from '@/components/ScreenLoading';
 import { Skeleton } from '@/components/Skeleton';
 import { ThemedText } from '@/components/ThemedText';
 import { Typography } from '@/lib/theme/theme';
@@ -193,11 +193,7 @@ export default function AddManuallyScreen() {
   }
 
   if (isEditing && (isLoadingBook || !isPrefilled)) {
-    return (
-      <View style={[styles.centered, { backgroundColor }]}>
-        <ActivityIndicator color={accentColor} />
-      </View>
-    );
+    return <ScreenLoading />;
   }
 
   return (
@@ -464,11 +460,6 @@ const styles = StyleSheet.create({
   container: {
     padding: 16,
     gap: 12,
-  },
-  centered: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   headerRow: {
     flexDirection: 'row',

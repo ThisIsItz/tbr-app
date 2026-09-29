@@ -18,6 +18,7 @@ import { CoverImage } from '@/components/CoverImage';
 import { IconSymbol } from '@/components/IconSymbol';
 import { LibraryFiltersSheet } from '@/components/LibraryFiltersSheet';
 import { Paywall } from '@/components/Paywall';
+import { ScreenLoading } from '@/components/ScreenLoading';
 import { SpinReel } from '@/components/SpinReel';
 import { ThemedText } from '@/components/ThemedText';
 import { Typography } from '@/lib/theme/theme';
@@ -125,10 +126,8 @@ export default function SpinScreen() {
 
   if (purchasesLoading) {
     return (
-      <SafeAreaView style={[styles.container, { backgroundColor }]} edges={['bottom']}>
-        <View style={styles.centered}>
-          <ActivityIndicator color={accentColor} />
-        </View>
+      <SafeAreaView style={styles.flex} edges={['bottom']}>
+        <ScreenLoading />
       </SafeAreaView>
     );
   }

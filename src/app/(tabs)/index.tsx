@@ -2,13 +2,14 @@ import * as DocumentPicker from 'expo-document-picker';
 import { router } from 'expo-router';
 import { ArrowUpDown, BookOpenText, Dices, LayoutGrid, LayoutList, List, Settings } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, FlatList, Pressable, StyleSheet, View } from 'react-native';
+import { FlatList, Pressable, StyleSheet, View } from 'react-native';
 import { KeyboardStickyView } from 'react-native-keyboard-controller';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { BookCard } from '@/components/BookCard';
 import { FilterSheet } from '@/components/FilterSheet';
 import { LibraryFiltersSheet } from '@/components/LibraryFiltersSheet';
+import { ScreenLoading } from '@/components/ScreenLoading';
 import { SearchInput } from '@/components/SearchInput';
 import { SwipeToDeleteRow } from '@/components/SwipeToDeleteRow';
 import { ThemedText } from '@/components/ThemedText';
@@ -239,8 +240,8 @@ export default function MyTbrScreen() {
 
   if (isLoading) {
     return (
-      <SafeAreaView style={[styles.centered, { backgroundColor }]} edges={['top']}>
-        <ActivityIndicator color={accentColor} />
+      <SafeAreaView style={styles.flex} edges={['top']}>
+        <ScreenLoading />
       </SafeAreaView>
     );
   }
@@ -424,6 +425,9 @@ export default function MyTbrScreen() {
 }
 
 const styles = StyleSheet.create({
+  flex: {
+    flex: 1,
+  },
   container: {
     flex: 1,
     paddingHorizontal: 16,
