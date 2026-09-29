@@ -52,13 +52,27 @@ export function toFallbackZoomUrl(url: string): string {
   return url.replace(/zoom=3\b/, 'zoom=1')
 }
 
-const volumesCache = new Map<string, Promise<GoogleBooksVolume[]>>()
+const MAX_CACHE_SIZE = 100
 
-async function fetchVolumes(q: string): Promise<GoogleBooksVolume[]> {
-  const cached = volumesCache.get(q)
+function memoizeAsync<T>(cache: Map<string, Promise<T>>, key: string, fetcher: () => Promise<T>): Promise<T> {
+  const cached = cache.get(key)
   if (cached) return cached
 
-  const promise = (async () => {
+  if (cache.size >= MAX_CACHE_SIZE) {
+    const oldestKey = cache.keys().next().value
+    if (oldestKey !== undefined) cache.delete(oldestKey)
+  }
+
+  const promise = fetcher()
+  cache.set(key, promise)
+  promise.catch(() => cache.delete(key))
+  return promise
+}
+
+const volumesCache = new Map<string, Promise<GoogleBooksVolume[]>>()
+
+function fetchVolumes(q: string): Promise<GoogleBooksVolume[]> {
+  return memoizeAsync(volumesCache, q, async () => {
     const params = new URLSearchParams({ q, maxResults: String(MAX_RESULTS_PER_QUERY) })
     const response = await fetch(`${GOOGLE_BOOKS_API_URL}?${params.toString()}`)
     if (!response.ok) {
@@ -67,11 +81,7 @@ async function fetchVolumes(q: string): Promise<GoogleBooksVolume[]> {
 
     const data = (await response.json()) as GoogleBooksSearchResponse
     return data.items ?? []
-  })()
-
-  volumesCache.set(q, promise)
-  promise.catch(() => volumesCache.delete(q))
-  return promise
+  })
 }
 
 export async function searchGoogleBooks(
@@ -107,19 +117,12 @@ export async function searchGoogleBooksByIsbn(
 const volumeByIdCache = new Map<string, Promise<GoogleBooksVolume>>()
 
 export function getGoogleBookById(volumeId: string): Promise<GoogleBooksVolume> {
-  const cached = volumeByIdCache.get(volumeId)
-  if (cached) return cached
-
-  const promise = (async () => {
+  return memoizeAsync(volumeByIdCache, volumeId, async () => {
     const response = await fetch(`${GOOGLE_BOOKS_API_URL}/${volumeId}`)
     if (!response.ok) {
       throw new GoogleBooksApiError(response.status)
     }
 
     return (await response.json()) as GoogleBooksVolume
-  })()
-
-  volumeByIdCache.set(volumeId, promise)
-  promise.catch(() => volumeByIdCache.delete(volumeId))
-  return promise
+  })
 }
