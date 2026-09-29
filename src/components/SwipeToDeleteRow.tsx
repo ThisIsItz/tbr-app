@@ -20,8 +20,8 @@ export function SwipeToDeleteRow({ onDelete, children }: SwipeToDeleteRowProps) 
   const dangerColor = useThemeColor({}, 'danger');
 
   return (
-    <View style={styles.wrapper}>
-      <View style={[styles.iconArea, { backgroundColor: dangerColor }]} pointerEvents="none">
+    <View style={[styles.wrapper, { backgroundColor: dangerColor }]}>
+      <View style={styles.iconArea} pointerEvents="none">
         <Trash2 size={20} color="#fff" strokeWidth={2} />
         <ThemedText style={[Typography.caption, styles.actionText]}>{t('common.remove')}</ThemedText>
       </View>
@@ -46,6 +46,9 @@ const styles = StyleSheet.create({
   wrapper: {
     position: 'relative',
     width: '100%',
+    overflow: 'hidden',
+    borderTopRightRadius: 14,
+    borderBottomRightRadius: 14,
   },
   iconArea: {
     position: 'absolute',
@@ -53,7 +56,6 @@ const styles = StyleSheet.create({
     bottom: 0,
     right: 0,
     width: ACTION_WIDTH,
-    borderRadius: 14,
     alignItems: 'center',
     justifyContent: 'center',
     gap: 2,
