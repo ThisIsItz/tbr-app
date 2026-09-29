@@ -24,6 +24,7 @@ interface BookHeroProps {
   onCoverPress?: () => void;
   topRight?: ReactNode;
   bottomRight?: ReactNode;
+  belowMetadata?: ReactNode;
 }
 
 export function BookHero({
@@ -38,6 +39,7 @@ export function BookHero({
   onCoverPress,
   topRight,
   bottomRight,
+  belowMetadata,
 }: BookHeroProps) {
   const { t, locale } = useTranslation();
   const insets = useSafeAreaInsets();
@@ -91,6 +93,7 @@ export function BookHero({
                 {metadataParts.join('  ·  ')}
               </ThemedText>
             )}
+            {belowMetadata}
           </View>
         </View>
 

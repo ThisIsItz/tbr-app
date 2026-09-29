@@ -174,26 +174,27 @@ export default function BookDetailScreen() {
               </CircleButton>
             </>
           }
+          belowMetadata={
+            buyStore && (
+              <Pressable
+                onPress={() => buy(book)}
+                disabled={isResolvingBuyLink}
+                accessibilityRole="button"
+                accessibilityLabel={t('bookDetail.buyAt', { store: buyStore.name })}
+                style={styles.buyLink}>
+                {isResolvingBuyLink ? (
+                  <ActivityIndicator size="small" color="#1A1310" />
+                ) : (
+                  <ShoppingCart size={16} color="#1A1310" strokeWidth={2} />
+                )}
+                <ThemedText style={[Typography.caption, styles.buyLinkText]}>
+                  {t('bookDetail.buyAt', { store: buyStore.name })}
+                </ThemedText>
+              </Pressable>
+            )
+          }
         />
         <View style={styles.content}>
-          {buyStore && (
-            <Pressable
-              onPress={() => buy(book)}
-              disabled={isResolvingBuyLink}
-              accessibilityRole="button"
-              accessibilityLabel={t('bookDetail.buyAt', { store: buyStore.name })}
-              style={[styles.buyButton, { backgroundColor: accentColor }]}>
-              {isResolvingBuyLink ? (
-                <ActivityIndicator color={onAccentColor} />
-              ) : (
-                <ShoppingCart size={18} color={onAccentColor} strokeWidth={2} />
-              )}
-              <ThemedText style={[Typography.button, { color: onAccentColor }]}>
-                {t('bookDetail.buyAt', { store: buyStore.name })}
-              </ThemedText>
-            </Pressable>
-          )}
-
           {description && <ExpandableDescription description={description} />}
 
           <View style={styles.section}>
@@ -353,14 +354,20 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     paddingHorizontal: 12,
   },
-  buyButton: {
+  buyLink: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8,
-    borderRadius: 10,
-    minHeight: 44,
-    paddingVertical: 12,
+    alignSelf: 'flex-start',
+    gap: 6,
+    marginTop: 8,
+    minHeight: 32,
+    paddingHorizontal: 12,
+    borderRadius: 16,
+    backgroundColor: 'rgba(255, 255, 255, 0.85)',
+  },
+  buyLinkText: {
+    color: '#1A1310',
+    fontWeight: '600',
   },
   notesInput: {
     borderRadius: 10,
