@@ -388,7 +388,7 @@ export default function MyTbrScreen() {
           initialNumToRender={12}
           maxToRenderPerBatch={12}
           windowSize={7}
-          removeClippedSubviews
+          removeClippedSubviews={viewMode === 'grid'}
           contentContainerStyle={[
             styles.listContent,
             { paddingBottom: 88 + insets.bottom },
