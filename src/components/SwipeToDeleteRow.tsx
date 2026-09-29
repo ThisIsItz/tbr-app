@@ -11,17 +11,16 @@ import { useTranslation } from '@/hooks/useTranslation';
 interface SwipeToDeleteRowProps {
   onDelete: () => void;
   children: ReactNode;
-  borderRadius?: number;
 }
 
 const ACTION_WIDTH = 96;
 
-export function SwipeToDeleteRow({ onDelete, children, borderRadius = 0 }: SwipeToDeleteRowProps) {
+export function SwipeToDeleteRow({ onDelete, children }: SwipeToDeleteRowProps) {
   const { t } = useTranslation();
   const dangerColor = useThemeColor({}, 'danger');
 
   return (
-    <View style={[styles.wrapper, { backgroundColor: dangerColor, borderRadius }]}>
+    <View style={[styles.wrapper, { backgroundColor: dangerColor }]}>
       <View style={styles.iconArea} pointerEvents="none">
         <Trash2 size={20} color="#fff" strokeWidth={2} />
         <ThemedText style={[Typography.caption, styles.actionText]}>{t('common.remove')}</ThemedText>
@@ -47,6 +46,8 @@ const styles = StyleSheet.create({
   wrapper: {
     position: 'relative',
     width: '100%',
+    overflow: 'hidden',
+    borderRadius: 14,
   },
   iconArea: {
     position: 'absolute',
