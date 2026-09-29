@@ -8,10 +8,17 @@ import type { Book, NewBookInput } from '@/types/book';
 
 export const booksQueryKey = ['books'] as const;
 
+// Every write to the books table already calls invalidateQueries below, so
+// this only avoids re-reading on every screen mount within the same short
+// window — not a substitute for those invalidations, just a cheap backstop
+// with a short enough leash that a missed one self-heals fast.
+const BOOKS_STALE_TIME_MS = 30_000;
+
 export function useBooks() {
   return useQuery({
     queryKey: booksQueryKey,
     queryFn: () => bookRepository.getAll(),
+    staleTime: BOOKS_STALE_TIME_MS,
   });
 }
 
@@ -20,6 +27,7 @@ export function useBook(id: string | undefined) {
     queryKey: [...booksQueryKey, id],
     queryFn: () => bookRepository.getById(id as string),
     enabled: !!id,
+    staleTime: BOOKS_STALE_TIME_MS,
   });
 }
 
