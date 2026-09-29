@@ -46,7 +46,6 @@ const styles = StyleSheet.create({
   wrapper: {
     position: 'relative',
     width: '100%',
-    overflow: 'hidden',
     borderRadius: 14,
   },
   iconArea: {
