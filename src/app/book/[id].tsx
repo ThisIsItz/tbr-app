@@ -15,6 +15,7 @@ import { ThemedText } from '@/components/ThemedText';
 import { Typography } from '@/lib/theme/theme';
 import { useBuyBook } from '@/hooks/useBuyBook';
 import { useBook, useDeleteBook, useUpdateBookGenres, useUpdateBookNotes } from '@/hooks/useLibrary';
+import { useResolvedCoverUrl } from '@/hooks/useResolvedCoverUrl';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { useTranslatedGenres } from '@/hooks/useTranslatedGenres';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -22,7 +23,6 @@ import { capitalizeFirst } from '@/lib/capitalize';
 import { confirmAsync } from '@/lib/dialog';
 import { estimateGenreSkeletonWidth, normalizeGenres } from '@/lib/genres';
 import { useUndoContext } from '@/lib/undo/UndoProvider';
-import { toHighResUrl } from '@/api/googleBooks';
 import { sanitizeDescription } from '@/lib/sanitizeHtml';
 
 const MAX_VISIBLE_GENRES = 3;
@@ -47,6 +47,7 @@ export default function BookDetailScreen() {
   const dangerColor = useThemeColor({}, 'danger');
 
   const { data: book, isLoading } = useBook(id);
+  const resolvedCoverUrl = useResolvedCoverUrl(book ?? null);
   const updateGenres = useUpdateBookGenres();
   const updateNotes = useUpdateBookNotes();
   const deleteBook = useDeleteBook();
@@ -137,7 +138,7 @@ export default function BookDetailScreen() {
     router.back();
   }
 
-  const coverUrl = toHighResUrl(book.thumbnailUrl);
+  const coverUrl = resolvedCoverUrl;
   const visibleGenres = genres.slice(0, MAX_VISIBLE_GENRES);
   const extraGenreCount = genres.length - visibleGenres.length;
   const description = book.description ? sanitizeDescription(book.description) : null;
@@ -154,6 +155,7 @@ export default function BookDetailScreen() {
           subtitle={book.subtitle}
           authors={book.authors}
           coverUrl={coverUrl}
+          skipCoverCheck
           pageCount={book.pageCount}
           language={book.language}
           publishedDate={book.publishedDate}

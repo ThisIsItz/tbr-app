@@ -14,6 +14,7 @@ interface BookRow {
   genres: string;
   manual_genres: string;
   thumbnail_url: string | null;
+  cover_resolved: number;
   description: string | null;
   published_date: string | null;
   page_count: number | null;
@@ -37,6 +38,7 @@ function rowToBook(row: BookRow): Book {
     genres: JSON.parse(row.genres) as string[],
     manualGenres: JSON.parse(row.manual_genres) as string[],
     thumbnailUrl: row.thumbnail_url,
+    coverResolved: row.cover_resolved === 1,
     description: row.description,
     publishedDate: row.published_date,
     pageCount: row.page_count,
@@ -70,13 +72,17 @@ export const sqliteBookRepository: BookRepository = {
     const db = await getDb();
     const id = randomUUID();
     const now = new Date().toISOString();
+    // Manual covers are local file URIs — there's no higher-res tier to
+    // check, so they're final from the start. Google-sourced covers start
+    // unresolved and get checked once on first render (useResolvedCoverUrl).
+    const coverResolved = input.googleBooksId === null ? 1 : 0;
 
     await db.runAsync(
       `INSERT INTO books (
         id, google_books_id, title, subtitle, authors, genres, manual_genres, thumbnail_url,
-        description, published_date, page_count, publisher, language, isbn13, isbn10, notes,
-        status, created_at, updated_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'to_read', ?, ?)`,
+        cover_resolved, description, published_date, page_count, publisher, language,
+        isbn13, isbn10, notes, status, created_at, updated_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'to_read', ?, ?)`,
       [
         id,
         input.googleBooksId,
@@ -86,6 +92,7 @@ export const sqliteBookRepository: BookRepository = {
         JSON.stringify(input.genres),
         JSON.stringify(input.manualGenres),
         input.thumbnailUrl,
+        coverResolved,
         input.description,
         input.publishedDate,
         input.pageCount,
@@ -124,7 +131,7 @@ export const sqliteBookRepository: BookRepository = {
     const now = new Date().toISOString();
     await db.runAsync(
       `UPDATE books SET
-        title = ?, authors = ?, description = ?, thumbnail_url = ?,
+        title = ?, authors = ?, description = ?, thumbnail_url = ?, cover_resolved = 1,
         published_date = ?, page_count = ?, publisher = ?, language = ?,
         isbn13 = ?, isbn10 = ?, notes = ?, updated_at = ?
       WHERE id = ?`,
@@ -175,6 +182,20 @@ export const sqliteBookRepository: BookRepository = {
     return updated;
   },
 
+  async updateCoverUrl(id: string, thumbnailUrl: string) {
+    const db = await getDb();
+    const now = new Date().toISOString();
+    await db.runAsync('UPDATE books SET thumbnail_url = ?, cover_resolved = 1, updated_at = ? WHERE id = ?', [
+      thumbnailUrl,
+      now,
+      id,
+    ]);
+
+    const updated = await getById(id);
+    if (!updated) throw new Error(`Book not found: ${id}`);
+    return updated;
+  },
+
   async remove(id: string) {
     const db = await getDb();
     await db.runAsync('DELETE FROM books WHERE id = ?', [id]);
@@ -193,9 +214,9 @@ export const sqliteBookRepository: BookRepository = {
         const result = await db.runAsync(
           `INSERT OR IGNORE INTO books (
             id, google_books_id, title, subtitle, authors, genres, manual_genres, thumbnail_url,
-            description, published_date, page_count, publisher, language, isbn13, isbn10, notes,
-            status, created_at, updated_at
-          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            cover_resolved, description, published_date, page_count, publisher, language,
+            isbn13, isbn10, notes, status, created_at, updated_at
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
           [
             book.id,
             book.googleBooksId,
@@ -207,6 +228,9 @@ export const sqliteBookRepository: BookRepository = {
             JSON.stringify(book.genres),
             JSON.stringify(book.manualGenres ?? []),
             book.thumbnailUrl,
+            // Older backups predate this too — treat as unresolved, so it's
+            // simply checked once on next render rather than trusted blindly.
+            book.coverResolved ? 1 : 0,
             book.description,
             book.publishedDate,
             book.pageCount,

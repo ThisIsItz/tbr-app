@@ -7,6 +7,7 @@ import { IconSymbol } from '@/components/IconSymbol';
 import { Typography } from '@/lib/theme/theme';
 import { capitalizeFirst } from '@/lib/capitalize';
 import { useThemeColor } from '@/hooks/useThemeColor';
+import { useResolvedCoverUrl } from '@/hooks/useResolvedCoverUrl';
 import { useTranslation } from '@/hooks/useTranslation';
 import { toHighResUrl, toHttpsUrl } from '@/api/googleBooks';
 
@@ -21,6 +22,11 @@ interface BookCardProps {
   author?: string | null;
   genres?: string[];
   thumbnailUrl?: string | null;
+  /** Present only for already-saved books — enables the resolve-once-and-
+   * persist cover check instead of the live per-render one used for
+   * search results (which aren't saved anywhere yet). */
+  id?: string;
+  coverResolved?: boolean;
   onPress?: () => void;
   action?: BookCardAction;
   /** 'library' (default): saved-book row with genre/status chips.
@@ -38,6 +44,8 @@ export const BookCard = memo(function BookCard({
   author,
   genres = [],
   thumbnailUrl,
+  id,
+  coverResolved,
   onPress,
   action,
   variant = 'library',
@@ -53,8 +61,12 @@ export const BookCard = memo(function BookCard({
   const onAccentSoftColor = useThemeColor({}, 'onAccentSoft');
   const accentSoftColor = useThemeColor({}, 'accentSoft');
 
-  const coverUrl = toHighResUrl(thumbnailUrl);
-  const fallbackCoverUrl = toHttpsUrl(thumbnailUrl);
+  const isSaved = id !== undefined;
+  const resolvedCoverUrl = useResolvedCoverUrl(
+    isSaved ? { id, thumbnailUrl: thumbnailUrl ?? null, coverResolved: coverResolved ?? false } : null,
+  );
+  const coverUrl = isSaved ? resolvedCoverUrl : toHighResUrl(thumbnailUrl);
+  const fallbackCoverUrl = isSaved ? null : toHttpsUrl(thumbnailUrl);
   const isResult = variant === 'result';
   const isList = variant === 'list';
   const isGrid = variant === 'grid';

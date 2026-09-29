@@ -17,6 +17,9 @@ interface BookHeroProps {
   subtitle?: string | null;
   authors: string[];
   coverUrl: string | null;
+  /** Set when `coverUrl` is already a confirmed-final URL (see
+   * `useResolvedCoverUrl`) — skips CoverImage's own hi-res check. */
+  skipCoverCheck?: boolean;
   pageCount?: number | null;
   language?: string | null;
   publishedDate?: string | null;
@@ -32,6 +35,7 @@ export function BookHero({
   subtitle,
   authors,
   coverUrl,
+  skipCoverCheck = false,
   pageCount,
   language,
   publishedDate,
@@ -45,6 +49,8 @@ export function BookHero({
   const insets = useSafeAreaInsets();
   const surfaceMutedColor = useThemeColor({}, 'surfaceMuted');
 
+  const coverFallbackUri = skipCoverCheck ? null : undefined;
+
   const metadataParts = [
     publishedDate && getPublishedYear(publishedDate),
     !!pageCount && t(pageCount === 1 ? 'bookDetail.onePage' : 'bookDetail.pagesCount', { count: pageCount }),
@@ -54,7 +60,7 @@ export function BookHero({
   return (
     <View style={styles.hero}>
       {coverUrl ? (
-        <CoverImage uri={coverUrl} style={StyleSheet.absoluteFill} blurRadius={30} />
+        <CoverImage uri={coverUrl} fallbackUri={coverFallbackUri} style={StyleSheet.absoluteFill} blurRadius={30} />
       ) : (
         <View style={[StyleSheet.absoluteFill, { backgroundColor: surfaceMutedColor }]} />
       )}
@@ -75,7 +81,7 @@ export function BookHero({
               disabled={!onCoverPress}
               accessibilityRole={onCoverPress ? 'button' : undefined}
               accessibilityLabel={onCoverPress ? t('bookDetail.viewCover') : undefined}>
-              <CoverImage uri={coverUrl} style={styles.thumbnail} />
+              <CoverImage uri={coverUrl} fallbackUri={coverFallbackUri} style={styles.thumbnail} />
             </Pressable>
           ) : (
             <View style={[styles.thumbnail, styles.thumbnailPlaceholder, { backgroundColor: surfaceMutedColor }]}>

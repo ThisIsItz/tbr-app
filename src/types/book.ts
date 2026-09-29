@@ -11,6 +11,9 @@ export interface Book {
   genres: string[];
   manualGenres: string[];
   thumbnailUrl: string | null;
+  /** Whether `thumbnailUrl` is already the final, checked cover URL (see
+   * `useResolvedCoverUrl`) — false for books added before this existed. */
+  coverResolved: boolean;
   description: string | null;
   publishedDate: string | null;
   pageCount: number | null;

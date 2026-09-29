@@ -192,6 +192,8 @@ export default function MyTbrScreen() {
           author={item.authors.join(', ') || null}
           genres={translatedGenresByBookId.get(item.id) ?? EMPTY_GENRES}
           thumbnailUrl={item.thumbnailUrl}
+          id={item.id}
+          coverResolved={item.coverResolved}
           onPress={() => router.push(`/book/${item.id}`)}
         />
       );

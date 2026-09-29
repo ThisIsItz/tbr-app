@@ -36,6 +36,7 @@ export function useAddBook() {
         ...input,
         isbn13: input.isbn13 ?? null,
         isbn10: input.isbn10 ?? null,
+        coverResolved: input.googleBooksId === null,
         id: randomUUID(),
         status: 'to_read',
         createdAt: now,
@@ -131,6 +132,17 @@ export function useUpdateBookIsbn() {
   return useMutation({
     mutationFn: ({ id, isbn13, isbn10 }: { id: string; isbn13: string | null; isbn10: string | null }) =>
       bookRepository.updateIsbn(id, isbn13, isbn10),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: booksQueryKey });
+    },
+  });
+}
+
+export function useUpdateBookCoverUrl() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, thumbnailUrl }: { id: string; thumbnailUrl: string }) =>
+      bookRepository.updateCoverUrl(id, thumbnailUrl),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: booksQueryKey });
     },
