@@ -26,14 +26,46 @@ function isReadingStatus(value: unknown): value is ReadingStatus {
   return READING_STATUSES.includes(value as ReadingStatus);
 }
 
+function isStringArray(value: unknown): value is string[] {
+  return Array.isArray(value) && value.every((item) => typeof item === 'string');
+}
+
+function isNullableString(value: unknown): value is string | null {
+  return value === null || typeof value === 'string';
+}
+
+// Fields added in later schema migrations are absent from older exports —
+// the repository already defaults those to null/[] on import, so validation
+// only needs to reject them when present with the wrong type.
+function isOptionalNullableString(value: unknown): value is string | null | undefined {
+  return value === undefined || isNullableString(value);
+}
+
+function isOptionalStringArray(value: unknown): value is string[] | undefined {
+  return value === undefined || isStringArray(value);
+}
+
 function isValidBook(value: unknown): value is Book {
   if (!value || typeof value !== 'object') return false;
   const b = value as Record<string, unknown>;
   return (
     typeof b.id === 'string' &&
+    isNullableString(b.googleBooksId) &&
     typeof b.title === 'string' &&
-    Array.isArray(b.authors) &&
-    Array.isArray(b.genres) &&
+    isOptionalNullableString(b.subtitle) &&
+    isStringArray(b.authors) &&
+    isStringArray(b.genres) &&
+    isOptionalStringArray(b.manualGenres) &&
+    isNullableString(b.thumbnailUrl) &&
+    (b.coverResolved === undefined || typeof b.coverResolved === 'boolean') &&
+    isNullableString(b.description) &&
+    isNullableString(b.publishedDate) &&
+    (b.pageCount === null || typeof b.pageCount === 'number') &&
+    isOptionalNullableString(b.publisher) &&
+    isOptionalNullableString(b.language) &&
+    isOptionalNullableString(b.isbn13) &&
+    isOptionalNullableString(b.isbn10) &&
+    isOptionalNullableString(b.notes) &&
     isReadingStatus(b.status) &&
     typeof b.createdAt === 'string' &&
     typeof b.updatedAt === 'string'
