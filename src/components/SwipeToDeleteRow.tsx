@@ -46,6 +46,7 @@ const styles = StyleSheet.create({
   wrapper: {
     position: 'relative',
     width: '100%',
+    margin: 1,
     borderRadius: 14,
   },
   iconArea: {
