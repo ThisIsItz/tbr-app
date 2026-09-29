@@ -29,7 +29,8 @@ export function SwipeToDeleteRow({ onDelete, children }: SwipeToDeleteRowProps) 
           <ThemedText style={[Typography.caption, styles.actionText]}>{t('common.remove')}</ThemedText>
         </Pressable>
       )}
-      overshootRight={false}>
+      overshootRight={false}
+      onSwipeableOpen={onDelete}>
       {children}
     </ReanimatedSwipeable>
   );
