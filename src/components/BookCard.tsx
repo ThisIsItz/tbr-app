@@ -200,10 +200,7 @@ export const BookCard = memo(function BookCard({
       onPress={onPress}
       accessibilityRole="button"
       accessibilityLabel={displayAuthor ? `${displayTitle}, ${displayAuthor}` : displayTitle}
-      style={[
-        styles.card,
-        { backgroundColor: surfaceColor, boxShadow: `0px 4px 10px ${shadowColor}` },
-      ]}>
+      style={[styles.card, { backgroundColor: surfaceColor }]}>
       {coverUrl ? (
         <CoverImage uri={coverUrl} fallbackUri={fallbackCoverUrl} style={[styles.cover, styles.coverLibrary]} />
       ) : (
