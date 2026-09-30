@@ -145,6 +145,7 @@ export default function BookDetailScreen() {
       <KeyboardAwareScrollView
         style={[styles.scrollView, { backgroundColor }]}
         contentContainerStyle={styles.container}
+        showsVerticalScrollIndicator={false}
         bottomOffset={24}>
         <Stack.Screen options={{ headerShown: false }} />
         <BookHero

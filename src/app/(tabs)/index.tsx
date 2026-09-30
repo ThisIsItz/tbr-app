@@ -382,6 +382,7 @@ export default function MyTbrScreen() {
       ) : (
         <FlatList
           key={viewMode === 'grid' ? 'grid' : 'single'}
+          showsVerticalScrollIndicator={false}
           data={viewMode === 'grid' ? gridBooks : filteredBooks}
           keyExtractor={(item: Book | null, index) => item?.id ?? `__filler-${index}`}
           numColumns={viewMode === 'grid' ? 2 : 1}

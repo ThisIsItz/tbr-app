@@ -203,7 +203,8 @@ export default function AddManuallyScreen() {
           style={{ backgroundColor }}
           contentContainerStyle={styles.container}
           bottomOffset={10}
-          keyboardShouldPersistTaps="handled">
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}>
           <Stack.Screen
             options={{ title: isEditing ? t('screenTitles.editBook') : t('screenTitles.addManually') }}
           />

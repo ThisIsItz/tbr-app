@@ -300,7 +300,7 @@ export default function SettingsScreen() {
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor }]} edges={['bottom']}>
-      <ScrollView contentContainerStyle={styles.scrollContent}>
+      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         <ThemedText style={[Typography.sectionTitle, styles.sectionLabel, { color: textColor }]}>
           {t('settings.language')}
         </ThemedText>

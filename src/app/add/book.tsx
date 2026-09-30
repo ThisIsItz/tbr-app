@@ -72,6 +72,7 @@ export default function AddBookScreen() {
         data={visibleResults ?? []}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.listContent}
+        showsVerticalScrollIndicator={false}
         ListHeaderComponent={
           <View style={styles.listHeader}>
             <View style={styles.quickActionsRow}>

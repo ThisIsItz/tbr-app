@@ -52,7 +52,10 @@ export default function AddBookScreen() {
 
   if (isLoading) {
     return (
-      <ScrollView style={{ backgroundColor }} contentContainerStyle={styles.container}>
+      <ScrollView
+        style={{ backgroundColor }}
+        contentContainerStyle={styles.container}
+        showsVerticalScrollIndicator={false}>
         <Stack.Screen options={{ headerShown: false }} />
         <BookHeroSkeleton onBack={() => router.back()} />
         <View style={styles.content}>
@@ -117,7 +120,10 @@ export default function AddBookScreen() {
   }
 
   return (
-    <ScrollView style={{ backgroundColor }} contentContainerStyle={styles.container}>
+    <ScrollView
+      style={{ backgroundColor }}
+      contentContainerStyle={styles.container}
+      showsVerticalScrollIndicator={false}>
       <Stack.Screen options={{ headerShown: false }} />
       <BookHero
         title={title}

@@ -94,6 +94,7 @@ export function FilterSheet({
               data={options}
               keyExtractor={(item) => item.label}
               style={styles.optionList}
+              showsVerticalScrollIndicator={false}
               renderItem={({ item }) => {
                 const isSelected = item.value === selected;
                 return (

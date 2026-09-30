@@ -234,7 +234,8 @@ export default function RecognizeCoverScreen() {
       <ScrollView
         style={{ backgroundColor }}
         contentContainerStyle={styles.container}
-        keyboardShouldPersistTaps="handled">
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}>
         <Stack.Screen
           options={{
             title: pickSource === 'gallery' ? t('search.uploadPhoto') : t('search.scanCover'),
