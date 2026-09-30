@@ -14,8 +14,8 @@ interface SwipeToDeleteRowProps {
   children: ReactNode;
 }
 
-const ACTION_WIDTH = 96;
-const DELETE_THRESHOLD = 70;
+const ACTION_WIDTH = 140;
+const DELETE_THRESHOLD = 100;
 // Duration scales with the row's real height so a tall card collapses at
 // roughly the same visual speed as a short list row instead of feeling rushed.
 const MIN_COLLAPSE_DURATION = 220;
