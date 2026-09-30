@@ -1,4 +1,5 @@
-import { Pressable, StyleSheet } from 'react-native';
+import { useEffect } from 'react';
+import { Pressable, StyleSheet, View } from 'react-native';
 import Animated, { FadeInDown, FadeOutDown } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -9,46 +10,60 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { capitalizeFirst } from '@/lib/capitalize';
 import { Typography } from '@/lib/theme/theme';
 import { useUndoContext } from '@/lib/undo/UndoProvider';
+import type { Book } from '@/types/book';
 
-export function UndoToast() {
-  const { deletedBook, dismiss } = useUndoContext();
+const DISMISS_AFTER_MS = 5000;
+
+function UndoToastItem({ book, onDismiss }: { book: Book; onDismiss: () => void }) {
   const restoreBook = useRestoreBook();
   const { t } = useTranslation();
-  const insets = useSafeAreaInsets();
   const toastBackground = useThemeColor({}, 'text');
   const toastText = useThemeColor({}, 'background');
   const shadowColor = useThemeColor({}, 'shadow');
 
-  if (!deletedBook) return null;
+  useEffect(() => {
+    const timeoutId = setTimeout(onDismiss, DISMISS_AFTER_MS);
+    return () => clearTimeout(timeoutId);
+  }, [onDismiss]);
 
   function handleUndo() {
-    if (!deletedBook) return;
-    restoreBook.mutate(deletedBook);
-    dismiss();
+    restoreBook.mutate(book);
+    onDismiss();
   }
 
   return (
     <Animated.View
-      key={deletedBook.id}
       entering={FadeInDown.duration(200)}
       exiting={FadeOutDown.duration(200)}
-      style={[styles.wrapper, styles.boxNone, { bottom: insets.bottom + 16 }]}>
-      <Animated.View
-        style={[styles.toast, { backgroundColor: toastBackground, boxShadow: `0px 4px 10px ${shadowColor}` }]}>
-        <ThemedText numberOfLines={1} style={[Typography.body, styles.message, { color: toastText }]}>
-          {t('bookDetail.removedToast', { title: capitalizeFirst(deletedBook.title) })}
+      style={[styles.toast, { backgroundColor: toastBackground, boxShadow: `0px 4px 10px ${shadowColor}` }]}>
+      <ThemedText numberOfLines={1} style={[Typography.body, styles.message, { color: toastText }]}>
+        {t('bookDetail.removedToast', { title: capitalizeFirst(book.title) })}
+      </ThemedText>
+      <Pressable
+        onPress={handleUndo}
+        hitSlop={8}
+        accessibilityRole="button"
+        accessibilityLabel={t('common.undo')}>
+        <ThemedText style={[Typography.button, styles.undoText, { color: toastText }]}>
+          {t('common.undo')}
         </ThemedText>
-        <Pressable
-          onPress={handleUndo}
-          hitSlop={8}
-          accessibilityRole="button"
-          accessibilityLabel={t('common.undo')}>
-          <ThemedText style={[Typography.button, styles.undoText, { color: toastText }]}>
-            {t('common.undo')}
-          </ThemedText>
-        </Pressable>
-      </Animated.View>
+      </Pressable>
     </Animated.View>
+  );
+}
+
+export function UndoToast() {
+  const { deletedBooks, dismiss } = useUndoContext();
+  const insets = useSafeAreaInsets();
+
+  if (deletedBooks.length === 0) return null;
+
+  return (
+    <View pointerEvents="box-none" style={[styles.wrapper, { bottom: insets.bottom + 16 }]}>
+      {deletedBooks.map((book) => (
+        <UndoToastItem key={book.id} book={book} onDismiss={() => dismiss(book.id)} />
+      ))}
+    </View>
   );
 }
 
@@ -57,10 +72,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: 16,
     right: 16,
-    alignItems: 'center',
-  },
-  boxNone: {
-    pointerEvents: 'box-none',
+    gap: 8,
   },
   toast: {
     flexDirection: 'row',

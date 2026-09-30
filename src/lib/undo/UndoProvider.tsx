@@ -1,38 +1,28 @@
-import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react';
+import { createContext, useCallback, useContext, useState, type ReactNode } from 'react';
 
 import type { Book } from '@/types/book';
 
-const DISMISS_AFTER_MS = 5000;
-
 interface UndoContextValue {
-  deletedBook: Book | null;
+  deletedBooks: Book[];
   notifyDeleted: (book: Book) => void;
-  dismiss: () => void;
+  dismiss: (bookId: string) => void;
 }
 
 const UndoContext = createContext<UndoContextValue | null>(null);
 
 export function UndoProvider({ children }: { children: ReactNode }) {
-  const [queue, setQueue] = useState<Book[]>([]);
-
-  const advance = useCallback(() => {
-    setQueue((q) => q.slice(1));
-  }, []);
+  const [deletedBooks, setDeletedBooks] = useState<Book[]>([]);
 
   const notifyDeleted = useCallback((book: Book) => {
-    setQueue((q) => [...q, book]);
+    setDeletedBooks((books) => [...books, book]);
   }, []);
 
-  useEffect(() => {
-    if (queue.length === 0) return;
-    const timeoutId = setTimeout(advance, DISMISS_AFTER_MS);
-    return () => clearTimeout(timeoutId);
-  }, [queue, advance]);
+  const dismiss = useCallback((bookId: string) => {
+    setDeletedBooks((books) => books.filter((book) => book.id !== bookId));
+  }, []);
 
   return (
-    <UndoContext.Provider value={{ deletedBook: queue[0] ?? null, notifyDeleted, dismiss: advance }}>
-      {children}
-    </UndoContext.Provider>
+    <UndoContext.Provider value={{ deletedBooks, notifyDeleted, dismiss }}>{children}</UndoContext.Provider>
   );
 }
 
