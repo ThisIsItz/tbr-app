@@ -21,17 +21,20 @@ const COLLAPSE_DURATION = 220;
 export function SwipeToDeleteRow({ onDelete, children }: SwipeToDeleteRowProps) {
   const { t } = useTranslation();
   const dangerColor = useThemeColor({}, 'danger');
-  // -1 means "not measured yet" — lets the row size itself naturally until
-  // we know its real height, which we need as the animation's start value.
+  // Tracks the row's real height so we know where to animate from — kept in
+  // sync on every layout pass (cover images resolve async and can change it)
+  // right up until the collapse starts, at which point we freeze it.
   const height = useSharedValue(-1);
   const scale = useSharedValue(1);
+  const isCollapsing = useSharedValue(false);
 
   function handleLayout(event: LayoutChangeEvent) {
-    if (height.value >= 0) return;
+    if (isCollapsing.value) return;
     height.value = event.nativeEvent.layout.height;
   }
 
   function handleCollapse() {
+    isCollapsing.value = true;
     scale.value = withTiming(0, { duration: COLLAPSE_DURATION });
     height.value = withTiming(0, { duration: COLLAPSE_DURATION }, (finished) => {
       if (finished) runOnJS(onDelete)();
@@ -39,7 +42,7 @@ export function SwipeToDeleteRow({ onDelete, children }: SwipeToDeleteRowProps) 
   }
 
   const animatedStyle = useAnimatedStyle(() => ({
-    height: height.value < 0 ? undefined : height.value,
+    height: isCollapsing.value && height.value >= 0 ? height.value : undefined,
     transform: [{ scaleY: scale.value }],
   }));
 
