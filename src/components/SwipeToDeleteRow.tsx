@@ -51,6 +51,7 @@ export function SwipeToDeleteRow({ onDelete, children }: SwipeToDeleteRowProps) 
 
   const animatedStyle = useAnimatedStyle(() => ({
     height: isCollapsing.value && height.value >= 0 ? height.value : undefined,
+    overflow: isCollapsing.value ? 'hidden' : 'visible',
     transform: [{ scaleY: scale.value }],
   }));
 
@@ -83,7 +84,6 @@ const styles = StyleSheet.create({
   wrapper: {
     position: 'relative',
     width: '100%',
-    overflow: 'hidden',
   },
   background: {
     position: 'absolute',
