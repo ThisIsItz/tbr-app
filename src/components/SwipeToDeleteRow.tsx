@@ -1,7 +1,14 @@
 import { Trash2 } from 'lucide-react-native';
 import type { ReactNode } from 'react';
 import { Pressable, StyleSheet, View, type LayoutChangeEvent } from 'react-native';
-import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import Animated, {
+  interpolate,
+  runOnJS,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+  type SharedValue,
+} from 'react-native-reanimated';
 import ReanimatedSwipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
 
 import { ThemedText } from '@/components/ThemedText';
@@ -21,19 +28,50 @@ const MIN_COLLAPSE_DURATION = 220;
 const MAX_COLLAPSE_DURATION = 300;
 const REFERENCE_HEIGHT = 80;
 
+function RightActionIcon({
+  showRightProgress,
+  rowWidth,
+  label,
+}: {
+  showRightProgress: SharedValue<number>;
+  rowWidth: SharedValue<number>;
+  label: string;
+}) {
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [
+      {
+        translateX: interpolate(
+          showRightProgress.value,
+          [0, 1],
+          [0, rowWidth.value > 0 ? -(rowWidth.value - ACTION_WIDTH) / 2 : 0],
+        ),
+      },
+    ],
+  }));
+
+  return (
+    <Animated.View style={[styles.iconArea, animatedStyle]} pointerEvents="none">
+      <Trash2 size={20} color="#fff" strokeWidth={2} />
+      <ThemedText style={[Typography.caption, styles.actionText]}>{label}</ThemedText>
+    </Animated.View>
+  );
+}
+
 export function SwipeToDeleteRow({ onDelete, children }: SwipeToDeleteRowProps) {
   const { t } = useTranslation();
   const dangerColor = useThemeColor({}, 'danger');
-  // Tracks the row's real height so we know where to animate from — kept in
-  // sync on every layout pass (cover images resolve async and can change it)
-  // right up until the collapse starts, at which point we freeze it.
+  // Tracks the row's real size so we know where to animate from — kept in
+  // sync on every layout pass (cover images resolve async and can change
+  // height) right up until the collapse starts, at which point we freeze it.
   const height = useSharedValue(-1);
+  const width = useSharedValue(-1);
   const scale = useSharedValue(1);
   const isCollapsing = useSharedValue(false);
 
   function handleLayout(event: LayoutChangeEvent) {
     if (isCollapsing.value) return;
     height.value = event.nativeEvent.layout.height;
+    width.value = event.nativeEvent.layout.width;
   }
 
   function handleCollapse() {
@@ -57,18 +95,17 @@ export function SwipeToDeleteRow({ onDelete, children }: SwipeToDeleteRowProps) 
   return (
     <Animated.View onLayout={handleLayout} style={[styles.wrapper, animatedStyle]}>
       <View style={[styles.background, { backgroundColor: dangerColor }]} pointerEvents="none" />
-      <View style={styles.iconArea} pointerEvents="none">
-        <Trash2 size={20} color="#fff" strokeWidth={2} />
-        <ThemedText style={[Typography.caption, styles.actionText]}>{t('common.remove')}</ThemedText>
-      </View>
       <ReanimatedSwipeable
-        renderRightActions={() => (
-          <Pressable
-            onPress={handleCollapse}
-            accessibilityRole="button"
-            accessibilityLabel={t('common.remove')}
-            style={styles.action}
-          />
+        renderRightActions={(showRightProgress) => (
+          <>
+            <Pressable
+              onPress={handleCollapse}
+              accessibilityRole="button"
+              accessibilityLabel={t('common.remove')}
+              style={styles.action}
+            />
+            <RightActionIcon showRightProgress={showRightProgress} rowWidth={width} label={t('common.remove')} />
+          </>
         )}
         overshootRight={false}
         onSwipeableOpen={handleCollapse}>
