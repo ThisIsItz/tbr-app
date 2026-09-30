@@ -19,7 +19,7 @@ const DELETE_THRESHOLD = 70;
 // Duration scales with the row's real height so a tall card collapses at
 // roughly the same visual speed as a short list row instead of feeling rushed.
 const MIN_COLLAPSE_DURATION = 220;
-const MAX_COLLAPSE_DURATION = 420;
+const MAX_COLLAPSE_DURATION = 300;
 const REFERENCE_HEIGHT = 80;
 
 export function SwipeToDeleteRow({ onDelete, children }: SwipeToDeleteRowProps) {
