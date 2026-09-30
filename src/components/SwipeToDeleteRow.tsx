@@ -1,7 +1,7 @@
 import { Trash2 } from 'lucide-react-native';
 import type { ReactNode } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
-import Animated, { StretchOutY } from 'react-native-reanimated';
+import { Pressable, StyleSheet, View, type LayoutChangeEvent } from 'react-native';
+import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import ReanimatedSwipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
 
 import { ThemedText } from '@/components/ThemedText';
@@ -16,13 +16,35 @@ interface SwipeToDeleteRowProps {
 
 const ACTION_WIDTH = 96;
 const DELETE_THRESHOLD = 70;
+const COLLAPSE_DURATION = 220;
 
 export function SwipeToDeleteRow({ onDelete, children }: SwipeToDeleteRowProps) {
   const { t } = useTranslation();
   const dangerColor = useThemeColor({}, 'danger');
+  // -1 means "not measured yet" — lets the row size itself naturally until
+  // we know its real height, which we need as the animation's start value.
+  const height = useSharedValue(-1);
+  const scale = useSharedValue(1);
+
+  function handleLayout(event: LayoutChangeEvent) {
+    if (height.value >= 0) return;
+    height.value = event.nativeEvent.layout.height;
+  }
+
+  function handleCollapse() {
+    scale.value = withTiming(0, { duration: COLLAPSE_DURATION });
+    height.value = withTiming(0, { duration: COLLAPSE_DURATION }, (finished) => {
+      if (finished) runOnJS(onDelete)();
+    });
+  }
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    height: height.value < 0 ? undefined : height.value,
+    transform: [{ scaleY: scale.value }],
+  }));
 
   return (
-    <Animated.View exiting={StretchOutY.duration(220)} style={styles.wrapper}>
+    <Animated.View onLayout={handleLayout} style={[styles.wrapper, animatedStyle]}>
       <View style={[styles.background, { backgroundColor: dangerColor }]} pointerEvents="none" />
       <View style={styles.iconArea} pointerEvents="none">
         <Trash2 size={20} color="#fff" strokeWidth={2} />
@@ -31,7 +53,7 @@ export function SwipeToDeleteRow({ onDelete, children }: SwipeToDeleteRowProps) 
       <ReanimatedSwipeable
         renderRightActions={() => (
           <Pressable
-            onPress={onDelete}
+            onPress={handleCollapse}
             accessibilityRole="button"
             accessibilityLabel={t('common.remove')}
             style={styles.action}
@@ -39,7 +61,7 @@ export function SwipeToDeleteRow({ onDelete, children }: SwipeToDeleteRowProps) 
         )}
         overshootRight={false}
         rightThreshold={DELETE_THRESHOLD}
-        onSwipeableOpen={onDelete}>
+        onSwipeableOpen={handleCollapse}>
         {children}
       </ReanimatedSwipeable>
     </Animated.View>
@@ -50,6 +72,7 @@ const styles = StyleSheet.create({
   wrapper: {
     position: 'relative',
     width: '100%',
+    overflow: 'hidden',
   },
   background: {
     position: 'absolute',
