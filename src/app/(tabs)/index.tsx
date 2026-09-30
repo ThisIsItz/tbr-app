@@ -388,7 +388,7 @@ export default function MyTbrScreen() {
           keyExtractor={(item: Book | null, index) => item?.id ?? `__filler-${index}`}
           numColumns={viewMode === 'grid' ? 2 : 1}
           columnWrapperStyle={viewMode === 'grid' ? styles.gridRow : undefined}
-          itemLayoutAnimation={viewMode === 'grid' ? undefined : LinearTransition}
+          itemLayoutAnimation={viewMode === 'grid' ? undefined : LinearTransition.duration(220)}
           initialNumToRender={12}
           maxToRenderPerBatch={12}
           windowSize={7}
