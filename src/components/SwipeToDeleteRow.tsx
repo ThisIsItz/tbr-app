@@ -1,6 +1,7 @@
 import { Trash2 } from 'lucide-react-native';
 import type { ReactNode } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
+import Animated, { FadeOutLeft } from 'react-native-reanimated';
 import ReanimatedSwipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
 
 import { ThemedText } from '@/components/ThemedText';
@@ -14,13 +15,14 @@ interface SwipeToDeleteRowProps {
 }
 
 const ACTION_WIDTH = 96;
+const DELETE_THRESHOLD = 70;
 
 export function SwipeToDeleteRow({ onDelete, children }: SwipeToDeleteRowProps) {
   const { t } = useTranslation();
   const dangerColor = useThemeColor({}, 'danger');
 
   return (
-    <View style={styles.wrapper}>
+    <Animated.View exiting={FadeOutLeft.duration(220)} style={styles.wrapper}>
       <View style={[styles.background, { backgroundColor: dangerColor }]} pointerEvents="none" />
       <View style={styles.iconArea} pointerEvents="none">
         <Trash2 size={20} color="#fff" strokeWidth={2} />
@@ -36,10 +38,11 @@ export function SwipeToDeleteRow({ onDelete, children }: SwipeToDeleteRowProps) 
           />
         )}
         overshootRight={false}
+        rightThreshold={DELETE_THRESHOLD}
         onSwipeableOpen={onDelete}>
         {children}
       </ReanimatedSwipeable>
-    </View>
+    </Animated.View>
   );
 }
 
