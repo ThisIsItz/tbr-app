@@ -12,7 +12,7 @@ import { Typography } from '@/lib/theme/theme';
 import { useUndoContext } from '@/lib/undo/UndoProvider';
 import type { Book } from '@/types/book';
 
-const DISMISS_AFTER_MS = 5000;
+const DISMISS_AFTER_MS = 7000;
 
 function UndoToastItem({ book, onDismiss }: { book: Book; onDismiss: () => void }) {
   const restoreBook = useRestoreBook();
