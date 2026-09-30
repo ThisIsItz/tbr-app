@@ -26,6 +26,11 @@ const ACTION_WIDTH = 140;
 // roughly the same visual speed as a short list row instead of feeling rushed.
 const MIN_COLLAPSE_DURATION = 220;
 const MAX_COLLAPSE_DURATION = 300;
+// Small buffer between the collapse visually finishing and the actual
+// removal, so the native layout has a couple of frames to settle at height
+// 0 before the FlatList's data changes — otherwise the sibling below can
+// still jump slightly once the real layout recalculates.
+const REMOVE_DELAY = 32;
 const REFERENCE_HEIGHT = 80;
 
 function RightActionIcon({
@@ -74,6 +79,10 @@ export function SwipeToDeleteRow({ onDelete, children }: SwipeToDeleteRowProps) 
     width.value = event.nativeEvent.layout.width;
   }
 
+  function scheduleDelete() {
+    setTimeout(onDelete, REMOVE_DELAY);
+  }
+
   function handleCollapse() {
     isCollapsing.value = true;
     const duration = Math.min(
@@ -82,7 +91,7 @@ export function SwipeToDeleteRow({ onDelete, children }: SwipeToDeleteRowProps) 
     );
     scale.value = withTiming(0, { duration });
     height.value = withTiming(0, { duration }, (finished) => {
-      if (finished) runOnJS(onDelete)();
+      if (finished) runOnJS(scheduleDelete)();
     });
   }
 
