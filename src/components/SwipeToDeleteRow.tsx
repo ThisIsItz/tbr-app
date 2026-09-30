@@ -15,7 +15,6 @@ interface SwipeToDeleteRowProps {
 }
 
 const ACTION_WIDTH = 140;
-const DELETE_THRESHOLD = 100;
 // Duration scales with the row's real height so a tall card collapses at
 // roughly the same visual speed as a short list row instead of feeling rushed.
 const MIN_COLLAPSE_DURATION = 220;
@@ -72,7 +71,6 @@ export function SwipeToDeleteRow({ onDelete, children }: SwipeToDeleteRowProps) 
           />
         )}
         overshootRight={false}
-        rightThreshold={DELETE_THRESHOLD}
         onSwipeableOpen={handleCollapse}>
         {children}
       </ReanimatedSwipeable>
@@ -104,7 +102,7 @@ const styles = StyleSheet.create({
     gap: 2,
   },
   action: {
-    width: ACTION_WIDTH,
+    width: '100%',
   },
   actionText: {
     color: '#fff',
