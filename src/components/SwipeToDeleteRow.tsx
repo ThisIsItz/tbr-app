@@ -108,6 +108,7 @@ export function SwipeToDeleteRow({ onDelete, children }: SwipeToDeleteRowProps) 
           </>
         )}
         overshootRight={false}
+        animationOptions={{ mass: 0.6, damping: 20, stiffness: 300 }}
         onSwipeableOpen={handleCollapse}>
         {children}
       </ReanimatedSwipeable>
