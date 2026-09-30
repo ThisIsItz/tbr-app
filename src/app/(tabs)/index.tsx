@@ -4,7 +4,7 @@ import { ArrowUpDown, BookOpenText, Dices, LayoutGrid, LayoutList, List, Setting
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { KeyboardStickyView } from 'react-native-keyboard-controller';
-import Animated, { LinearTransition } from 'react-native-reanimated';
+import Animated from 'react-native-reanimated';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { BookCard } from '@/components/BookCard';
@@ -388,7 +388,6 @@ export default function MyTbrScreen() {
           keyExtractor={(item: Book | null, index) => item?.id ?? `__filler-${index}`}
           numColumns={viewMode === 'grid' ? 2 : 1}
           columnWrapperStyle={viewMode === 'grid' ? styles.gridRow : undefined}
-          itemLayoutAnimation={viewMode === 'grid' ? undefined : LinearTransition.duration(220)}
           initialNumToRender={12}
           maxToRenderPerBatch={12}
           windowSize={7}

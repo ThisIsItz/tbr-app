@@ -16,7 +16,11 @@ interface SwipeToDeleteRowProps {
 
 const ACTION_WIDTH = 96;
 const DELETE_THRESHOLD = 70;
-const COLLAPSE_DURATION = 220;
+// Duration scales with the row's real height so a tall card collapses at
+// roughly the same visual speed as a short list row instead of feeling rushed.
+const MIN_COLLAPSE_DURATION = 220;
+const MAX_COLLAPSE_DURATION = 420;
+const REFERENCE_HEIGHT = 80;
 
 export function SwipeToDeleteRow({ onDelete, children }: SwipeToDeleteRowProps) {
   const { t } = useTranslation();
@@ -35,8 +39,12 @@ export function SwipeToDeleteRow({ onDelete, children }: SwipeToDeleteRowProps) 
 
   function handleCollapse() {
     isCollapsing.value = true;
-    scale.value = withTiming(0, { duration: COLLAPSE_DURATION });
-    height.value = withTiming(0, { duration: COLLAPSE_DURATION }, (finished) => {
+    const duration = Math.min(
+      MAX_COLLAPSE_DURATION,
+      Math.max(MIN_COLLAPSE_DURATION, (height.value / REFERENCE_HEIGHT) * MIN_COLLAPSE_DURATION),
+    );
+    scale.value = withTiming(0, { duration });
+    height.value = withTiming(0, { duration }, (finished) => {
       if (finished) runOnJS(onDelete)();
     });
   }
