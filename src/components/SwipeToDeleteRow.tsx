@@ -19,22 +19,12 @@ import { useTranslation } from '@/hooks/useTranslation';
 interface SwipeToDeleteRowProps {
   onDelete: () => void;
   children: ReactNode;
-  // Space below the row, e.g. the gap between cards in grid-less list
-  // layouts. Must live here (not in the list's contentContainerStyle gap)
-  // so it collapses together with the row instead of leaving a leftover
-  // gap that only disappears once the item is actually removed.
   spacing?: number;
 }
 
 const ACTION_WIDTH = 140;
-// Duration scales with the row's real height so a tall card collapses at
-// roughly the same visual speed as a short list row instead of feeling rushed.
 const MIN_COLLAPSE_DURATION = 220;
 const MAX_COLLAPSE_DURATION = 300;
-// Small buffer between the collapse visually finishing and the actual
-// removal, so the native layout has a couple of frames to settle at height
-// 0 before the FlatList's data changes — otherwise the sibling below can
-// still jump slightly once the real layout recalculates.
 const REMOVE_DELAY = 32;
 const REFERENCE_HEIGHT = 80;
 
@@ -70,18 +60,12 @@ function RightActionIcon({
 export function SwipeToDeleteRow({ onDelete, children, spacing = 0 }: SwipeToDeleteRowProps) {
   const { t } = useTranslation();
   const dangerColor = useThemeColor({}, 'danger');
-  // Tracks the row's real size so we know where to animate from — kept in
-  // sync on every layout pass (cover images resolve async and can change
-  // height) right up until the collapse starts, at which point we freeze it.
   const height = useSharedValue(-1);
   const width = useSharedValue(-1);
   const scale = useSharedValue(1);
   const margin = useSharedValue(spacing);
   const isCollapsing = useSharedValue(false);
 
-  // The FlatList only remounts rows when switching to/from grid view, not
-  // between list and card — so a stale spacing value from the previous
-  // view mode can otherwise stick around on reused row instances.
   useEffect(() => {
     if (!isCollapsing.value) margin.value = spacing;
   }, [spacing, margin, isCollapsing]);
