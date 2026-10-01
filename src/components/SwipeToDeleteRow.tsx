@@ -19,6 +19,11 @@ import { useTranslation } from '@/hooks/useTranslation';
 interface SwipeToDeleteRowProps {
   onDelete: () => void;
   children: ReactNode;
+  // Space below the row, e.g. the gap between cards in grid-less list
+  // layouts. Must live here (not in the list's contentContainerStyle gap)
+  // so it collapses together with the row instead of leaving a leftover
+  // gap that only disappears once the item is actually removed.
+  spacing?: number;
 }
 
 const ACTION_WIDTH = 140;
@@ -62,7 +67,7 @@ function RightActionIcon({
   );
 }
 
-export function SwipeToDeleteRow({ onDelete, children }: SwipeToDeleteRowProps) {
+export function SwipeToDeleteRow({ onDelete, children, spacing = 0 }: SwipeToDeleteRowProps) {
   const { t } = useTranslation();
   const dangerColor = useThemeColor({}, 'danger');
   // Tracks the row's real size so we know where to animate from — kept in
@@ -71,6 +76,7 @@ export function SwipeToDeleteRow({ onDelete, children }: SwipeToDeleteRowProps) 
   const height = useSharedValue(-1);
   const width = useSharedValue(-1);
   const scale = useSharedValue(1);
+  const margin = useSharedValue(spacing);
   const isCollapsing = useSharedValue(false);
 
   function handleLayout(event: LayoutChangeEvent) {
@@ -90,6 +96,7 @@ export function SwipeToDeleteRow({ onDelete, children }: SwipeToDeleteRowProps) 
       Math.max(MIN_COLLAPSE_DURATION, (height.value / REFERENCE_HEIGHT) * MIN_COLLAPSE_DURATION),
     );
     scale.value = withTiming(0, { duration });
+    margin.value = withTiming(0, { duration });
     height.value = withTiming(0, { duration }, (finished) => {
       if (finished) runOnJS(scheduleDelete)();
     });
@@ -97,6 +104,7 @@ export function SwipeToDeleteRow({ onDelete, children }: SwipeToDeleteRowProps) 
 
   const animatedStyle = useAnimatedStyle(() => ({
     height: isCollapsing.value && height.value >= 0 ? height.value : undefined,
+    marginBottom: margin.value,
     overflow: isCollapsing.value ? 'hidden' : 'visible',
     transform: [{ scaleY: scale.value }],
   }));

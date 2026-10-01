@@ -202,7 +202,11 @@ export default function MyTbrScreen() {
 
       if (viewMode === 'grid') return card;
 
-      return <SwipeToDeleteRow onDelete={() => handleSwipeDelete(item)}>{card}</SwipeToDeleteRow>;
+      return (
+        <SwipeToDeleteRow onDelete={() => handleSwipeDelete(item)} spacing={viewMode === 'list' ? 0 : 10}>
+          {card}
+        </SwipeToDeleteRow>
+      );
     },
     [viewMode, translatedGenresByBookId, handleSwipeDelete],
   );
@@ -395,7 +399,6 @@ export default function MyTbrScreen() {
           contentContainerStyle={[
             styles.listContent,
             { paddingBottom: 88 + insets.bottom },
-            viewMode === 'list' && styles.listContentCompact,
             viewMode === 'grid' && styles.gridContent,
           ]}
           renderItem={renderBookItem}
@@ -502,12 +505,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   listContent: {
-    gap: 10,
     paddingHorizontal: 10,
     paddingTop: 10,
-  },
-  listContentCompact: {
-    gap: 0,
   },
   gridContent: {
     gap: 16,
