@@ -1,5 +1,5 @@
 import { Trash2 } from 'lucide-react-native';
-import type { ReactNode } from 'react';
+import { useEffect, type ReactNode } from 'react';
 import { Pressable, StyleSheet, View, type LayoutChangeEvent } from 'react-native';
 import Animated, {
   interpolate,
@@ -78,6 +78,13 @@ export function SwipeToDeleteRow({ onDelete, children, spacing = 0 }: SwipeToDel
   const scale = useSharedValue(1);
   const margin = useSharedValue(spacing);
   const isCollapsing = useSharedValue(false);
+
+  // The FlatList only remounts rows when switching to/from grid view, not
+  // between list and card — so a stale spacing value from the previous
+  // view mode can otherwise stick around on reused row instances.
+  useEffect(() => {
+    if (!isCollapsing.value) margin.value = spacing;
+  }, [spacing, margin, isCollapsing]);
 
   function handleLayout(event: LayoutChangeEvent) {
     if (isCollapsing.value) return;
